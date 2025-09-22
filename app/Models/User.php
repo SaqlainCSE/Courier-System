@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Shipment;
+use App\Models\Courier;
 
 class User extends Authenticatable
 {
@@ -58,7 +60,8 @@ class User extends Authenticatable
         return $this->hasOne(Courier::class);
     }
 
-    public function shipments() {
+    public function shipments()
+    {
         return $this->hasMany(Shipment::class);
     }
 }
