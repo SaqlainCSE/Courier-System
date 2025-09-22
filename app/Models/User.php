@@ -20,6 +20,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
+        'phone',
         'password',
     ];
 
@@ -44,5 +46,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // convenience helpers
+    public function isAdmin() { return $this->role === 'admin'; }
+    public function isCourier() { return $this->role === 'courier'; }
+    public function isCustomer() { return $this->role === 'customer'; }
+
+    // relationships
+    public function courierProfile() {
+        return $this->hasOne(Courier::class);
+    }
+
+    public function shipments() {
+        return $this->hasMany(Shipment::class);
     }
 }
