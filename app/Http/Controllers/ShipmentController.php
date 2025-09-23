@@ -54,6 +54,15 @@ class ShipmentController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
+        // Price calculation
+        $weight = $request->weight_kg;
+        $price = 60; // minimum price
+        if ($weight > 1) {
+            // Add 10 tk for each kg above 1
+            $additionalKg = ceil($weight - 1); // round up extra kg
+            $price += $additionalKg * 10;
+        }
+
         Shipment::create([
             'tracking_number' => 'TRK' . strtoupper(uniqid()),
             'user_id' => Auth::id(),
@@ -63,8 +72,8 @@ class ShipmentController extends Controller
             'drop_name' => $request->drop_name,
             'drop_phone' => $request->drop_phone,
             'drop_address' => $request->drop_address,
-            'weight_kg' => $request->weight_kg,
-            'price' => $request->weight_kg * 100, // simple calculation
+            'weight_kg' => $weight,
+            'price' => $price,
             'notes' => $request->notes,
         ]);
 

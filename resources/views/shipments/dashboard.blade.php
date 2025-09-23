@@ -48,7 +48,7 @@
                             <th>Drop</th>
                             <th>Weight</th>
                             <th>Status</th>
-                            <th>Price</th>
+                            <th>Delivery Fee</th>
                             <th>Booked At</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -78,11 +78,11 @@
                             <td>৳ {{ number_format($shipment->price, 2) }}</td>
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
-                                <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info"><i class="fas fa-eye">View</i></a>
+                                <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">View</a>
                                 @if($shipment->status === 'pending')
                                     <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-times">Cancel</i></button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                     </form>
                                 @endif
                             </td>
