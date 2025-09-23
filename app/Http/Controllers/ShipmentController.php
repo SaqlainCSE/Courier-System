@@ -3,23 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
-use App\Models\ShipmentStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-use Illuminate\Routing\Controller as BaseController;
-
-class ShipmentController extends BaseController
+class ShipmentController extends Controller
 {
-    public function __construct()
+    use AuthorizesRequests;
+
+    public function dashboard()
     {
-        $this->middleware('auth');
-        $this->middleware('role:customer')->only(['create','store','index','show']);
+        $user = Auth::user();
+
+        // Recent shipments (latest 10)
+        $shipments = Shipment::where('user_id', $user->id)->latest()->take(10)->get();
+
+        // Summary counts
+        $summary = [
+            'pending' => Shipment::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'in_transit' => Shipment::where('user_id', $user->id)->whereIn('status', ['assigned','picked','in_transit'])->count(),
+            'delivered' => Shipment::where('user_id', $user->id)->where('status', 'delivered')->count(),
+            'cancelled' => Shipment::where('user_id', $user->id)->where('status', 'cancelled')->count(),
+        ];
+
+        return view('shipments.dashboard', compact('shipments', 'summary'));
     }
+
 
     public function index()
     {
-        $shipments = Auth::user()->shipments()->latest()->paginate(10);
+        $shipments = Shipment::where('user_id', Auth::id())->latest()->get();
         return view('shipments.index', compact('shipments'));
     }
 
@@ -30,52 +43,57 @@ class ShipmentController extends BaseController
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'pickup_name'=>'required',
-            'pickup_phone'=>'required',
-            'pickup_address'=>'required',
-            'drop_name'=>'required',
-            'drop_phone'=>'required',
-            'drop_address'=>'required',
-            'weight_kg'=>'required|numeric|min:0',
-            'price'=>'required|numeric|min:0'
+        $request->validate([
+            'pickup_name' => 'required|string|max:255',
+            'pickup_phone' => 'required|string|max:20',
+            'pickup_address' => 'required|string',
+            'drop_name' => 'required|string|max:255',
+            'drop_phone' => 'required|string|max:20',
+            'drop_address' => 'required|string',
+            'weight_kg' => 'required|numeric|min:0.1',
+            'notes' => 'nullable|string|max:500',
         ]);
 
-        $data['user_id'] = Auth::id();
-        $shipment = Shipment::create($data);
-
-        ShipmentStatusLog::create([
-            'shipment_id' => $shipment->id,
-            'status' => $shipment->status,
-            'changed_by' => Auth::id(),
-            'note' => 'Shipment created by customer'
+        Shipment::create([
+            'tracking_number' => 'TRK' . strtoupper(uniqid()),
+            'user_id' => Auth::id(),
+            'pickup_name' => $request->pickup_name,
+            'pickup_phone' => $request->pickup_phone,
+            'pickup_address' => $request->pickup_address,
+            'drop_name' => $request->drop_name,
+            'drop_phone' => $request->drop_phone,
+            'drop_address' => $request->drop_address,
+            'weight_kg' => $request->weight_kg,
+            'price' => $request->weight_kg * 100, // simple calculation
+            'notes' => $request->notes,
         ]);
 
-        return redirect()->route('shipments.show', $shipment)->with('success','Shipment created. Tracking: '.$shipment->tracking_number);
+        return redirect()->route('shipments.dashboard')->with('success', 'Shipment created successfully!');
     }
 
     public function show(Shipment $shipment)
     {
-        $this->authorizeView($shipment);
-        $logs = $shipment->statusLogs()->latest()->get();
-        return view('shipments.show', compact('shipment','logs'));
+        $user = Auth::user();
+
+        // Only allow the logged-in customer to view their own shipment
+        if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        // Optionally, calculate estimated delivery in human-readable format
+        $estimated = $shipment->estimated_delivery_at
+            ? $shipment->estimated_delivery_at->format('d M Y, H:i')
+            : 'Not Estimated';
+
+        return view('shipments.show', compact('shipment', 'estimated'));
     }
 
-    protected function authorizeView(Shipment $shipment)
-    {
-        if (Auth::user()->isAdmin()) return true;
-        if (Auth::id() !== $shipment->user_id) abort(403);
-        return true;
-    }
 
     public function cancel(Shipment $shipment)
     {
-        $this->authorizeView($shipment);
-        if (!in_array($shipment->status, ['pending','assigned'])) {
-            return back()->with('error','Cannot cancel at this stage');
+        if ($shipment->status === 'pending') {
+            $shipment->update(['status' => 'cancelled']);
         }
-        $shipment->update(['status'=>'cancelled']);
-        ShipmentStatusLog::create(['shipment_id'=>$shipment->id,'status'=>'cancelled','changed_by'=>Auth::id(),'note'=>'Cancelled by customer']);
-        return back()->with('success','Shipment cancelled.');
+        return redirect()->route('shipments.dashboard')->with('success', 'Shipment cancelled successfully.');
     }
 }

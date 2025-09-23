@@ -8,8 +8,15 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\Admin\ShipmentAdminController;
 
 Route::get('/', function () {
+    if(\Illuminate\Support\Facades\Auth::check()){
+        $role = \Illuminate\Support\Facades\Auth::user()->role;
+        if($role === 'admin') return redirect()->route('admin.dashboard');
+        if($role === 'courier') return redirect()->route('courier.dashboard');
+        return redirect()->route('shipments.dashboard');
+    }
     return view('welcome');
 });
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,12 +33,15 @@ Route::post('/track', [TrackingController::class,'search'])->name('tracking.sear
 Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('tracking.show');
 
 Route::middleware('auth')->group(function() {
+
     // customer shipments
-    Route::get('/shipments', [ShipmentController::class,'index'])->name('shipments.index');
-    Route::get('/shipments/create', [ShipmentController::class,'create'])->name('shipments.create');
-    Route::post('/shipments', [ShipmentController::class,'store'])->name('shipments.store');
-    Route::get('/shipments/{shipment}', [ShipmentController::class,'show'])->name('shipments.show');
-    Route::post('/shipments/{shipment}/cancel', [ShipmentController::class,'cancel'])->name('shipments.cancel');
+    Route::prefix('customer')->middleware('role:customer')->group(function() {
+        Route::get('/shipments/dashboard', [ShipmentController::class,'dashboard'])->name('shipments.dashboard');
+        Route::get('/shipments/create', [ShipmentController::class,'create'])->name('shipments.create');
+        Route::post('/shipments', [ShipmentController::class,'store'])->name('shipments.store');
+        Route::get('/shipments/{shipment}', [ShipmentController::class,'show'])->name('shipments.show');
+        Route::post('/shipments/{shipment}/cancel', [ShipmentController::class,'cancel'])->name('shipments.cancel');
+    });
 
     // courier
     Route::prefix('courier')->middleware('role:courier')->group(function(){
