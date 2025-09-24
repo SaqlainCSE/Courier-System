@@ -2,138 +2,125 @@
 
 @section('content')
 <!-- Hero Section -->
-<section class="hero-section text-white d-flex align-items-center"
-    style="background: url('/slider.jpg') center/cover no-repeat;
-           min-height: 100vh; position: relative;">
-
-    <!-- Optional animated shapes / overlays -->
-    <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.25); mix-blend-mode: multiply;"></div>
-
-    <div class="container text-center position-relative" style="z-index: 2;">
-        <h1 class="fw-bold display-3 animate__animated animate__fadeInDown mb-3">
-            Your Trusted Courier Partner
+<section class="text-white d-flex align-items-center justify-content-center text-center"
+    style="background: linear-gradient(157deg, #ff416c, #ff4b2b, #34bf36);
+           min-height: 100vh; position: relative; overflow: hidden;">
+    <div class="container position-relative z-2">
+        <!-- Branding -->
+        <h1 class="fw-bold display-2 animate__animated animate__fadeInDown">
+            StepUp Courier
         </h1>
-        <p class="lead mb-5 animate__animated animate__fadeInUp">
-            Delivering speed, safety, and satisfaction across Bangladesh
+        <h2 class="fw-bold display-2 mb-3 animate__animated animate__fadeInDown">
+            Fast • Reliable • Secure 🚚
+        </h2>
+        <p class="lead mb-4 animate__animated animate__fadeInUp">
+            Your trusted courier partner across Bangladesh
         </p>
-
         @guest
-            <a href="{{ route('register') }}"
-               class="btn btn-danger btn-lg px-5 me-3 shadow-lg animate__animated animate__fadeInLeft"
-               style="border-radius: 50px;">Sign Up</a>
-            <a href="{{ route('login') }}"
-               class="btn btn-outline-light btn-lg px-5 shadow-lg animate__animated animate__fadeInRight"
-               style="border-radius: 50px;">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-light btn-lg px-5 rounded-pill shadow-lg me-3">Get Started</a>
+            <a href="{{ route('login') }}" class="btn btn-outline-light btn-lg px-5 rounded-pill shadow-lg">Login</a>
         @else
-            <a href="{{ route('shipments.create') }}"
-               class="btn btn-success btn-lg px-5 shadow-lg animate__animated animate__fadeInUp"
-               style="border-radius: 50px;">Create Shipment</a>
+            <a href="{{ route('shipments.create') }}" class="btn btn-success btn-lg px-5 rounded-pill shadow-lg">Create Shipment</a>
         @endguest
-    </div>
-
-    <!-- Optional floating courier truck icon -->
-    <div style="position: absolute; bottom: 20px; right: 20px; font-size: 3rem; color: rgba(255,255,255,0.3);">
-        <i class="fas fa-truck-moving animate__animated animate__bounce animate__infinite"></i>
     </div>
 </section>
 
-
-<!-- Curved Divider -->
-<div class="custom-shape-divider-bottom-hero">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-        <path d="M321.39,56.44C160.2,82.31,0,0,0,0V120H1200V0S482.59,29.77,321.39,56.44Z" opacity=".25" class="shape-fill"></path>
-    </svg>
-</div>
-
 <!-- Tracking Section -->
 <section class="py-5 bg-light">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-4">📦 Track Your Parcel</h2>
-        <form action="{{ route('tracking.search') }}" method="POST" class="row g-3 justify-content-center">
-            @csrf
-            <div class="col-md-6">
-                <input type="text" name="tracking_number" class="form-control form-control-lg shadow-sm rounded-pill" placeholder="Enter Tracking Number" required>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-danger btn-lg w-100 rounded-pill shadow-sm">Track</button>
-            </div>
-        </form>
+    <div class="container">
+        <div class="card shadow-lg border-0 p-4 glass-box text-center mx-auto" style="max-width: 700px;">
+            <h3 class="fw-bold mb-3">📦 Track Your Parcel</h3>
+            <form action="{{ route('tracking.search') }}" method="POST" class="row g-3">
+                @csrf
+                <div class="col-md-9">
+                    <input type="text" name="tracking_number" class="form-control form-control-lg rounded-pill shadow-sm"
+                           placeholder="Enter Tracking Number (e.g. TRK12345678)" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-danger btn-lg w-100 rounded-pill">Track</button>
+                </div>
+            </form>
+        </div>
     </div>
 </section>
 
 <!-- Services Section -->
 <section class="py-5">
     <div class="container text-center">
-        <h2 class="fw-bold mb-5">🚀 What We Offer</h2>
+        <h2 class="fw-bold mb-5">🚀 Our Services</h2>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card service-card shadow-lg border-0 h-100 p-4">
-                    <i class="fas fa-store fa-3x text-danger mb-3"></i>
-                    <h5 class="fw-bold">E-commerce Delivery</h5>
-                    <p>Powering your online business with fast, secure, and reliable delivery.</p>
+                <div class="service-box shadow-lg p-4">
+                    <div class="icon-circle bg-danger"><i class="fas fa-store fa-2x text-white"></i></div>
+                    <h5 class="fw-bold mt-3">E-commerce Delivery</h5>
+                    <p>Superfast & secure delivery for online businesses.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card service-card shadow-lg border-0 h-100 p-4">
-                    <i class="fas fa-shipping-fast fa-3x text-success mb-3"></i>
-                    <h5 class="fw-bold">Pick & Drop</h5>
-                    <p>Simple pickup & drop-off services designed for everyday parcels.</p>
+                <div class="service-box shadow-lg p-4">
+                    <div class="icon-circle bg-success"><i class="fas fa-shipping-fast fa-2x text-white"></i></div>
+                    <h5 class="fw-bold mt-3">Pick & Drop</h5>
+                    <p>Simple pickup & drop-off designed for daily parcels.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card service-card shadow-lg border-0 h-100 p-4">
-                    <i class="fas fa-warehouse fa-3x text-warning mb-3"></i>
-                    <h5 class="fw-bold">Warehousing</h5>
-                    <p>Organized storage solutions with maximum safety for your goods.</p>
+                <div class="service-box shadow-lg p-4">
+                    <div class="icon-circle bg-warning"><i class="fas fa-warehouse fa-2x text-white"></i></div>
+                    <h5 class="fw-bold mt-3">Warehousing</h5>
+                    <p>Safe & organized storage solutions for your goods.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Statistics Section -->
-<section class="py-5 bg-dark text-white">
+<!-- Stats Section -->
+<section class="py-5 text-white" style="background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);">
     <div class="container text-center">
         <div class="row g-4">
             <div class="col-md-4">
-                <h2 class="fw-bold counter text-danger" data-target="3000">0</h2>
-                <p>Registered Merchants</p>
+                <h2 class="fw-bold counter" data-target="5000">0</h2>
+                <p>Happy Clients</p>
             </div>
             <div class="col-md-4">
-                <h2 class="fw-bold counter text-success" data-target="10000">0</h2>
-                <p>Delivery Personnel</p>
+                <h2 class="fw-bold counter" data-target="100000">0</h2>
+                <p>Parcels Delivered</p>
             </div>
             <div class="col-md-4">
-                <h2 class="fw-bold counter text-warning" data-target="500">0</h2>
-                <p>Delivery Points</p>
+                <h2 class="fw-bold counter" data-target="50">0</h2>
+                <p>Districts Covered</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Testimonials Section -->
+<!-- Testimonials -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h2 class="fw-bold text-center mb-5">❤️ What Our Clients Say</h2>
-        <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner text-center">
-                <div class="carousel-item active">
-                    <blockquote class="blockquote">
-                        <p class="mb-4">“Amazing service! My parcels always arrive on time with live tracking.”</p>
-                        <footer class="blockquote-footer">Ayesha, Dhaka</footer>
-                    </blockquote>
+        <h2 class="fw-bold text-center mb-5">❤️ What Customers Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-box shadow-lg p-4 text-center">
+                    <img src="https://i.pravatar.cc/80?img=1" class="rounded-circle mb-3">
+                    <p>"Super fast and reliable service. Tracking is awesome!"</p>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <h6 class="mt-2">Ayesha - Dhaka</h6>
                 </div>
-                <div class="carousel-item">
-                    <blockquote class="blockquote">
-                        <p class="mb-4">“Best courier company for e-commerce deliveries. Super reliable.”</p>
-                        <footer class="blockquote-footer">Rahim, Chittagong</footer>
-                    </blockquote>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-box shadow-lg p-4 text-center">
+                    <img src="https://i.pravatar.cc/80?img=2" class="rounded-circle mb-3">
+                    <p>"My #1 courier choice for my online store."</p>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <h6 class="mt-2">Rahim - Chittagong</h6>
                 </div>
-                <div class="carousel-item">
-                    <blockquote class="blockquote">
-                        <p class="mb-4">“I trust them with all my logistics needs. Great support team.”</p>
-                        <footer class="blockquote-footer">Karim, Sylhet</footer>
-                    </blockquote>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-box shadow-lg p-4 text-center">
+                    <img src="https://i.pravatar.cc/80?img=3" class="rounded-circle mb-3">
+                    <p>"Great support team. Always helpful!"</p>
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <h6 class="mt-2">Karim - Sylhet</h6>
                 </div>
             </div>
         </div>
@@ -141,24 +128,23 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 text-white" style="background: linear-gradient(45deg,#d32f2f,#8e0000);">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-4">Start Shipping Smarter Today 🚚</h2>
+<section class="py-5 text-white text-center"
+    style="background: linear-gradient(90deg,#11998e,#38ef7d);">
+    <div class="container">
+        <h2 class="fw-bold mb-4">Ready to Ship Smarter? 🚀</h2>
         @guest
-            <a href="{{ route('register') }}" class="btn btn-light btn-lg me-2 shadow-lg">Get Started</a>
+            <a href="{{ route('register') }}" class="btn btn-light btn-lg me-2 shadow-lg">Join Now</a>
             <a href="{{ route('login') }}" class="btn btn-outline-light btn-lg shadow-lg">Login</a>
         @else
-            <a href="{{ route('shipments.create') }}" class="btn btn-success btn-lg shadow-lg">Create Shipment</a>
+            <a href="{{ route('shipments.create') }}" class="btn btn-dark btn-lg shadow-lg">Create Shipment</a>
         @endguest
     </div>
 </section>
 @endsection
 
 @push('scripts')
-<!-- Animate.css -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 <script>
-// Counter Animation
 document.addEventListener("DOMContentLoaded", () => {
     const counters = document.querySelectorAll('.counter');
     counters.forEach(counter => {
@@ -178,31 +164,32 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <style>
-.hero-section {
-    position: relative;
-    text-shadow: 0 3px 10px rgba(0,0,0,0.6);
+/* Glass box */
+.glass-box {
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
 }
-.service-card {
-    transition: transform .3s ease, box-shadow .3s ease;
+
+/* Service cards */
+.service-box {
+    border-radius: 20px;
+    transition: transform .3s ease;
+}
+.service-box:hover { transform: translateY(-8px); }
+.icon-circle {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
+}
+
+/* Testimonials */
+.testimonial-box {
     border-radius: 20px;
     background: #fff;
+    transition: transform .3s ease;
 }
-.service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-.custom-shape-divider-bottom-hero {
-    position: relative;
-    bottom: -1px;
-    width: 100%;
-    overflow: hidden;
-    line-height: 0;
-}
-.custom-shape-divider-bottom-hero svg {
-    position: relative;
-    display: block;
-    width: calc(132% + 1.3px);
-    height: 80px;
-}
+.testimonial-box:hover { transform: translateY(-6px); }
+.stars { color: gold; }
 </style>
 @endpush

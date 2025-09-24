@@ -3,67 +3,88 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <h3 class="mb-4 text-center fw-bold">Register</h3>
+        <div class="col-md-6 col-lg-6">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body p-5">
+                    <h3 class="mb-4 text-center fw-bold text-primary">
+                        <i class="fas fa-user-plus me-2"></i> Register
+                    </h3>
 
+                    <!-- Register Form -->
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
                         <!-- Name -->
                         <div class="mb-3">
-                            <label class="form-label">Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-user me-2 text-muted"></i>Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="name" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your full name"
+                                   value="{{ old('name') }}" required>
                         </div>
 
                         <!-- Business Name -->
                         <div class="mb-3">
-                            <label class="form-label">Business Name</label>
-                            <input type="text" name="business_name" class="form-control" value="{{ old('business_name') }}">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-building me-2 text-muted"></i>Business Name
+                            </label>
+                            <input type="text" name="business_name" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your business name"
+                                   value="{{ old('business_name') }}">
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
-                            <label class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-2 text-muted"></i>Email <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" name="email" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your email"
+                                   value="{{ old('email') }}" required>
                         </div>
 
                         <!-- Phone -->
                         <div class="mb-3">
-                            <label class="form-label">Phone<span class="text-danger"> *</label>
-                            <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-phone me-2 text-muted"></i>Phone <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="phone" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your phone number"
+                                   value="{{ old('phone') }}" required>
                         </div>
-
-                        <!-- Role -->
-                        {{-- <div class="mb-3">
-                            <label class="form-label">Register As</label>
-                            <select name="role" class="form-select">
-                                <option value="" selected>Customer</option>
-                                <option value="">Courier</option>
-                                <option value="">Admin</option>
-                            </select>
-                        </div> --}}
 
                         <!-- Password -->
                         <div class="mb-3">
-                            <label class="form-label">Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password" class="form-control" required>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-lock me-2 text-muted"></i>Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" name="password" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your password" required>
                         </div>
 
                         <!-- Confirm Password -->
                         <div class="mb-3">
-                            <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                            <input type="password" name="password_confirmation" class="form-control" required>
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-lock me-2 text-muted"></i>Confirm Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" name="password_confirmation" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Confirm your password" required>
                         </div>
 
                         <!-- Submit -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success shadow">Register</button>
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                <i class="fas fa-user-plus me-1"></i> Register
+                            </button>
                         </div>
                     </form>
 
-                    <p class="text-center mt-3">Already have an account? <a href="{{ route('login') }}">Login</a></p>
+                    <!-- Login -->
+                    <p class="text-center mt-4 mb-0">
+                        Already have an account?
+                        <a href="{{ route('login') }}" class="fw-semibold text-decoration-none">Login</a>
+                    </p>
                 </div>
             </div>
         </div>

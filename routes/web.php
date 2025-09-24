@@ -29,8 +29,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/track', function(){ return view('tracking.form'); })->name('tracking.form');
-Route::post('/track', [TrackingController::class,'search'])->name('tracking.search');
-Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('tracking.show');
+Route::post('/track', [\App\Http\Controllers\TrackingController::class,'search'])->name('tracking.search');
+Route::get('/track/{tracking}', [\App\Http\Controllers\TrackingController::class,'show'])->name('tracking.show');
 
 Route::middleware('auth')->group(function() {
 

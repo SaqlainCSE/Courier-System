@@ -35,4 +35,9 @@ class Shipment extends Model
     public function user() { return $this->belongsTo(User::class); }
     public function courier() { return $this->belongsTo(Courier::class); }
     public function branch() { return $this->belongsTo(Branch::class, 'from_branch_id'); }
+
+    public function statusLogs()
+    {
+        return $this->hasMany(\App\Models\ShipmentStatusLog::class);
+    }
 }

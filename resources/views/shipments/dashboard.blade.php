@@ -33,6 +33,48 @@
         @endforeach
     </div>
 
+    <!-- Total Cost Card -->
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 text-center py-4">
+            <div class="card-body">
+                <i class="fas fa-coins fa-2x text-warning mb-2"></i>
+                <h5 class="fw-bold">Total Cost</h5>
+                <h3 class="text-success">৳ {{ number_format($totalCost, 2) }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Wise Cost -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="fas fa-calendar-alt me-2"></i>Monthly Cost Breakdown
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Month</th>
+                            <th>Total Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($monthlyCosts as $month)
+                            <tr>
+                                <td>{{ \Carbon\Carbon::parse($month->month.'-01')->format('F Y') }}</td>
+                                <td>৳ {{ number_format($month->total, 2) }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-4">No data found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div><br>
+
     <!-- Recent Shipments Table -->
     <div class="card shadow-sm border-0">
         {{-- <div class="card-header bg-danger text-white fw-bold">

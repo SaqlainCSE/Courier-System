@@ -26,8 +26,23 @@ class ShipmentController extends Controller
             'cancelled' => Shipment::where('user_id', $user->id)->where('status', 'cancelled')->count(),
         ];
 
-        return view('shipments.dashboard', compact('shipments', 'summary'));
+        // ✅ Total cost for delivered shipments only
+        $totalCost = Shipment::where('user_id', $user->id)
+            ->where('status', 'delivered')
+            ->sum('price');
+
+        // ✅ Monthly cost (delivered only)
+        $monthlyCosts = Shipment::where('user_id', $user->id)
+            ->where('status', 'delivered')
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(price) as total")
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        return view('shipments.dashboard', compact('shipments', 'summary', 'totalCost', 'monthlyCosts'));
     }
+
+
 
 
     public function index()

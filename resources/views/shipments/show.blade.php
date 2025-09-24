@@ -174,7 +174,7 @@
                     <p><strong>Weight:</strong> {{ $shipment->weight_kg }} kg</p>
                 </div>
                 <div class="col-md-4">
-                    <p><strong>Price:</strong> ৳ {{ number_format($shipment->price, 2) }}</p>
+                    <p><strong>Cost:</strong> ৳ {{ number_format($shipment->price, 2) }}</p>
                 </div>
                 <div class="col-md-4">
                     <p><strong>Booked At:</strong> {{ $shipment->created_at->format('d M Y, H:i') }}</p>
@@ -189,18 +189,50 @@
             @endif
 
             <!-- Delivery Cost Details -->
-            <div class="mt-4 p-3 border rounded bg-light">
-                <h5 class="fw-bold text-danger mb-3"><i class="fas fa-money-bill-wave me-1"></i>Delivery Cost Details</h5>
+            <div class="mt-4 p-3 border rounded bg-white shadow-sm">
+                <h5 class="fw-bold mb-3"><i class="fas fa-money-bill-wave me-1 text-danger"></i>Cost Of Delivery</h5>
+
                 @php
-                    $basePrice = 60;
-                    $additional = max(0, ceil($shipment->weight_kg - 1) * 10);
-                    $totalPrice = $basePrice + $additional;
+                    $deliveryFee = 60;
+                    $codFee = 0;
+                    $discount = 0;
+                    $promoDiscount = 0;
+                    $additionalCharge = max(0, ceil($shipment->weight_kg - 1) * 10);
+                    $compensationCost = 0;
+                    $totalCost = $deliveryFee + $codFee + $additionalCharge - $discount - $promoDiscount;
                 @endphp
-                <p><strong>Base Price (up to 1 kg):</strong> ৳ {{ $basePrice }}</p>
-                <p><strong>Additional Weight Charges:</strong> ৳ {{ $additional }} ({{ max(0, $shipment->weight_kg - 1) }} kg × 10)</p>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Delivery Fee</span>
+                    <span>৳ {{ $deliveryFee }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>COD Fee</span>
+                    <span>৳ {{ $codFee }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Discount</span>
+                    <span class="text-danger">-৳ {{ $discount }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Promo Discount</span>
+                    <span class="text-danger">-৳ {{ $promoDiscount }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Additional Charge</span>
+                    <span>৳ {{ $additionalCharge }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Compensation Cost</span>
+                    <span>৳ {{ $compensationCost }}</span>
+                </div>
                 <hr>
-                <p class="fw-bold"><strong>Total Delivery Price:</strong> ৳ {{ $totalPrice }}</p>
+                <div class="d-flex justify-content-between fw-bold">
+                    <span>Total Cost</span>
+                    <span>৳ {{ $totalCost }}</span>
+                </div>
             </div>
+
 
             @if($shipment->status === 'pending')
             <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="mt-3">
