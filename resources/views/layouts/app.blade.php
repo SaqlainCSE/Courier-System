@@ -24,8 +24,8 @@
 
     <!-- Branding with Icon -->
     <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url('/') }}">
-      <i class="fas fa-shipping-fast text-warning me-2"></i>
-      StepUp <span class="text-warning">Courier</span>
+      <i class="fas fa-shipping-fast text-danger me-2"></i>
+      StepUp <span class="text-danger">Courier</span>
     </a>
 
     <!-- Mobile Toggle -->
@@ -43,10 +43,10 @@
 
         @guest
             <li class="nav-item">
-              <a class="nav-link fw-semibold" href="{{ route('login') }}">🔑 Login</a>
+              <a style="background-color: #34bf36;" class="btn text-light fw-bold ms-lg-3 px-4 rounded-pill shadow-sm" href="{{ route('login') }}">🔑 Login</a>
             </li>
             <li class="nav-item">
-              <a class="btn btn-warning text-dark fw-bold ms-lg-3 px-4 rounded-pill shadow-sm"
+              <a style="background-color: red;" class="btn text-light fw-bold ms-lg-3 px-4 rounded-pill shadow-sm"
                  href="{{ route('register') }}">
                  🚀 Register
               </a>
@@ -103,7 +103,7 @@
       <!-- About -->
       <div class="col-md-4">
         <a class="navbar-brand fw-bold d-flex align-items-center" href="/"><h5 class="fw-bold d-flex align-items-center">
-          <i class="fas fa-shipping-fast text-warning me-2"></i> StepUp <span class="text-warning">Courier</span>
+          <i class="fas fa-shipping-fast text-danger me-2"></i> StepUp <span class="text-danger">Courier</span>
         </h5></a>
         <p class="small text-light">
           🚚 Fast, reliable, and secure delivery service across Bangladesh.

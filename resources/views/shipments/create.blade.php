@@ -2,114 +2,132 @@
 
 @section('content')
 <div class="container py-4">
-    <h2 class="fw-bold mb-4">📦 Create Shipment</h2>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-box-open me-2"></i>Create Shipment</h2>
+        <a href="{{ route('shipments.dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-lg border-0 rounded-3">
         <div class="card-body">
             <form action="{{ route('shipments.store') }}" method="POST">
                 @csrf
-
-                <div class="row g-3">
+                <div class="row g-4">
                     <!-- Pickup -->
                     <div class="col-md-6">
-                        <h5 class="fw-semibold mb-3">Pickup Details</h5>
+                        <div class="p-3 border rounded-3 bg-light h-100">
+                            <h5 class="fw-semibold mb-3 text-primary"><i class="fas fa-map-marker-alt me-2"></i>Pickup Details</h5>
 
-                        <div class="mb-3">
-                            <label>Name</label>
-                            <input type="text" name="pickup_name" class="form-control" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Name</label>
+                                <input type="text" name="pickup_name" class="form-control" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Phone</label>
-                            <input type="text" name="pickup_phone" class="form-control" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Phone</label>
+                                <input type="text" name="pickup_phone" class="form-control" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>District</label>
-                            <select id="pickup_district" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">District</label>
+                                <select id="pickup_district" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Police Station</label>
-                            <select id="pickup_police" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Police Station</label>
+                                <select id="pickup_police" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Area</label>
-                            <select id="pickup_area" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Area</label>
+                                <select id="pickup_area" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Street / House / Road</label>
-                            <input type="text" id="pickup_street" class="form-control" placeholder="Street / House / Road" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Street / House / Road</label>
+                                <input type="text" id="pickup_street" class="form-control" placeholder="e.g. Road #12, House #10" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Full Address (Breadcrumb)</label>
-                            <input type="text" name="pickup_address" id="pickup_address" class="form-control" readonly required>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Full Address</label>
+                                <input type="text" name="pickup_address" id="pickup_address" class="form-control bg-light" readonly required>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Dropoff -->
                     <div class="col-md-6">
-                        <h5 class="fw-semibold mb-3">Dropoff Details</h5>
+                        <div class="p-3 border rounded-3 bg-light h-100">
+                            <h5 class="fw-semibold mb-3 text-success"><i class="fas fa-map-pin me-2"></i>Dropoff Details</h5>
 
-                        <div class="mb-3">
-                            <label>Name</label>
-                            <input type="text" name="drop_name" class="form-control" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Name</label>
+                                <input type="text" name="drop_name" class="form-control" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Phone</label>
-                            <input type="text" name="drop_phone" class="form-control" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Phone</label>
+                                <input type="text" name="drop_phone" class="form-control" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>District</label>
-                            <select id="drop_district" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">District</label>
+                                <select id="drop_district" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Police Station</label>
-                            <select id="drop_police" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Police Station</label>
+                                <select id="drop_police" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Area</label>
-                            <select id="drop_area" class="form-select" required></select>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Area</label>
+                                <select id="drop_area" class="form-select" required></select>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Street / House / Road</label>
-                            <input type="text" id="drop_street" class="form-control" placeholder="Street / House / Road" required>
-                        </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Street / House / Road</label>
+                                <input type="text" id="drop_street" class="form-control" placeholder="e.g. Lane #5, Flat #A2" required>
+                            </div>
 
-                        <div class="mb-3">
-                            <label>Full Address (Breadcrumb)</label>
-                            <input type="text" name="drop_address" id="drop_address" class="form-control" readonly required>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Full Address</label>
+                                <input type="text" name="drop_address" id="drop_address" class="form-control bg-light" readonly required>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row g-3 mt-2">
+                <!-- Shipment Info -->
+                <div class="row g-3 mt-4">
                     <div class="col-md-4">
-                        <label>Weight (kg)</label>
+                        <label class="form-label fw-medium">Weight (kg)</label>
                         <input type="number" id="weight" name="weight_kg" class="form-control" step="0.1" min="0.1" required>
                     </div>
                     <div class="col-md-8">
-                        <label>Notes (optional)</label>
+                        <label class="form-label fw-medium">Notes (optional)</label>
                         <input type="text" name="notes" class="form-control">
                     </div>
                 </div>
 
                 <!-- Live Price Display -->
-                <div class="mt-3">
-                    <h5>Delivery Fee: <span id="price" class="text-danger fw-bold">৳ 60</span></h5>
+                <div class="mt-4">
+                    <div class="alert alert-info d-flex align-items-center justify-content-between">
+                        <span><i class="fas fa-coins me-2"></i><strong>Delivery Fee:</strong></span>
+                        <span id="price" class="fs-5 fw-bold text-success">৳ 60</span>
+                    </div>
                 </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-success shadow">🚀 Book Shipment</button>
-                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                <!-- Buttons -->
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success shadow">
+                        🚀 Book Shipment
+                    </button>
+                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-secondary">
+                        Cancel
+                    </a>
                 </div>
             </form>
         </div>

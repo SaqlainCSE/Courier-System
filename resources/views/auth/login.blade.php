@@ -6,7 +6,7 @@
         <div class="col-md-5">
             <div class="card shadow border-0 rounded-3">
                 <div class="card-body p-5">
-                    <h3 class="mb-4 text-center fw-bold text-primary">
+                    <h3 class="mb-4 text-center fw-bold text-success">
                         <i class="fas fa-sign-in-alt me-2"></i>Login
                     </h3>
 
@@ -49,7 +49,7 @@
 
                         <!-- Submit -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                            <button type="submit" class="btn btn-success btn-lg rounded-pill shadow-sm">
                                 <i class="fas fa-sign-in-alt me-1"></i> Login
                             </button>
                         </div>

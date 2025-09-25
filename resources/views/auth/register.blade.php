@@ -6,7 +6,7 @@
         <div class="col-md-6 col-lg-6">
             <div class="card shadow border-0 rounded-3">
                 <div class="card-body p-5">
-                    <h3 class="mb-4 text-center fw-bold text-primary">
+                    <h3 class="mb-4 text-center fw-bold text-danger">
                         <i class="fas fa-user-plus me-2"></i> Register
                     </h3>
 
@@ -74,7 +74,7 @@
 
                         <!-- Submit -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                            <button type="submit" class="btn btn-danger btn-lg rounded-pill shadow-sm">
                                 <i class="fas fa-user-plus me-1"></i> Register
                             </button>
                         </div>
