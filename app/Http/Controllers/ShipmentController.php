@@ -16,7 +16,7 @@ class ShipmentController extends Controller
         $user = Auth::user();
 
         // Recent shipments (latest 10)
-        $shipments = Shipment::where('user_id', $user->id)->latest()->take(10)->get();
+        $shipments = Shipment::where('user_id', $user->id)->where('created_at', '>=', now()->subMonths(3))->latest()->paginate(20);
 
         // Summary counts
         $summary = [
@@ -42,15 +42,6 @@ class ShipmentController extends Controller
         return view('shipments.dashboard', compact('shipments', 'summary', 'totalCost', 'monthlyCosts'));
     }
 
-
-
-
-    public function index()
-    {
-        $shipments = Shipment::where('user_id', Auth::id())->latest()->get();
-        return view('shipments.index', compact('shipments'));
-    }
-
     public function create()
     {
         return view('shipments.create');
@@ -67,19 +58,53 @@ class ShipmentController extends Controller
             'drop_address' => 'required|string',
             'weight_kg' => 'required|numeric|min:0.1',
             'notes' => 'nullable|string|max:500',
+            'total_price_of_product' => 'required|numeric|min:1',
         ]);
 
-        // Price calculation
+        // Weight
         $weight = $request->weight_kg;
-        $price = 60; // minimum price
-        if ($weight > 1) {
-            // Add 10 tk for each kg above 1
-            $additionalKg = ceil($weight - 1); // round up extra kg
-            $price += $additionalKg * 10;
+
+        // ---- Cost Breakdown ----
+        $total_price_of_product = $request->total_price_of_product;
+
+        $deliveryFee      = 60;
+        $codFee           = 0;
+        $discount         = 0;
+        $promoDiscount    = 0;
+        $additionalCharge = max(0, ceil($weight - 1) * 10);
+        $compensationCost = 0;
+
+        $costOfDeliveryAmount = $deliveryFee + $codFee + $additionalCharge - $discount - $promoDiscount + $compensationCost;
+        // $totalCost = $total_price_of_product +  $costOfDeliveryAmount;
+
+        $buss_name = trim(Auth::user()->business_name ?? '');
+        $nameParts = explode(' ', $buss_name);
+        $namePrefix = 'STUP';
+
+        if (!empty($buss_name)) {
+
+            if (count($nameParts) === 1) {
+
+                $namePrefix = strtoupper(substr($buss_name, 0, 3));
+
+            } else {
+
+                $initialsArray = array_map(
+                    fn($part) => strtoupper(substr($part, 0, 1)),
+                    array_slice($nameParts, 0, 3)
+                );
+                $namePrefix = implode('', $initialsArray);
+
+                if (empty($namePrefix)) {
+                    $namePrefix = 'STUP';
+                }
+            }
         }
 
+        $tracking = $namePrefix . strtoupper(uniqid());
+
         Shipment::create([
-            'tracking_number' => 'TRK' . strtoupper(uniqid()),
+            'tracking_number' => $tracking,
             'user_id' => Auth::id(),
             'pickup_name' => $request->pickup_name,
             'pickup_phone' => $request->pickup_phone,
@@ -88,7 +113,8 @@ class ShipmentController extends Controller
             'drop_phone' => $request->drop_phone,
             'drop_address' => $request->drop_address,
             'weight_kg' => $weight,
-            'price' => $price,
+            'price' => $total_price_of_product,
+            'cost_of_delivery_amount' => $costOfDeliveryAmount,
             'notes' => $request->notes,
         ]);
 
@@ -99,18 +125,38 @@ class ShipmentController extends Controller
     {
         $user = Auth::user();
 
-        // Only allow the logged-in customer to view their own shipment
         if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
             abort(403, 'Unauthorized access.');
         }
 
-        // Optionally, calculate estimated delivery in human-readable format
         $estimated = $shipment->estimated_delivery_at
             ? $shipment->estimated_delivery_at->format('d M Y, H:i')
             : 'Not Estimated';
 
-        return view('shipments.show', compact('shipment', 'estimated'));
+        //Cost calculations moved here
+        $deliveryFee = 60;
+        $codFee = 0;
+        $discount = 0;
+        $promoDiscount = 0;
+        $additionalCharge = max(0, ceil($shipment->weight_kg - 1) * 10);
+        $compensationCost = 0;
+
+        $totalCost = $shipment->price  +  $shipment->cost_of_delivery_amount;
+
+        // Pass all cost details as array
+        $costDetails = [
+            'deliveryFee' => $deliveryFee,
+            'codFee' => $codFee,
+            'discount' => $discount,
+            'promoDiscount' => $promoDiscount,
+            'additionalCharge' => $additionalCharge,
+            'compensationCost' => $compensationCost,
+            'totalCost' => $totalCost,
+        ];
+
+        return view('shipments.show', compact('shipment', 'estimated', 'costDetails'));
     }
+
 
 
     public function cancel(Shipment $shipment)

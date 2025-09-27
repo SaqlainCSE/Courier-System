@@ -44,7 +44,7 @@
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
                 <i class="fas fa-coins fa-2x text-warning mb-2"></i>
-                <h6 class="fw-bold text-muted">Total Cost</h6>
+                <h6 class="fw-bold text-muted">Total Balance</h6>
                 <h4 class="fw-bold text-success">৳ {{ number_format($totalCost, 2) }}</h4>
             </div>
         </div>
@@ -52,8 +52,8 @@
 
     <!-- Monthly Wise Cost -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-header bg-gradient text-white fw-bold rounded-top-4">
-            <i class="fas fa-calendar-alt me-2"></i> Monthly Cost Breakdown
+        <div class="card-header bg-gradient text-dark fw-bold rounded-top-4">
+            <i class="fas fa-calendar-alt me-2"></i> Monthly Balance Breakdown
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -61,7 +61,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>Month</th>
-                            <th>Total Cost</th>
+                            <th>Balance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -81,10 +81,10 @@
         </div>
     </div>
 
-    <!-- Recent Shipments -->
+    <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header bg-dark text-white fw-bold rounded-top-4">
-            <i class="fas fa-boxes me-2"></i> Recent Shipments
+            <i class="fas fa-boxes me-2"></i> All Shipments
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -96,7 +96,7 @@
                             <th>Drop</th>
                             <th>Weight</th>
                             <th>Status</th>
-                            <th>Delivery Fee</th>
+                            <th>Total Amount</th>
                             <th>Booked At</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -129,7 +129,7 @@
                                     {{ ucfirst(str_replace('_',' ', $shipment->status)) }}
                                 </span>
                             </td>
-                            <td class="fw-bold text-success">৳ {{ number_format($shipment->price, 2) }}</td>
+                            <td class="fw-bold text-success">৳ {{ number_format($shipment->price + $shipment->cost_of_delivery_amount, 2) }}</td>
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
                                 <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">View</a>
@@ -151,6 +151,11 @@
                     </tbody>
                 </table>
             </div>
+
+                    <!-- Pagination -->
+                    <div class="mt-3 d-flex justify-content-center flex-wrap">
+                        {{ $shipments->links('pagination::bootstrap-5') }}
+                    </div>
         </div>
     </div>
 </div>

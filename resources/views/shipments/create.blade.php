@@ -103,10 +103,14 @@
                 <!-- Shipment Info -->
                 <div class="row g-3 mt-4">
                     <div class="col-md-4">
+                        <label class="form-label fw-medium">Total Price of Product</label>
+                        <input type="number" id="total_price_of_product" name="total_price_of_product" class="form-control" step="0.1" min="1" required>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label fw-medium">Weight (kg)</label>
                         <input type="number" id="weight" name="weight_kg" class="form-control" step="0.1" min="0.1" required>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-4">
                         <label class="form-label fw-medium">Notes (optional)</label>
                         <input type="text" name="notes" class="form-control">
                     </div>

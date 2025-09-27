@@ -26,6 +26,7 @@ class Shipment extends Model
         'drop_lng',
         'weight_kg',
         'price',
+        'cost_of_delivery_amount',
         'status',
         'estimated_delivery_at',
         'notes',

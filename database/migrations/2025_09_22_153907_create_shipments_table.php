@@ -32,8 +32,9 @@ return new class extends Migration
             $table->decimal('drop_lat', 10, 7)->nullable();
             $table->decimal('drop_lng', 10, 7)->nullable();
 
-            $table->decimal('weight_kg', 8, 2)->default(0); // weight
+            $table->decimal('weight_kg', 8, 2)->default(0);
             $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('cost_of_delivery_amount', 10, 2)->default(0);
             $table->enum('status', ['pending','assigned','picked','in_transit','delivered','cancelled'])->default('pending');
             $table->timestamp('estimated_delivery_at')->nullable();
             $table->text('notes')->nullable();
