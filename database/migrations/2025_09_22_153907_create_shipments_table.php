@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreignId('from_branch_id')->nullable()->constrained('branches')->nullOnDelete();
 
             // pickup
-            $table->string('pickup_name');
-            $table->string('pickup_phone');
-            $table->text('pickup_address');
+            $table->string('pickup_name')->nullable();
+            $table->string('pickup_phone')->nullable();
+            $table->text('pickup_address')->nullable();
             $table->decimal('pickup_lat', 10, 7)->nullable();
             $table->decimal('pickup_lng', 10, 7)->nullable();
 
@@ -35,6 +35,8 @@ return new class extends Migration
             $table->decimal('weight_kg', 8, 2)->default(0);
             $table->decimal('price', 10, 2)->default(0);
             $table->decimal('cost_of_delivery_amount', 10, 2)->default(0);
+            $table->decimal('additional_charge', 10, 2)->default(0);
+            $table->decimal('balance_cost', 10, 2)->default(0);
             $table->enum('status', ['pending','assigned','picked','in_transit','delivered','cancelled'])->default('pending');
             $table->timestamp('estimated_delivery_at')->nullable();
             $table->text('notes')->nullable();

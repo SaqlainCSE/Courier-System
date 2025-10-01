@@ -45,7 +45,7 @@
             <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
                 <i class="fas fa-coins fa-2x text-warning mb-2"></i>
                 <h6 class="fw-bold text-muted">Total Balance</h6>
-                <h4 class="fw-bold text-success">৳ {{ number_format($totalCost, 2) }}</h4>
+                <h4 class="fw-bold text-success">৳ {{ number_format($balanceCost, 2) }}</h4>
             </div>
         </div>
     </div>
@@ -92,11 +92,11 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Tracking #</th>
-                            <th>Pickup</th>
-                            <th>Drop</th>
+                            {{-- <th>Pickup</th> --}}
+                            <th>Drop Address</th>
                             <th>Weight</th>
                             <th>Status</th>
-                            <th>Total Amount</th>
+                            <th>Amount</th>
                             <th>Booked At</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -105,10 +105,10 @@
                     @forelse($shipments as $shipment)
                         <tr>
                             <td>{{ $shipment->tracking_number }}</td>
-                            <td>
+                            {{-- <td>
                                 {{ $shipment->pickup_name }}<br>
                                 <small class="text-muted">{{ Str::limit($shipment->pickup_address,30) }}</small>
-                            </td>
+                            </td> --}}
                             <td>
                                 {{ $shipment->drop_name }}<br>
                                 <small class="text-muted">{{ Str::limit($shipment->drop_address,30) }}</small>
@@ -129,10 +129,14 @@
                                     {{ ucfirst(str_replace('_',' ', $shipment->status)) }}
                                 </span>
                             </td>
-                            <td class="fw-bold text-success">৳ {{ number_format($shipment->price + $shipment->cost_of_delivery_amount, 2) }}</td>
+                            <td class="fw-bold text-success">৳ {{ number_format($shipment->price ) }}</td>
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
                                 <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">View</a>
+                                @if($shipment->status === 'pending')
+                                        <a href="{{ route('shipments.edit', $shipment) }}" class="btn btn-sm btn-outline-warning">Edit
+                                        </a>
+                                @endif
                                 {{-- @if($shipment->status === 'pending')
                                     <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="d-inline">
                                         @csrf

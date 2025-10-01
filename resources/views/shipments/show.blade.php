@@ -80,7 +80,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
-      StepUp <span class="text-danger">Courier</span> - Shipment Details</h2>
+            StepUp <span class="text-danger">Courier</span> - Shipment Details</h2>
         <a href="{{ route('shipments.dashboard') }}" class="btn btn-outline-dark shadow-sm">
             <i class="fas fa-arrow-left me-1"></i>Back
         </a>
@@ -116,77 +116,72 @@
             <hr>
 
             <!-- Shipment Progress Tracker -->
-@php
-    // If shipment is cancelled, show only the Cancelled step.
-    if ($shipment->status === 'cancelled') {
-        $statuses = ['cancelled'];
-    } else {
-        $statuses = ['pending','assigned','picked','in_transit','delivered'];
-    }
+            @php
+                if ($shipment->status === 'cancelled') {
+                    $statuses = ['cancelled'];
+                } else {
+                    $statuses = ['pending','assigned','picked','in_transit','delivered'];
+                }
 
-    $statusLabels = [
-        'pending'     => 'Pending',
-        'assigned'    => 'Assigned',
-        'picked'      => 'Picked Up',
-        'in_transit'  => 'On The Way',
-        'delivered'   => 'Delivered',
-        'cancelled'   => 'Cancelled',
-    ];
+                $statusLabels = [
+                    'pending'     => 'Pending',
+                    'assigned'    => 'Assigned',
+                    'picked'      => 'Picked Up',
+                    'in_transit'  => 'On The Way',
+                    'delivered'   => 'Delivered',
+                    'cancelled'   => 'Cancelled',
+                ];
 
-    $icons = [
-        'pending'     => 'fa-hourglass-start',
-        'assigned'    => 'fa-user-check',
-        'picked'      => 'fa-box',
-        'in_transit'  => 'fa-truck-moving',
-        'delivered'   => 'fa-flag-checkered',
-        'cancelled'   => 'fa-times-circle'
-    ];
+                $icons = [
+                    'pending'     => 'fa-hourglass-start',
+                    'assigned'    => 'fa-user-check',
+                    'picked'      => 'fa-box',
+                    'in_transit'  => 'fa-truck-moving',
+                    'delivered'   => 'fa-flag-checkered',
+                    'cancelled'   => 'fa-times-circle'
+                ];
 
-    $colors = [
-        'pending'     => '#ffc107',
-        'assigned'    => '#0dcaf0',
-        'picked'      => '#0d6efd',
-        'in_transit'  => '#6f42c1',
-        'delivered'   => '#198754',
-        'cancelled'   => '#dc3545'
-    ];
+                $colors = [
+                    'pending'     => '#ffc107',
+                    'assigned'    => '#0dcaf0',
+                    'picked'      => '#0d6efd',
+                    'in_transit'  => '#6f42c1',
+                    'delivered'   => '#198754',
+                    'cancelled'   => '#dc3545'
+                ];
 
-    // Make sure $currentIndex is always defined and numeric (fallback to 0)
-    $currentIndex = array_search($shipment->status, $statuses);
-    if ($currentIndex === false) {
-        $currentIndex = 0;
-    }
-@endphp
+                $currentIndex = array_search($shipment->status, $statuses);
+                if ($currentIndex === false) $currentIndex = 0;
+            @endphp
 
-<div class="progress-tracker">
-    <div class="progress-bar"></div>
+            <div class="progress-tracker">
+                <div class="progress-bar"></div>
 
-    <div class="steps d-flex justify-content-between">
-        @foreach($statuses as $index => $status)
-            <div class="step {{ $index <= $currentIndex ? 'active' : '' }}">
-                <div class="circle"
-                     style="border-color: {{ $colors[$status] }};
-                            background: {{ $index <= $currentIndex ? $colors[$status] : '#fff' }};
-                            color: {{ $index <= $currentIndex ? '#fff' : $colors[$status] }};">
-                    <i class="fas {{ $icons[$status] }}"></i>
+                <div class="steps d-flex justify-content-between">
+                    @foreach($statuses as $index => $status)
+                        <div class="step {{ $index <= $currentIndex ? 'active' : '' }}">
+                            <div class="circle"
+                                style="border-color: {{ $colors[$status] }};
+                                       background: {{ $index <= $currentIndex ? $colors[$status] : '#fff' }};
+                                       color: {{ $index <= $currentIndex ? '#fff' : $colors[$status] }};">
+                                <i class="fas {{ $icons[$status] }}"></i>
+                            </div>
+                            <p style="color: {{ $index <= $currentIndex ? $colors[$status] : '#6c757d' }}">
+                                {{ $statusLabels[$status] }}
+                            </p>
+                        </div>
+                    @endforeach
                 </div>
-                <p style="color: {{ $index <= $currentIndex ? $colors[$status] : '#6c757d' }}">
-                    {{ $statusLabels[$status] }}
-                </p>
             </div>
-        @endforeach
-    </div>
-</div>
-<br>
+            <br>
 
-
-            <!-- Pickup & Dropoff -->
             <div class="row g-4">
+                <!--Delivery Man-->
                 <div class="col-md-6">
-                    <h5 class="fw-bold text-primary"><i class="fas fa-location-arrow me-1"></i>Pickup</h5>
-                    <p class="mb-1">{{ $shipment->pickup_name }} - {{ $shipment->pickup_phone }}</p>
-                    <p class="mb-0">{{ $shipment->pickup_address }}</p>
+                    <h5 class="fw-bold text-primary"><i class="fas fa-location-arrow me-1"></i>Delivery Man</h5>
+                    <p class="mb-1">{{ $costDetails['deliveryManName'] }} - {{ $costDetails['deliveryManPhone'] }}</p>
                 </div>
+                <!--Dropoff-->
                 <div class="col-md-6">
                     <h5 class="fw-bold text-success"><i class="fas fa-map-marker-alt me-1"></i>Dropoff</h5>
                     <p class="mb-1">{{ $shipment->drop_name }} - {{ $shipment->drop_phone }}</p>
@@ -209,10 +204,10 @@
             </div>
 
             @if($shipment->notes)
-            <div class="mt-3">
-                <h6 class="fw-bold text-secondary"><i class="fas fa-sticky-note me-1"></i>Notes</h6>
-                <p class="mb-0">{{ $shipment->notes }}</p>
-            </div>
+                <div class="mt-3">
+                    <h6 class="fw-bold text-secondary"><i class="fas fa-sticky-note me-1"></i>Notes</h6>
+                    <p class="mb-0">{{ $shipment->notes }}</p>
+                </div>
             @endif
 
             <!-- Delivery Cost Details -->
@@ -220,45 +215,26 @@
                 <h5 class="fw-bold mb-3 text-danger"><i class="fas fa-money-bill-wave me-1"></i>Cost Breakdown</h5>
 
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Amount</span>
-                    <span>৳ {{ number_format($shipment->price) }}</span>
+                    <span>Product Price</span>
+                    <span>৳ {{ number_format($shipment->price, 2) }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Delivery Fee</span>
-                    <span>৳ {{ number_format($costDetails['deliveryFee']) }}</span>
+                    <span>Delivery Charge</span>
+                    <span class="text-danger">-৳ {{ number_format(60, 2) }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Additional Charge</span>
-                    <span>৳ {{ number_format($costDetails['additionalCharge']) }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Discount</span>
-                    <span class="text-danger">-৳ {{ number_format($costDetails['discount']) }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Promo Discount</span>
-                    <span class="text-danger">-৳ {{ number_format($costDetails['promoDiscount']) }}</span>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Compensation Cost</span>
-                    <span>৳ {{ number_format($costDetails['compensationCost']) }}</span>
-                </div>
+                    <span class="text-danger">-৳ {{ number_format($shipment->additional_charge, 2) }}</span> </div>
                 <hr>
                 <div class="d-flex justify-content-between fw-bold fs-5">
-                    <span>Total Cost</span>
-                    <span class="text-success">৳ {{ number_format($costDetails['totalCost']) }}</span>
+                    <span>Payable Amount</span>
+                    <span class="text-success">৳ {{ number_format($shipment->balance_cost, 2) }}</span>
                 </div>
-            </div>
-
-
-            {{-- @if($shipment->status === 'pending')
-            <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="mt-3">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    <i class="fas fa-times me-1"></i>Cancel Shipment
-                </button>
-            </form>
-            @endif --}}
+            </div><br>
+            @if($shipment->status === 'pending')
+                   <a href="{{ route('shipments.edit', $shipment) }}" class="btn btn-sm btn-outline-warning">Edit Shipment
+                    </a>
+            @endif
         </div>
     </div>
 </div>
@@ -267,22 +243,17 @@
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Steps and currentIndex come from backend (always defined now)
-    let steps = @json($statuses);
-    // use json to safely inject numeric value
     let currentIndex = parseInt(@json($currentIndex), 10);
-    let totalSteps = steps.length - 1;
+    let totalSteps = @json(count($statuses) - 1);
     const progressBar = document.querySelector(".progress-bar");
 
     if (!progressBar) return;
 
-    // If only one step (e.g. cancelled), hide the progress bar to avoid division by zero
     if (totalSteps <= 0) {
         progressBar.style.display = 'none';
         return;
     }
 
-    // Otherwise calculate width normally
     let progress = (currentIndex / totalSteps) * 100;
     if (!isFinite(progress) || progress < 0) progress = 0;
     if (progress > 100) progress = 100;

@@ -34,6 +34,13 @@ class TrackingController extends Controller
             $logs = collect();
         }
 
-        return view('tracking.show', compact('shipment', 'logs'));
+        // Get assigned courier and delivery man info
+        $courier = $shipment->courier;            // Shipment -> Courier
+        $courierUser = $courier?->user;           // Courier -> User
+
+        $deliveryManName = $courierUser?->business_name ?? 'Not Assigned Yet';
+        $deliveryManPhone = $courierUser?->phone ?? '';
+
+        return view('tracking.show', compact('shipment', 'logs', 'deliveryManName', 'deliveryManPhone'));
     }
 }

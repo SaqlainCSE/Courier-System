@@ -27,6 +27,8 @@ class Shipment extends Model
         'weight_kg',
         'price',
         'cost_of_delivery_amount',
+        'additional_charge',
+        'balance_cost',
         'status',
         'estimated_delivery_at',
         'notes',

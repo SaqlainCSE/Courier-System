@@ -34,6 +34,16 @@
                                    value="{{ old('business_name') }}">
                         </div>
 
+                        <!-- Business Address -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-map-marked-alt me-2 text-muted"></i>Business Address
+                            </label>
+                            <input type="text" name="business_address" class="form-control form-control-lg rounded-pill"
+                                   placeholder="Enter your business address"
+                                   value="{{ old('business_address') }}">
+                        </div>
+
                         <!-- Email -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">
