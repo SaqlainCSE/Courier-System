@@ -251,14 +251,14 @@
             </div>
 
 
-            @if($shipment->status === 'pending')
+            {{-- @if($shipment->status === 'pending')
             <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="mt-3">
                 @csrf
                 <button type="submit" class="btn btn-outline-danger btn-sm">
                     <i class="fas fa-times me-1"></i>Cancel Shipment
                 </button>
             </form>
-            @endif
+            @endif --}}
         </div>
     </div>
 </div>

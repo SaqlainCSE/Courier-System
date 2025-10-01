@@ -133,12 +133,12 @@
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
                                 <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">View</a>
-                                @if($shipment->status === 'pending')
+                                {{-- @if($shipment->status === 'pending')
                                     <form action="{{ route('shipments.cancel', $shipment) }}" method="POST" class="d-inline">
                                         @csrf
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                     </form>
-                                @endif
+                                @endif --}}
                             </td>
                         </tr>
                     @empty
