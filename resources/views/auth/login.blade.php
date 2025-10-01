@@ -31,11 +31,19 @@
                             <label class="form-label fw-semibold">
                                 <i class="fas fa-lock me-2 text-muted"></i>Password
                             </label>
-                            <input type="password"
-                                   name="password"
-                                   class="form-control form-control-lg rounded-pill"
-                                   placeholder="Enter your password"
-                                   required>
+                            <div class="input-group">
+                                <input type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control form-control-lg rounded-start-pill"
+                                    placeholder="Enter your password"
+                                    required>
+                                <button type="button"
+                                        class="btn btn-outline-secondary rounded-end-pill"
+                                        onclick="togglePassword()">
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Remember + Forgot -->
@@ -66,3 +74,20 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function togglePassword() {
+        const password = document.getElementById("password");
+        const icon = document.getElementById("toggleIcon");
+
+        if (password.type === "password") {
+            password.type = "text";
+            icon.classList.replace("fa-eye", "fa-eye-slash");
+        } else {
+            password.type = "password";
+            icon.classList.replace("fa-eye-slash", "fa-eye");
+        }
+    }
+</script>
+@endpush

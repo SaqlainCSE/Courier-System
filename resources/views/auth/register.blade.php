@@ -59,8 +59,19 @@
                             <label class="form-label fw-semibold">
                                 <i class="fas fa-lock me-2 text-muted"></i>Password <span class="text-danger">*</span>
                             </label>
-                            <input type="password" name="password" class="form-control form-control-lg rounded-pill"
-                                   placeholder="Enter your password" required>
+                            <div class="input-group">
+                                <input type="password"
+                                    id="password"
+                                    name="password"
+                                    class="form-control form-control-lg rounded-start-pill"
+                                    placeholder="Enter your password"
+                                    required>
+                                <button type="button"
+                                        class="btn btn-outline-secondary rounded-end-pill"
+                                        onclick="togglePassword('password', 'toggleIcon1')">
+                                    <i class="fas fa-eye" id="toggleIcon1"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Confirm Password -->
@@ -68,8 +79,19 @@
                             <label class="form-label fw-semibold">
                                 <i class="fas fa-lock me-2 text-muted"></i>Confirm Password <span class="text-danger">*</span>
                             </label>
-                            <input type="password" name="password_confirmation" class="form-control form-control-lg rounded-pill"
-                                   placeholder="Confirm your password" required>
+                            <div class="input-group">
+                                <input type="password"
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    class="form-control form-control-lg rounded-start-pill"
+                                    placeholder="Confirm your password"
+                                    required>
+                                <button type="button"
+                                        class="btn btn-outline-secondary rounded-end-pill"
+                                        onclick="togglePassword('password_confirmation', 'toggleIcon2')">
+                                    <i class="fas fa-eye" id="toggleIcon2"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Submit -->
@@ -91,3 +113,18 @@
     </div>
 </div>
 @endsection
+
+<script>
+function togglePassword(fieldId, iconId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(iconId);
+
+    if (field.type === "password") {
+        field.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        field.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+}
+</script>
