@@ -83,6 +83,24 @@
 
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="col-md-3 mt-4 ms-4">
+            <!-- Date Filter -->
+            <form method="GET" action="{{ route('shipments.dashboard') }}" class="row g-2 mb-3">
+                <div class="col-md-6">
+                    <input type="date" name="start_date" class="form-control"
+                        value="{{ $filters['start_date'] ?? '' }}">
+                </div>
+                <div class="col-md-6">
+                    <input type="date" name="end_date" class="form-control"
+                        value="{{ $filters['end_date'] ?? '' }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-sm btn-dark w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+
         <div class="card-header bg-dark text-white fw-bold rounded-top-4">
             <i class="fas fa-boxes me-2"></i> All Shipments
         </div>
