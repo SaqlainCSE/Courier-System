@@ -177,12 +177,22 @@
 
             <div class="row g-4">
                 <!--Delivery Man-->
-                <div class="col-md-6">
-                    <h5 class="fw-bold text-primary"><i class="fas fa-location-arrow me-1"></i>Delivery Man</h5>
+                <div class="col-md-4">
+                    @if(isset($costDetails['deliveryManName']))
+                    <h5 class="fw-bold text-primary"><i class="fas fa-truck me-1"></i>Delivery Man</h5>
                     <p class="mb-1">{{ $costDetails['deliveryManName'] }} - {{ $costDetails['deliveryManPhone'] }}</p>
+                    @else
+                        <p class="text-muted mb-0"><i class="fas fa-truck me-1"></i>No delivery man assigned yet.</p>
+                    @endif
+                </div>
+                <!--Pickup-->
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-danger"><i class="fas fa-location-arrow me-1"></i>Pickup</h5>
+                    <p class="mb-1">{{ $costDetails['pickupName'] }} - {{ $costDetails['pickupPhone'] }}</p>
+                    <p class="mb-0">{{ $costDetails['pickupAddress'] }}</p>
                 </div>
                 <!--Dropoff-->
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <h5 class="fw-bold text-success"><i class="fas fa-map-marker-alt me-1"></i>Dropoff</h5>
                     <p class="mb-1">{{ $shipment->drop_name }} - {{ $shipment->drop_phone }}</p>
                     <p class="mb-0">{{ $shipment->drop_address }}</p>

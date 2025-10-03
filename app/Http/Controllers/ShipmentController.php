@@ -41,18 +41,12 @@ class ShipmentController extends Controller
         $balanceCost = (clone $query)->where('status', 'delivered')->sum('balance_cost');
 
         // ✅ Monthly cost (delivered only)
-        $monthlyCosts = (clone $query)
-                        ->where('status', 'delivered')
-                        ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(balance_cost) as total")
-                        ->groupBy('month')
-                        ->orderBy('month', 'desc');
-
-        // clear old orderBy (from ->latest())
-        $monthlyCosts->getQuery()->orders = null;
-
-        $monthlyCosts = $monthlyCosts->get();
-
-
+        $monthlyCosts = Shipment::where('user_id', $user->id)
+                                            ->where('status', 'delivered')
+                                            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(price) as total")
+                                            ->groupBy('month')
+                                            ->orderBy('month', 'desc')
+                                            ->get();
 
         return view('shipments.dashboard', compact('shipments', 'summary', 'balanceCost', 'monthlyCosts'))
             ->with('filters', $request->only(['start_date','end_date']));
@@ -151,6 +145,9 @@ class ShipmentController extends Controller
         $courierPhone = $courierUser?->phone ?? '';
 
         $costDetails = [
+            'pickupName'        => $user->name,
+            'pickupPhone'       => $user->phone,
+            'pickupAddress'     => $user->business_address,
             'deliveryManName'    => $courierName,
             'deliveryManPhone'   => $courierPhone,
             'price'              => $shipment->price,

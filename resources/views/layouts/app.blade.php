@@ -117,8 +117,8 @@
         <ul class="list-unstyled">
           <li><a href="{{ url('/') }}" class="footer-link">🏠 Home</a></li>
           <li><a href="{{ route('shipments.dashboard') }}" class="footer-link">📦 Dashboard</a></li>
-          <li><a href="{{ route('tracking.form') }}" class="footer-link">🔍 Track Shipment</a></li>
-          <li><a href="#" class="footer-link">📞 Contact Us</a></li>
+          {{-- <li><a href="{{ route('tracking.form') }}" class="footer-link">🔍 Track Shipment</a></li> --}}
+          {{-- <li><a href="#" class="footer-link">📞 Contact Us</a></li> --}}
         </ul>
       </div>
 

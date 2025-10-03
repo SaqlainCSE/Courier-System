@@ -76,7 +76,7 @@
 
             <!-- Shipment Details -->
             <div class="row g-4 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="p-3 rounded bg-light shadow-sm h-100">
                         @if(isset($deliveryManName))
                             <h6 class="fw-bold"><i class="fas fa-truck text-primary me-2"></i> Delivery Man</h6>
@@ -84,14 +84,22 @@
                                 <i class="fas fa-user me-1"></i>{{ $deliveryManName }} — {{ $deliveryManPhone }}
                             </p>
                         @else
-                            <p class="text-muted small mb-0">No delivery man assigned yet.</p>
+                            <p class="text-muted mb-0"><i class="fas fa-truck me-1"></i>No delivery man assigned yet.</p>
                         @endif
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="p-3 rounded bg-light shadow-sm h-100">
-                        <h6 class="fw-bold"><i class="fas fa-location-arrow text-success me-2"></i> Dropoff</h6>
+                        <h6 class="fw-bold"><i class="fas fa-location-arrow text-danger me-2"></i> Pickup</h6>
+                        <p class="mb-1"><i class="fas fa-user me-1"></i>{{ $customerName }} - {{ $customerPhone }}</p>
+                        <p class="text-muted small mb-0"><i class="fas fa-location-dot me-1"></i>{{ $customerAddress }}</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 rounded bg-light shadow-sm h-100">
+                        <h6 class="fw-bold"><i class="fas fa-map-marker-alt text-success me-2"></i> Dropoff</h6>
                         <p class="mb-1"><i class="fas fa-user me-1"></i>{{ $shipment->drop_name }} — {{ $shipment->drop_phone }}</p>
                         <p class="text-muted small mb-0"><i class="fas fa-location-dot me-1"></i>{{ $shipment->drop_address }}</p>
                     </div>
