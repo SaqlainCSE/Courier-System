@@ -54,13 +54,30 @@
 
             <!-- Progress Bar -->
             @php
-                $statuses = ['pending','assigned','picked','in_transit','hold','delivered'];
+                // Base statuses
+                $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered'];
 
+                // Filter statuses for progress tracker
                 if ($shipment->status === 'cancelled') {
+                    $statuses = ['cancelled'];
                     $isCancelled = true;
-                    $progressPercent = 100; // force full bar in red
-                    $currentIndex = -1; // so nothing in $statuses loop shows as completed
+                    $progressPercent = 100;
+                    $currentIndex = -1;
+                } elseif ($shipment->status === 'hold') {
+                    // Show all up to hold
+                    $statuses = ['pending','assigned','picked','in_transit','hold'];
+                    $isCancelled = false;
+                    $currentIndex = array_search($shipment->status, $statuses);
+                    $progressPercent = (($currentIndex + 1) / count($statuses)) * 100;
+                } elseif ($shipment->status === 'delivered') {
+                    // Delivered skips hold
+                    $statuses = ['pending','assigned','picked','in_transit','delivered'];
+                    $isCancelled = false;
+                    $currentIndex = array_search($shipment->status, $statuses);
+                    $progressPercent = (($currentIndex + 1) / count($statuses)) * 100;
                 } else {
+                    // Normal flow excluding cancelled
+                    $statuses = array_filter($allStatuses, fn($s) => $s !== 'cancelled');
                     $isCancelled = false;
                     $currentIndex = array_search($shipment->status, $statuses);
                     $progressPercent = $currentIndex === false ? 0 : (($currentIndex + 1) / count($statuses)) * 100;

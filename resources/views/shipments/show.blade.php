@@ -118,45 +118,56 @@
 
             <!-- Shipment Progress Tracker -->
             @php
-                if ($shipment->status === 'cancelled') {
-                    $statuses = ['cancelled'];
-                } else {
-                    $statuses = ['pending','assigned','picked','in_transit', 'hold','delivered'];
-                }
+            // Base statuses
+            $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered'];
 
-                $statusLabels = [
-                    'pending'     => 'Pending',
-                    'assigned'    => 'Assigned',
-                    'picked'      => 'Picked Up',
-                    'in_transit'  => 'On The Way',
-                    'delivered'   => 'Delivered',
-                    'cancelled'   => 'Cancelled',
-                    'hold'        => 'On Hold'
-                ];
+            // Filter statuses for the tracker
+            if ($shipment->status === 'cancelled') {
+                $statuses = ['cancelled'];
+            } elseif ($shipment->status === 'hold') {
+                // If shipment is currently on hold, show all up to hold
+                $statuses = ['pending','assigned','picked','in_transit','hold'];
+            } elseif ($shipment->status === 'delivered') {
+                // If delivered, skip hold
+                $statuses = ['pending','assigned','picked','in_transit','delivered'];
+            } else {
+                // For other statuses, show everything except cancelled
+                $statuses = array_filter($allStatuses, fn($s) => $s !== 'cancelled');
+            }
 
-                $icons = [
-                    'pending'     => 'fa-hourglass-start',
-                    'assigned'    => 'fa-user-check',
-                    'picked'      => 'fa-box',
-                    'in_transit'  => 'fa-truck-moving',
-                    'delivered'   => 'fa-flag-checkered',
-                    'cancelled'   => 'fa-times-circle',
-                    'hold'        => 'fa-pause-circle'
-                ];
+            $statusLabels = [
+                'pending'     => 'Pending',
+                'assigned'    => 'Assigned',
+                'picked'      => 'Picked Up',
+                'in_transit'  => 'On The Way',
+                'delivered'   => 'Delivered',
+                'cancelled'   => 'Cancelled',
+                'hold'        => 'On Hold'
+            ];
 
-                $colors = [
-                    'pending'     => '#ffc107',
-                    'assigned'    => '#0dcaf0',
-                    'picked'      => '#0d6efd',
-                    'in_transit'  => '#6f42c1',
-                    'delivered'   => '#198754',
-                    'cancelled'   => '#dc3545',
-                    'hold'        => '#6c757d'
-                ];
+            $icons = [
+                'pending'     => 'fa-hourglass-start',
+                'assigned'    => 'fa-user-check',
+                'picked'      => 'fa-box',
+                'in_transit'  => 'fa-truck-moving',
+                'delivered'   => 'fa-flag-checkered',
+                'cancelled'   => 'fa-times-circle',
+                'hold'        => 'fa-pause-circle'
+            ];
 
-                $currentIndex = array_search($shipment->status, $statuses);
-                if ($currentIndex === false) $currentIndex = 0;
-            @endphp
+            $colors = [
+                'pending'     => '#ffc107',
+                'assigned'    => '#0dcaf0',
+                'picked'      => '#0d6efd',
+                'in_transit'  => '#6f42c1',
+                'delivered'   => '#198754',
+                'cancelled'   => '#dc3545',
+                'hold'        => '#6c757d'
+            ];
+
+            $currentIndex = array_search($shipment->status, $statuses);
+            if ($currentIndex === false) $currentIndex = 0;
+        @endphp
 
             <div class="progress-tracker">
                 <div class="progress-bar"></div>

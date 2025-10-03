@@ -24,8 +24,10 @@
         @php
             $cards = [
                 'pending' => ['color' => 'warning', 'icon' => 'hourglass-half', 'label' => 'Pending'],
+                'picked' => ['color' => 'info', 'icon' => 'box-open', 'label' => 'Picked'],
                 'in_transit' => ['color' => 'primary', 'icon' => 'truck-moving', 'label' => 'In Transit'],
                 'delivered' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Delivered'],
+                'hold' => ['color' => 'secondary', 'icon' => 'pause-circle', 'label' => 'On Hold'],
                 'cancelled' => ['color' => 'danger', 'icon' => 'times-circle', 'label' => 'Cancelled'],
             ];
         @endphp
@@ -97,6 +99,9 @@
                 </div>
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-sm btn-dark w-100">Filter</button>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-sm btn-outline-secondary w-100">Clear</a>
                 </div>
             </form>
         </div>

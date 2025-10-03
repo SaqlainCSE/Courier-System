@@ -17,7 +17,7 @@ class ShipmentController extends Controller
 
         $query = Shipment::where('user_id', $user->id);
 
-        // ✅ Apply date range filter if provided
+        // Apply date range filter if provided
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
@@ -29,18 +29,20 @@ class ShipmentController extends Controller
         // Recent shipments (latest 20)
         $shipments = $query->latest()->paginate(20);
 
-        // ✅ Summary counts (respect date filter too)
+        // Summary counts (respect date filter too)
         $summary = [
-            'pending' => (clone $query)->where('status', 'pending')->count(),
-            'in_transit' => (clone $query)->whereIn('status', ['assigned','picked','in_transit'])->count(),
-            'delivered' => (clone $query)->where('status', 'delivered')->count(),
-            'cancelled' => (clone $query)->where('status', 'cancelled')->count(),
+            'pending' => Shipment::where('status', 'pending')->count(),
+            'picked' => Shipment::where('status', 'picked')->count(),
+            'in_transit' => Shipment::whereIn('status', ['in_transit','hold'])->count(),
+            'delivered' => Shipment::where('status', 'delivered')->count(),
+            'hold' => Shipment::where('status', 'hold')->count(),
+            'cancelled' => Shipment::where('status', 'cancelled')->count(),
         ];
 
-        // ✅ Balance cost for delivered shipments only
+        // Balance cost for delivered shipments only
         $balanceCost = (clone $query)->where('status', 'delivered')->sum('balance_cost');
 
-        // ✅ Monthly cost (delivered only)
+        // Monthly cost (delivered only)
         $monthlyCosts = Shipment::where('user_id', $user->id)
                                             ->where('status', 'delivered')
                                             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(price) as total")
