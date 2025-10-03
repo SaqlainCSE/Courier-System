@@ -90,4 +90,32 @@
         }
     }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const emailInput = document.querySelector('input[name="email"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const rememberCheckbox = document.querySelector('#remember');
+
+        // Load saved values
+        if(localStorage.getItem("savedEmail")) {
+            emailInput.value = localStorage.getItem("savedEmail");
+        }
+        if(localStorage.getItem("savedPassword")) {
+            passwordInput.value = localStorage.getItem("savedPassword");
+        }
+
+        // Save on form submit if remember is checked
+        document.querySelector("form").addEventListener("submit", function() {
+            if(rememberCheckbox.checked) {
+                localStorage.setItem("savedEmail", emailInput.value);
+                localStorage.setItem("savedPassword", passwordInput.value);
+            } else {
+                localStorage.removeItem("savedEmail");
+                localStorage.removeItem("savedPassword");
+            }
+        });
+    });
+</script>
+
 @endpush
