@@ -103,7 +103,8 @@
                             'picked' => 'primary',
                             'in_transit' => 'secondary',
                             'delivered' => 'success',
-                            'cancelled' => 'danger'
+                            'cancelled' => 'danger',
+                            'hold' => 'secondary'
                         ];
                     @endphp
                     <p class="mb-0"><strong>Status:</strong>
@@ -120,7 +121,7 @@
                 if ($shipment->status === 'cancelled') {
                     $statuses = ['cancelled'];
                 } else {
-                    $statuses = ['pending','assigned','picked','in_transit','delivered'];
+                    $statuses = ['pending','assigned','picked','in_transit', 'hold','delivered'];
                 }
 
                 $statusLabels = [
@@ -130,6 +131,7 @@
                     'in_transit'  => 'On The Way',
                     'delivered'   => 'Delivered',
                     'cancelled'   => 'Cancelled',
+                    'hold'        => 'On Hold'
                 ];
 
                 $icons = [
@@ -138,7 +140,8 @@
                     'picked'      => 'fa-box',
                     'in_transit'  => 'fa-truck-moving',
                     'delivered'   => 'fa-flag-checkered',
-                    'cancelled'   => 'fa-times-circle'
+                    'cancelled'   => 'fa-times-circle',
+                    'hold'        => 'fa-pause-circle'
                 ];
 
                 $colors = [
@@ -147,7 +150,8 @@
                     'picked'      => '#0d6efd',
                     'in_transit'  => '#6f42c1',
                     'delivered'   => '#198754',
-                    'cancelled'   => '#dc3545'
+                    'cancelled'   => '#dc3545',
+                    'hold'        => '#6c757d'
                 ];
 
                 $currentIndex = array_search($shipment->status, $statuses);

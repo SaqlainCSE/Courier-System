@@ -140,7 +140,8 @@
                                         'picked' => 'primary',
                                         'in_transit' => 'secondary',
                                         'delivered' => 'success',
-                                        'cancelled' => 'danger'
+                                        'cancelled' => 'danger',
+                                        'hold' => 'secondary',
                                     ];
                                 @endphp
                                 <span class="badge bg-{{ $statusColors[$shipment->status] }}">

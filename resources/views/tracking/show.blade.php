@@ -30,7 +30,8 @@
                             'picked' => 'primary',
                             'in_transit' => 'secondary',
                             'delivered' => 'success',
-                            'cancelled' => 'danger'
+                            'cancelled' => 'danger',
+                            'hold' => 'secondary'
                         ];
                         $statusIcons = [
                             'pending' => 'fas fa-hourglass-start',
@@ -38,7 +39,8 @@
                             'picked' => 'fas fa-box',
                             'in_transit' => 'fas fa-truck-moving',
                             'delivered' => 'fas fa-check-circle',
-                            'cancelled' => 'fas fa-times-circle'
+                            'cancelled' => 'fas fa-times-circle',
+                            'hold' => 'fas fa-pause-circle'
                         ];
                         $badge = $statusColors[$shipment->status] ?? 'secondary';
                         $icon = $statusIcons[$shipment->status] ?? 'fas fa-info-circle';
@@ -52,27 +54,44 @@
 
             <!-- Progress Bar -->
             @php
-                $statuses = ['pending','assigned','picked','in_transit','delivered'];
-                $currentIndex = array_search($shipment->status, $statuses);
-                $progressPercent = $currentIndex === false ? 0 : (($currentIndex + 1) / count($statuses)) * 100;
+                $statuses = ['pending','assigned','picked','in_transit','hold','delivered'];
+
+                if ($shipment->status === 'cancelled') {
+                    $isCancelled = true;
+                    $progressPercent = 100; // force full bar in red
+                    $currentIndex = -1; // so nothing in $statuses loop shows as completed
+                } else {
+                    $isCancelled = false;
+                    $currentIndex = array_search($shipment->status, $statuses);
+                    $progressPercent = $currentIndex === false ? 0 : (($currentIndex + 1) / count($statuses)) * 100;
+                }
             @endphp
 
             <div class="mb-5">
                 <div class="progress" style="height: 14px; border-radius: 10px;">
-                    <div class="progress-bar progress-bar-striped bg-success"
-                         role="progressbar"
-                         style="width: {{ $progressPercent }}%;"
-                         aria-valuenow="{{ $progressPercent }}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar progress-bar-striped {{ $isCancelled ? 'bg-danger' : 'bg-success' }}"
+                        role="progressbar"
+                        style="width: {{ $progressPercent }}%;"
+                        aria-valuenow="{{ $progressPercent }}" aria-valuemin="0" aria-valuemax="100">
+                        @if($isCancelled)
+                            ❌ Cancelled
+                        @endif
                     </div>
                 </div>
+
                 <div class="d-flex justify-content-between mt-2 small fw-semibold">
-                    @foreach($statuses as $st)
-                        <div class="{{ (array_search($st, $statuses) <= $currentIndex) ? 'text-success' : 'text-muted' }}">
-                            {{ ucfirst(str_replace('_',' ', $st)) }}
-                        </div>
-                    @endforeach
+                    @if($isCancelled)
+                        <div class="text-danger w-100 text-center">Cancelled</div>
+                    @else
+                        @foreach($statuses as $st)
+                            <div class="{{ (array_search($st, $statuses) <= $currentIndex) ? 'text-success' : 'text-muted' }}">
+                                {{ ucfirst(str_replace('_',' ', $st)) }}
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
+
 
             <!-- Shipment Details -->
             <div class="row g-4 mb-4">
