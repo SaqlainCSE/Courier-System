@@ -32,6 +32,8 @@ Route::get('/track', function(){ return view('tracking.form'); })->name('trackin
 Route::post('/track', [TrackingController::class,'search'])->name('tracking.search');
 Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('tracking.show');
 
+Route::get('/get-dropoff-details', [ShipmentController::class, 'getDropoffDetails']);
+
 Route::middleware('auth')->group(function() {
 
     // customer shipments

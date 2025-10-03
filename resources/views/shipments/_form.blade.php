@@ -10,7 +10,6 @@
                 <input type="text" name="drop_phone" class="form-control"
                        value="{{ old('drop_phone', $shipment->drop_phone ?? '') }}" required>
             </div>
-            
             <div class="mb-3">
                 <label class="form-label fw-medium">Name</label>
                 <input type="text" name="drop_name" class="form-control"
@@ -207,4 +206,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
+<script>
+    $(document).on("blur", "input[name='drop_phone']", function () {
+        let phone = $(this).val();
+
+        if (phone.length > 0) {
+            $.ajax({
+                url: "/get-dropoff-details",
+                type: "GET",
+                data: { drop_phone: phone },
+                success: function (res) {
+                    if (res.success) {
+                        $("input[name='drop_name']").val(res.data.drop_name);
+                        $("input[name='drop_address']").val(res.data.drop_address);
+                    }
+                }
+            });
+        }
+    });
+</script>
+
 @endpush

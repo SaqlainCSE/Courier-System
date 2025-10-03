@@ -235,4 +235,23 @@ class ShipmentController extends Controller
     //     }
     //     return redirect()->route('shipments.dashboard')->with('success', 'Shipment cancelled successfully.');
     // }
+
+    public function getDropoffDetails(Request $request)
+    {
+        $phone = $request->get('drop_phone');
+        $shipment = Shipment::where('drop_phone', $phone)->latest()->first();
+
+        if ($shipment) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'drop_name' => $shipment->drop_name,
+                    'drop_address' => $shipment->drop_address,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
 }
