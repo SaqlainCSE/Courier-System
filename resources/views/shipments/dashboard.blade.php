@@ -97,11 +97,9 @@
                     <input type="date" name="end_date" class="form-control"
                         value="{{ $filters['end_date'] ?? '' }}">
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-sm btn-dark w-100">Filter</button>
-                </div>
-                <div class="col-md-2">
-                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-sm btn-outline-secondary w-100">Clear</a>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-dark w-60">Filter</button>
+                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-outline-secondary w-60">Clear</a>
                 </div>
             </form>
         </div>
