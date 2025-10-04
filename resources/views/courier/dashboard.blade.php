@@ -4,7 +4,14 @@
 @php use Illuminate\Support\Str; @endphp
 
 <div class="container py-4">
-    <div class="row mb-4">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">
+            <i class="fas fa-shipping-fast text-danger me-2"></i> StepUp <span class="text-danger">Courier</span>
+        </h1>
+        <p class="text-muted">Fast • Reliable • Secure Deliveries</p>
+    </div>
+    <h3 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i> Delivery Dashboard</h3>
+    <div class="row mb-4 mt-4">
     <!-- Today's Earnings -->
     <div class="col-6 col-md-3">
         <div class="card shadow-sm border-0">
