@@ -262,7 +262,7 @@
             @endif
 
             <!-- Activity Logs -->
-            <h5 class="fw-bold mb-3"><i class="fas fa-history me-2 text-primary"></i> Activity Log</h5>
+            <h5 class="fw-bold mb-3 mt-4"><i class="fas fa-history me-2 text-primary"></i> Activity Log</h5>
 
             @if($logs->isEmpty())
                 <div class="alert alert-info">
