@@ -32,6 +32,7 @@ class CourierController extends Controller
 
         ShipmentStatusLog::create([
             'shipment_id'=>$shipment->id,
+            'user_id'=>Auth::id(),
             'status'=>$data['status'],
             'changed_by'=>Auth::id(),
             'note'=>$data['note'] ?? 'Updated by courier'

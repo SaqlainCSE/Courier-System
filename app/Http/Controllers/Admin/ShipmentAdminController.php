@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Shipment;
 use App\Models\Courier;
 use App\Models\ShipmentStatusLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ShipmentAdminController extends Controller
@@ -31,7 +32,12 @@ class ShipmentAdminController extends Controller
             'status' => 'assigned'
         ]);
 
-        ShipmentStatusLog::create(['shipment_id'=>$shipment->id,'status'=>'assigned','changed_by'=>auth()->id(),'note'=>'Assigned to courier id '.$data['courier_id']]);
+        ShipmentStatusLog::create([
+            'shipment_id'=>$shipment->id,
+            'user_id'=>Auth::id(),
+            'status'=>'assigned',
+            'changed_by'=>Auth::id(),
+            'note'=>'Assigned to courier id '.$data['courier_id']]);
 
         // mark courier busy
         $courier = Courier::find($data['courier_id']);
@@ -44,7 +50,12 @@ class ShipmentAdminController extends Controller
     {
         $data = $request->validate(['status'=>'required|in:pending,assigned,picked,in_transit,delivered,cancelled','note'=>'nullable|string']);
         $shipment->update(['status'=>$data['status']]);
-        ShipmentStatusLog::create(['shipment_id'=>$shipment->id,'status'=>$data['status'],'changed_by'=>auth()->id(),'note'=>$data['note'] ?? null]);
+        ShipmentStatusLog::create([
+            'shipment_id'=>$shipment->id,
+            'user_id'=>Auth::id(),
+            'status'=>$data['status'],
+            'changed_by'=>Auth::id(),
+            'note'=>$data['note'] ?? null]);
 
         return back()->with('success','Status updated.');
     }
