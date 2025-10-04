@@ -71,7 +71,7 @@
                         </div>
 
                         <!-- Dropoff (still shipment fields) -->
-                        <div class="col-md-6">
+                        <div class="col-md-6 text-end">
                             <h6 class="mb-2 small text-uppercase text-muted">Dropoff</h6>
                             <div class="fw-semibold">{{ $shipment->drop_name }} <span class="text-muted small">• {{ $shipment->drop_phone }}</span></div>
                             <div class="text-muted small">{{ $shipment->drop_address }}</div>
@@ -88,7 +88,7 @@
                                     <div class="small text-muted">Weight</div>
                                     <div class="fw-semibold">{{ $shipment->weight_kg }} kg</div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6 text-end">
                                     <div class="small text-muted">Price</div>
                                     <div class="fw-semibold">৳ {{ number_format($shipment->price, 2) }}</div>
                                 </div>
