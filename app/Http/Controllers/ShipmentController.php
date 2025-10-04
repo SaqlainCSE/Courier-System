@@ -263,11 +263,19 @@ class ShipmentController extends Controller
 
     public function print(Shipment $shipment)
     {
-        $this->authorize('view', $shipment);
+        $user = Auth::user();
 
-        $shipment->load(['courier', 'fromBranch']);
+        if (
+            $user->role === 'customer' && $shipment->user_id !== $user->id
+            || $user->isCourier() && $shipment->courier_id !== $user->courierProfile?->id
+        ) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $shipment->load(['courier', 'customer']);
 
         return view('shipments.print', compact('shipment'));
     }
+
 
 }

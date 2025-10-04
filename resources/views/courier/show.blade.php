@@ -18,7 +18,7 @@
         <div class="d-flex gap-2">
             <a href="{{ url()->previous() }}" class="btn btn-sm btn-outline-secondary">Back</a>
             <a href="{{ route('shipments.print', $shipment) }}" target="_blank" class="btn btn-sm btn-outline-dark">Print</a>
-            <button class="btn btn-sm btn-outline-primary" onclick="window.print()">Quick Print</button>
+            {{-- <button class="btn btn-sm btn-outline-primary" onclick="window.print()">Quick Print</button> --}}
         </div>
     </div>
 
