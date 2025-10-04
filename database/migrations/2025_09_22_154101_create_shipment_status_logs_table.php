@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('shipment_status_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('shipment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->enum('status', ['pending','assigned','picked','in_transit','delivered','cancelled']);
             $table->foreignId('changed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('note')->nullable();

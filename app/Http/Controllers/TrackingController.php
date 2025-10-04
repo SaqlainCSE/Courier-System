@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
+use App\Models\ShipmentStatusLog;
 use Illuminate\Http\Request;
 
 class TrackingController extends Controller
@@ -26,13 +27,10 @@ class TrackingController extends Controller
         // Find by tracking number
         $shipment = Shipment::where('tracking_number', $tracking)->firstOrFail();
 
-        // Get status logs if the relation exists on the model
-        if (method_exists($shipment, 'statusLogs')) {
-            $logs = $shipment->statusLogs()->latest('created_at')->get();
-        } else {
-            // fallback to empty collection so view won't break
-            $logs = collect();
-        }
+        $logs = ShipmentStatusLog::where('shipment_id', $shipment->id)
+                        ->with('deliveryMan')
+                        ->latest()
+                        ->get();
 
         // Get assigned courier and delivery man info
         $courier = $shipment->courier;            // Shipment -> Courier

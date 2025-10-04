@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shipment;
+use App\Models\ShipmentStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -158,7 +159,12 @@ class ShipmentController extends Controller
             'balanceCost'        => $shipment->balance_cost,
         ];
 
-        return view('shipments.show', compact('shipment', 'estimated', 'costDetails'));
+        $logs = ShipmentStatusLog::where('shipment_id', $shipment->id)
+                        ->with('deliveryMan')
+                        ->latest()
+                        ->get();
+
+        return view('shipments.show', compact('shipment', 'estimated', 'costDetails', 'logs'));
     }
 
 

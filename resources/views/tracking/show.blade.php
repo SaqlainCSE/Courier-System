@@ -153,16 +153,30 @@
                 <div class="timeline">
                     @foreach($logs as $log)
                         <div class="card mb-3 shadow-sm border-0">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong><i class="fas fa-circle-check text-success me-2"></i>{{ ucfirst(str_replace('_',' ', $log->status)) }}</strong>
-                                    @if(!empty($log->note))
-                                        <div class="text-muted small mt-1">{{ $log->note }}</div>
-                                    @endif
-                                </div>
-                                <div class="text-muted small">
-                                    <i class="fas fa-clock me-1"></i>
-                                    {{ \Carbon\Carbon::parse($log->created_at)->format('d M Y, H:i') }}
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>
+                                            <i class="fas fa-circle-check text-success me-2"></i>
+                                            {{ ucfirst(str_replace('_',' ', $log->status)) }}
+                                        </strong>
+
+                                        @if(!empty($log->note))
+                                            <div class="text-muted small mt-1">{{ $log->note }}</div>
+                                        @endif
+
+                                        @if($log->deliveryMan)
+                                            <div class="mt-2 small">
+                                                <i class="fas fa-user-tie text-info me-1"></i>
+                                                {{ $log->deliveryMan->name }}
+                                                <span class="text-muted">({{ $log->deliveryMan->phone ?? 'N/A' }})</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ \Carbon\Carbon::parse($log->created_at)->format('d M Y, H:i') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
