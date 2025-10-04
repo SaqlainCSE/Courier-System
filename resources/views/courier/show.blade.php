@@ -8,7 +8,8 @@
 <div class="container py-4">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h4 class="mb-0">Shipment Details</h4>
+            <h4 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
+            StepUp <span class="text-danger">Courier</span> - Shipment Details</h4>
             <p class="mb-1"><strong>Tracking#:</strong>
                         <span class="text-danger fs-6">{{ $shipment->tracking_number }}</span>
                     </p>
@@ -38,6 +39,7 @@
                                     'delivered' => 'bg-success',
                                     'partially_delivered' => 'bg-secondary',
                                     'cancelled' => 'bg-danger',
+                                    'in_transit' => 'bg-warning text-dark',
                                     default => 'bg-secondary'
                                 };
                             @endphp

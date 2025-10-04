@@ -33,8 +33,8 @@ class CourierController extends Controller
                                             });
                                         })
                                         ->orderByRaw("CASE
-                                            WHEN status = 'assigned' THEN 1
-                                            WHEN status IN ('picked','in_transit','partially_delivered') THEN 2
+                                            WHEN status IN ('assigned', 'in_transit') THEN 1
+                                            WHEN status IN ('picked','partially_delivered') THEN 2
                                             WHEN status = 'delivered' THEN 3
                                             ELSE 4
                                         END")
@@ -59,12 +59,17 @@ class CourierController extends Controller
                                                     ->count();
 
         $deliveredAssignments = $courier->assignedShipments()
-                                                            ->whereIn('status',['delivered','partially_delivered'])
+                                                            ->where('status','delivered')
                                                             ->count();
 
         $partiallyDeliveredAssignments = $courier->assignedShipments()
                                                                                 ->where('status','partially_delivered')
                                                                                 ->count();
+
+        $inTransitAssignments = $courier->assignedShipments()->where('status','in_transit')->count();
+        $holdAssignments = $courier->assignedShipments()->where('status','hold')->count();
+        $cancelledAssignments = $courier->assignedShipments()->where('status','cancelled')->count();
+
 
         return view('courier.dashboard', compact(
             'assignments',
@@ -72,7 +77,10 @@ class CourierController extends Controller
             'lastMonthEarnings',
             'newAssignments',
             'deliveredAssignments',
-            'partiallyDeliveredAssignments'
+            'partiallyDeliveredAssignments',
+            'inTransitAssignments',
+            'holdAssignments',
+            'cancelledAssignments'
         ));
     }
 

@@ -101,7 +101,7 @@
                             'pending' => 'warning',
                             'assigned' => 'info',
                             'picked' => 'primary',
-                            'in_transit' => 'secondary',
+                            'in_transit' => 'primary',
                             'delivered' => 'success',
                             'cancelled' => 'danger',
                             'hold' => 'secondary',

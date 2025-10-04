@@ -13,7 +13,7 @@
     <h3 class="fw-bold"><i class="fas fa-tachometer-alt me-2"></i> Delivery Dashboard</h3>
     <div class="row mb-4 mt-4">
     <!-- Today's Earnings -->
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md-3 mb-3">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-cash-stack fs-3 text-success mb-1"></i>
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Last 30 Days Earnings -->
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md-3 mb-3">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-calendar3 fs-3 text-primary mb-1"></i>
@@ -35,20 +35,20 @@
     </div>
 
     <!-- New Assignments (Clickable) -->
-    <div class="col-6 col-md-3 mt-3 mt-md-0">
+    <div class="col-6 col-md-3 mb-3">
         <a href="{{ url('courier/dashboard?status=assigned') }}" class="text-decoration-none">
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-body text-center">
-                    <i class="bi bi-bag-check fs-3 text-warning mb-1"></i>
+                    <i class="bi bi-bag-check fs-3 text-primary mb-1"></i>
                     <h6 class="text-muted text-uppercase small mb-2">New Assignments</h6>
-                    <h4 class="fw-bold">{{ $newAssignments }}</h4>
+                    <h4 class="fw-bold text-primary">{{ $newAssignments }}</h4>
                 </div>
             </div>
         </a>
     </div>
 
     <!-- Delivered Assignments -->
-    <div class="col-6 col-md-3 mt-3 mt-md-0">
+    <div class="col-6 col-md-3 mb-3">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-check2-circle fs-3 text-success mb-1"></i>
@@ -57,7 +57,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Partially Delivered -->
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <i class="bi bi-hourglass-split fs-3 text-info mb-1"></i>
+                <h6 class="text-muted text-uppercase small mb-2">Partially Delivered</h6>
+                <h4 class="fw-bold text-info">{{ $partiallyDeliveredAssignments }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- In Transit -->
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <i class="bi bi-truck fs-3 text-warning mb-1"></i>
+                <h6 class="text-muted text-uppercase small mb-2">In Transit</h6>
+                <h4 class="fw-bold text-warning">{{ $inTransitAssignments }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancelled -->
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <i class="bi bi-x-circle fs-3 text-danger mb-1"></i>
+                <h6 class="text-muted text-uppercase small mb-2">Cancelled</h6>
+                <h4 class="fw-bold text-danger">{{ $cancelledAssignments }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hold -->
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center">
+                <i class="bi bi-pause-circle fs-3 text-dark mb-1"></i>
+                <h6 class="text-muted text-uppercase small mb-2">Hold</h6>
+                <h4 class="fw-bold text-dark">{{ $holdAssignments }}</h4>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
     <!-- Assignments Header -->
@@ -85,6 +130,7 @@
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'delivered']) }}">Delivered</a></li>
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'partially_delivered']) }}">Partially Delivered</a></li>
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'cancelled']) }}">Cancelled</a></li>
+                    <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'in_transit']) }}">In Transit</a></li>
                 </ul>
             </div>
 
