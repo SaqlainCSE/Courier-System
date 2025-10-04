@@ -37,7 +37,7 @@ return new class extends Migration
             $table->decimal('cost_of_delivery_amount', 10, 2)->default(0);
             $table->decimal('additional_charge', 10, 2)->default(0);
             $table->decimal('balance_cost', 10, 2)->default(0);
-            $table->enum('status', ['pending','assigned','picked','in_transit','delivered','cancelled'])->default('pending');
+            $table->enum('status', ['pending','assigned','picked','in_transit','delivered','cancelled','hold','partially_delivered'])->default('pending');
             $table->timestamp('estimated_delivery_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

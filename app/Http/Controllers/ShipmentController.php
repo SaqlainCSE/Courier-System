@@ -38,6 +38,7 @@ class ShipmentController extends Controller
             'delivered' => Shipment::where('status', 'delivered')->count(),
             'hold' => Shipment::where('status', 'hold')->count(),
             'cancelled' => Shipment::where('status', 'cancelled')->count(),
+            'partially_delivered' => Shipment::where('status', 'partially_delivered')->count(),
         ];
 
         // Balance cost for delivered shipments only
@@ -258,6 +259,15 @@ class ShipmentController extends Controller
         }
 
         return response()->json(['success' => false]);
+    }
+
+    public function print(Shipment $shipment)
+    {
+        $this->authorize('view', $shipment);
+
+        $shipment->load(['courier', 'fromBranch']);
+
+        return view('shipments.print', compact('shipment'));
     }
 
 }

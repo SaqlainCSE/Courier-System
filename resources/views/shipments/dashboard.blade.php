@@ -29,6 +29,7 @@
                 'delivered' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Delivered'],
                 'hold' => ['color' => 'secondary', 'icon' => 'pause-circle', 'label' => 'On Hold'],
                 'cancelled' => ['color' => 'danger', 'icon' => 'times-circle', 'label' => 'Cancelled'],
+                'partially_delivered' => ['color' => 'dark', 'icon' => 'clipboard-check', 'label' => 'Partially Delivered'],
             ];
         @endphp
 
@@ -145,6 +146,7 @@
                                         'delivered' => 'success',
                                         'cancelled' => 'danger',
                                         'hold' => 'secondary',
+                                        'partially_delivered' => 'dark'
                                     ];
                                 @endphp
                                 <span class="badge bg-{{ $statusColors[$shipment->status] }}">

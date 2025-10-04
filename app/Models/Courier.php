@@ -16,6 +16,7 @@ class Courier extends Model
         'current_lat',
         'current_lng',
         'status',
+        'commission_rate',
     ];
 
     // relationships

@@ -104,7 +104,8 @@
                             'in_transit' => 'secondary',
                             'delivered' => 'success',
                             'cancelled' => 'danger',
-                            'hold' => 'secondary'
+                            'hold' => 'secondary',
+                            'partially_delivered' => 'dark'
                         ];
                     @endphp
                     <p class="mb-0"><strong>Status:</strong>
@@ -119,7 +120,7 @@
             <!-- Shipment Progress Tracker -->
             @php
             // Base statuses
-            $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered'];
+            $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered','partially_delivered'];
 
             // Filter statuses for the tracker
             if ($shipment->status === 'cancelled') {
@@ -130,7 +131,10 @@
             } elseif ($shipment->status === 'delivered') {
                 // If delivered, skip hold
                 $statuses = ['pending','assigned','picked','in_transit','delivered'];
-            } else {
+            }elseif ($shipment->status === 'partially_delivered') {
+                // If partially delivered, skip hold, show all up to partially delivered
+                $statuses = ['pending','assigned','picked','in_transit','partially_delivered'];
+            }else {
                 // For other statuses, show everything except cancelled
                 $statuses = array_filter($allStatuses, fn($s) => $s !== 'cancelled');
             }
@@ -142,7 +146,8 @@
                 'in_transit'  => 'On The Way',
                 'delivered'   => 'Delivered',
                 'cancelled'   => 'Cancelled',
-                'hold'        => 'On Hold'
+                'hold'        => 'On Hold',
+                'partially_delivered' => 'Partially Delivered'
             ];
 
             $icons = [
@@ -152,7 +157,8 @@
                 'in_transit'  => 'fa-truck-moving',
                 'delivered'   => 'fa-flag-checkered',
                 'cancelled'   => 'fa-times-circle',
-                'hold'        => 'fa-pause-circle'
+                'hold'        => 'fa-pause-circle',
+                'partially_delivered' => 'fa-clipboard-check'
             ];
 
             $colors = [
@@ -162,7 +168,8 @@
                 'in_transit'  => '#6f42c1',
                 'delivered'   => '#198754',
                 'cancelled'   => '#dc3545',
-                'hold'        => '#6c757d'
+                'hold'        => '#6c757d',
+                'partially_delivered' => '#343a40'
             ];
 
             $currentIndex = array_search($shipment->status, $statuses);

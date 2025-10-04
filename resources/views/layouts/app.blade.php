@@ -8,6 +8,9 @@
   <!-- Add inside <head> of layouts/app.blade.php -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
 
+<!-- Bootstrap Icons CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
   <style>
       body { background: #f8f9fa; }
       .hero { background: url('https://source.unsplash.com/1600x600/?delivery,logistics') center/cover no-repeat; height: 70vh; color: #fff; display: flex; align-items: center; }
@@ -59,7 +62,7 @@
             @if($role === 'admin')
                 <li class="nav-item"><a class="nav-link fw-semibold" href="{{ route('admin.dashboard') }}">📊 Admin Dashboard</a></li>
             @elseif($role === 'courier')
-                <li class="nav-item"><a class="nav-link fw-semibold" href="{{ route('courier.dashboard') }}">🚴 Courier Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link fw-semibold" href="{{ route('courier.dashboard') }}">🚴 Delivery Dashboard</a></li>
             @else
                 <li class="nav-item"><a class="nav-link fw-semibold" href="{{ route('shipments.dashboard') }}">📦 Dashboard</a></li>
             @endif
@@ -179,6 +182,22 @@
   }
 </style>
 
+
+<script>
+    navigator.geolocation.watchPosition(function(position){
+        fetch("{{ route('courier.location.update') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            })
+        });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

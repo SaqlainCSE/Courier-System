@@ -33,6 +33,7 @@ Route::post('/track', [TrackingController::class,'search'])->name('tracking.sear
 Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('tracking.show');
 
 Route::get('/get-dropoff-details', [ShipmentController::class, 'getDropoffDetails']);
+Route::get('/shipments/{shipment}/print', [ShipmentController::class, 'print'])->name('shipments.print');
 
 Route::middleware('auth')->group(function() {
 
@@ -52,6 +53,8 @@ Route::middleware('auth')->group(function() {
         Route::get('/dashboard', [CourierController::class,'dashboard'])->name('courier.dashboard');
         Route::post('/shipments/{shipment}/status', [CourierController::class,'updateStatus'])->name('courier.shipments.updateStatus');
         Route::post('/location', [CourierController::class,'updateLocation'])->name('courier.location.update');
+        Route::get('/shipments/history', [CourierController::class,'history'])->name('courier.shipments.history');
+        Route::get('/shipments/{shipment}', [CourierController::class,'show'])->name('courier.shipments.show');
     });
 
     // admin

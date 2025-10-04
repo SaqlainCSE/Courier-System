@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('couriers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->decimal('commission_rate', 5, 2)->default(30);
             $table->string('vehicle_type')->nullable();
             $table->string('vehicle_number')->nullable();
             $table->decimal('current_lat', 10, 7)->nullable();

@@ -43,4 +43,10 @@ class Shipment extends Model
     {
         return $this->hasMany(\App\Models\ShipmentStatusLog::class);
     }
+
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }

@@ -15,19 +15,78 @@ class CourierController extends Controller
         $this->middleware(['auth','role:courier']);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $courier = Auth::user()->courierProfile;
-        $assignments = $courier->assignedShipments()->whereIn('status',['assigned','picked','in_transit'])->orderBy('created_at','desc')->get();
-        return view('courier.dashboard', compact('assignments'));
+
+        // Assignments list with filter
+        $assignments = $courier->assignedShipments()
+                                        ->with(['customer']) // eager load user (customer)
+                                        ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+                                        ->when($request->filled('q'), function($q) use ($request) {
+                                            $q->where(function($sub) use ($request) {
+                                                $sub->where('tracking_number', 'like', '%'.$request->q.'%')
+                                                    ->orWhere('pickup_address', 'like', '%'.$request->q.'%')
+                                                    ->orWhere('drop_address', 'like', '%'.$request->q.'%')
+                                                    ->orWhere('pickup_name', 'like', '%'.$request->q.'%')
+                                                    ->orWhere('drop_name', 'like', '%'.$request->q.'%');
+                                            });
+                                        })
+                                        ->orderByRaw("CASE
+                                            WHEN status = 'assigned' THEN 1
+                                            WHEN status IN ('picked','in_transit','partially_delivered') THEN 2
+                                            WHEN status = 'delivered' THEN 3
+                                            ELSE 4
+                                        END")
+                                        ->orderBy('created_at', 'desc')
+                                        ->paginate(20)
+                                        ->withQueryString();
+
+        // === Dashboard Stats ===
+        $todayEarnings = $courier->assignedShipments()
+                                            ->whereIn('status', ['delivered', 'partially_delivered'])
+                                            ->whereDate('updated_at', today())
+                                            ->count() * $courier->commission_rate;
+
+        $lastMonthEarnings = $courier->assignedShipments()
+                                                    ->whereIn('status', ['delivered', 'partially_delivered'])
+                                                    ->whereBetween('updated_at', [now()->subMonth()->startOfDay(), now()])
+                                                    ->count() * $courier->commission_rate;
+
+
+        $newAssignments = $courier->assignedShipments()
+                                                    ->where('status','assigned')
+                                                    ->count();
+
+        $deliveredAssignments = $courier->assignedShipments()
+                                                            ->whereIn('status',['delivered','partially_delivered'])
+                                                            ->count();
+
+        $partiallyDeliveredAssignments = $courier->assignedShipments()
+                                                                                ->where('status','partially_delivered')
+                                                                                ->count();
+
+        return view('courier.dashboard', compact(
+            'assignments',
+            'todayEarnings',
+            'lastMonthEarnings',
+            'newAssignments',
+            'deliveredAssignments',
+            'partiallyDeliveredAssignments'
+        ));
     }
+
 
     public function updateStatus(Request $request, Shipment $shipment)
     {
-        $userCourier = Auth::user()->courierProfile;
-        if ($shipment->courier_id !== $userCourier->id) abort(403, 'Not your assignment');
+        $courier = Auth::user()->courierProfile;
+        if ($shipment->courier_id !== $courier->id) abort(403);
 
-        $data = $request->validate(['status'=>'required|in:picked,in_transit,delivered','note'=>'nullable|string']);
+        $data = $request->validate([
+            'status'=>'required|in:picked,hold,delivered,partially_delivered,cancelled',
+            'note'=>'nullable|string'
+        ]);
+
         $shipment->update(['status'=>$data['status']]);
 
         ShipmentStatusLog::create([
@@ -38,20 +97,51 @@ class CourierController extends Controller
             'note'=>$data['note'] ?? 'Updated by courier'
         ]);
 
+        // Release courier if delivered
         if ($data['status'] === 'delivered') {
-            // release courier
-            $userCourier->update(['status'=>'available']);
+            $courier->update(['status'=>'available']);
+        } else {
+            $courier->update(['status'=>'busy']);
         }
 
         return back()->with('success','Status updated');
     }
 
-    // optional: update courier location via AJAX
     public function updateLocation(Request $request)
     {
-        $request->validate(['lat'=>'required','lng'=>'required']);
+        $request->validate([
+            'lat'=>'required|numeric',
+            'lng'=>'required|numeric'
+        ]);
+
         $courier = Auth::user()->courierProfile;
-        $courier->update(['current_lat'=>$request->lat,'current_lng'=>$request->lng]);
-        return response()->json(['ok' => true]);
+        $courier->update([
+            'current_lat'=>$request->lat,
+            'current_lng'=>$request->lng
+        ]);
+
+        return response()->json(['ok'=>true]);
+    }
+
+    // Optional: Courier shipment history
+    public function history()
+    {
+        $courier = Auth::user()->courierProfile;
+        $history = $courier->assignedShipments()
+            ->where('status','delivered')
+            ->orderBy('updated_at','desc')
+            ->get();
+
+        return view('courier.history', compact('history'));
+    }
+
+    // Optional: Show shipment details to courier
+    public function show(Shipment $shipment)
+    {
+        $courier = Auth::user()->courierProfile;
+        if ($shipment->courier_id !== $courier->id) abort(403);
+
+        return view('courier.show', compact('shipment'));
     }
 }
+
