@@ -49,6 +49,7 @@
 
     <!-- Delivered Assignments -->
     <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url('courier/dashboard?status=delivered') }}" class="text-decoration-none">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-check2-circle fs-3 text-success mb-1"></i>
@@ -56,10 +57,12 @@
                 <h4 class="fw-bold text-success">{{ $deliveredAssignments }}</h4>
             </div>
         </div>
+        </a>
     </div>
 
     <!-- Partially Delivered -->
     <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url('courier/dashboard?status=partially_delivered') }}" class="text-decoration-none">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-hourglass-split fs-3 text-info mb-1"></i>
@@ -67,10 +70,12 @@
                 <h4 class="fw-bold text-info">{{ $partiallyDeliveredAssignments }}</h4>
             </div>
         </div>
+        </a>
     </div>
 
     <!-- In Transit -->
     <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url('courier/dashboard?status=in_transit') }}" class="text-decoration-none">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-truck fs-3 text-warning mb-1"></i>
@@ -78,10 +83,12 @@
                 <h4 class="fw-bold text-warning">{{ $inTransitAssignments }}</h4>
             </div>
         </div>
+        </a>
     </div>
 
     <!-- Cancelled -->
     <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url('courier/dashboard?status=cancelled') }}" class="text-decoration-none">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-x-circle fs-3 text-danger mb-1"></i>
@@ -89,10 +96,12 @@
                 <h4 class="fw-bold text-danger">{{ $cancelledAssignments }}</h4>
             </div>
         </div>
+        </a>
     </div>
 
     <!-- Hold -->
     <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url('courier/dashboard?status=hold') }}" class="text-decoration-none">
         <div class="card shadow-sm border-0">
             <div class="card-body text-center">
                 <i class="bi bi-pause-circle fs-3 text-dark mb-1"></i>
@@ -100,6 +109,7 @@
                 <h4 class="fw-bold text-dark">{{ $holdAssignments }}</h4>
             </div>
         </div>
+        </a>
     </div>
 </div>
 
