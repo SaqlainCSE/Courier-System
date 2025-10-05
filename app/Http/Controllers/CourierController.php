@@ -33,7 +33,7 @@ class CourierController extends Controller
                                             });
                                         })
                                         ->orderByRaw("CASE
-                                            WHEN status IN ('assigned', 'in_transit') THEN 1
+                                            WHEN status IN ('assigned', 'in_transit','hold') THEN 1
                                             WHEN status IN ('picked','partially_delivered') THEN 2
                                             WHEN status = 'delivered' THEN 3
                                             ELSE 4
