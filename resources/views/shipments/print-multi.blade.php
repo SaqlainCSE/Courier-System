@@ -14,7 +14,22 @@
                         <!-- Tracking -->
                         <p class="small mb-3"><strong>Tracking#:</strong> {{ $shipment->tracking_number }}</p>
                         <div class="text-end" style="margin-top: -50px;">
-                            {!! QrCode::size(50)->generate(route('shipments.print', $shipment->id)) !!}
+                            @php
+                                $qrData = [
+                                    'Tracking' => $shipment->tracking_number,
+                                    'Pickup Name' => $shipment->customer?->business_name ?? '-',
+                                    'Pickup Phone' => $shipment->customer?->phone ?? '-',
+                                    'Drop Name' => $shipment->drop_name,
+                                    'Drop Phone' => $shipment->drop_phone,
+                                    'Drop Address' => $shipment->drop_address,
+                                    'Weight (kg)' => $shipment->weight_kg,
+                                    'COD Price' => $shipment->price,
+                                    'Notes' => $shipment->notes ?? '-',
+                                ];
+
+                                $qrContent = json_encode($qrData, JSON_UNESCAPED_UNICODE);
+                            @endphp
+                                {!! QrCode::size(50)->generate($qrContent) !!}
                         </div>
                     </div>
 
