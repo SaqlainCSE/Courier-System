@@ -80,7 +80,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
-            StepUp <span class="text-danger">Courier</span> - Shipment Details</h2>
+            StepUp<span class="text-danger">Courier</span> - Shipment Details</h2>
         <a href="{{ route('shipments.dashboard') }}" class="btn btn-outline-dark shadow-sm">
             <i class="fas fa-arrow-left me-1"></i>Back
         </a>
@@ -260,7 +260,7 @@
                 <hr>
                 <div class="d-flex justify-content-between fw-bold fs-5">
                     <span>Payable Amount</span>
-                    <span class="text-success">৳ {{ number_format($shipment->balance_cost, 2) }}</span>
+                    <span class="text-success">৳ {{ number_format($shipment->price - (60 + $shipment->additional_charge), 2) }}</span>
                 </div>
             </div><br>
             @if($shipment->status === 'pending')

@@ -9,7 +9,7 @@
         <img src="{{ asset('images/logo.png') }}" alt="logo" onerror="this.style.display='none'">
         <div>
             <h2 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
-            StepUp <span class="text-danger">Courier</span></h2>
+            StepUp<span class="text-danger">Courier</span></h2>
             <div class="small-muted">Fast • Reliable • Secure Deliveries</div>
         </div>
     </div>

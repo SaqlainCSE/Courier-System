@@ -34,6 +34,7 @@ Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('track
 
 Route::get('/get-dropoff-details', [ShipmentController::class, 'getDropoffDetails']);
 Route::get('/shipments/{shipment}/print', [ShipmentController::class, 'print'])->name('shipments.print');
+Route::get('/shipments/print/all', [ShipmentController::class, 'printAll'])->name('shipments.print.all');
 
 Route::middleware('auth')->group(function() {
 

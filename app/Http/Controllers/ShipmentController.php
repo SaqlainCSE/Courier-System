@@ -296,5 +296,14 @@ class ShipmentController extends Controller
         return view('shipments.print', compact('shipment'));
     }
 
+    public function printAll(Request $request)
+    {
+        $shipments = Shipment::with(['courier', 'customer', 'statusLogs'])
+                                    ->whereIn('status', ['assigned', 'in_transit'])
+                                    ->latest()
+                                    ->get();
+
+        return view('shipments.print-multi', compact('shipments'));
+    }
 
 }

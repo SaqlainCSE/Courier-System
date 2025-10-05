@@ -28,7 +28,7 @@
     <!-- Branding with Icon -->
     <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url('/') }}">
       <i class="fas fa-shipping-fast text-danger me-2"></i>
-      StepUp <span class="text-danger">Courier</span>
+      StepUp<span class="text-danger">Courier</span>
     </a>
 
     <!-- Mobile Toggle -->

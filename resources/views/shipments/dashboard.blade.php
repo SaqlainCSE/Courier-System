@@ -6,7 +6,7 @@
     <!-- Branding / Header -->
     <div class="text-center mb-5">
         <h1 class="fw-bold">
-            <i class="fas fa-shipping-fast text-danger me-2"></i> StepUp <span class="text-danger">Courier</span>
+            <i class="fas fa-shipping-fast text-danger me-2"></i> StepUp<span class="text-danger">Courier</span>
         </h1>
         <p class="text-muted">Fast • Reliable • Secure Deliveries</p>
     </div>
