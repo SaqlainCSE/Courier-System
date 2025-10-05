@@ -34,7 +34,7 @@ class ShipmentController extends Controller
         $summary = [
             'pending' => Shipment::where('status', 'pending')->count(),
             'picked' => Shipment::where('status', 'picked')->count(),
-            'in_transit' => Shipment::whereIn('status', ['in_transit','hold'])->count(),
+            'in_transit' => Shipment::where('status', 'in_transit')->count(),
             'delivered' => Shipment::where('status', 'delivered')->count(),
             'hold' => Shipment::where('status', 'hold')->count(),
             'cancelled' => Shipment::where('status', 'cancelled')->count(),
@@ -42,12 +42,12 @@ class ShipmentController extends Controller
         ];
 
         // Balance cost for delivered shipments only
-        $balanceCost = (clone $query)->where('status', 'delivered')->sum('balance_cost');
+        $balanceCost = (clone $query)->whereIn('status', ['delivered','partially_delivered'])->sum('balance_cost');
 
         // Monthly cost (delivered only)
         $monthlyCosts = Shipment::where('user_id', $user->id)
-                                            ->where('status', 'delivered')
-                                            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(price) as total")
+                                            ->whereIn('status', ['delivered','partially_delivered'])
+                                            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(balance_cost) as total")
                                             ->groupBy('month')
                                             ->orderBy('month', 'desc')
                                             ->get();
@@ -87,11 +87,11 @@ class ShipmentController extends Controller
         $costOfDeliveryAmount = $deliveryFee + $codFee + $additionalCharge - $discount - $promoDiscount + $compensationCost;
 
         // Balance cost calculation
-        if ($total_price_of_product == 0) {
-            $balanceCost = $costOfDeliveryAmount;
-        } else {
-            $balanceCost = $total_price_of_product - $costOfDeliveryAmount;
-        }
+        // if ($total_price_of_product == 0) {
+        //     $balanceCost = $costOfDeliveryAmount;
+        // } else {
+        //     $balanceCost = $total_price_of_product - $costOfDeliveryAmount;
+        // }
 
         // ---- Tracking Number ----
         $buss_name = trim(Auth::user()->business_name ?? '');
@@ -119,7 +119,7 @@ class ShipmentController extends Controller
             'price' => $total_price_of_product,
             'cost_of_delivery_amount' => $costOfDeliveryAmount,
             'additional_charge' => $additionalCharge,
-            'balance_cost' => $balanceCost,
+            // 'balance_cost' => $balanceCost,
             'notes' => $request->notes,
         ]);
 

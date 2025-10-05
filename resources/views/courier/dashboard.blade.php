@@ -257,7 +257,7 @@
                                     <form action="{{ route('courier.shipments.updateStatus', $assignment) }}" method="POST" class="row g-2">
                                         @csrf
                                         <div class="col-7">
-                                            <select name="status" class="form-select form-select-sm" required>
+                                            <select name="status" class="form-select form-select-sm status-select" data-id="{{ $assignment->id }}" required>
                                                 <option value="picked" @selected($assignment->status=='picked')>Picked</option>
                                                 <option value="delivered" @selected($assignment->status=='delivered')>Delivered</option>
                                                 <option value="hold" @selected($assignment->status=='hold')>Hold</option>
@@ -268,11 +268,19 @@
                                         <div class="col-5">
                                             <button class="btn btn-sm btn-success w-100" type="submit">Apply</button>
                                         </div>
+
+                                        {{-- Note field --}}
                                         <div class="col-12">
                                             <textarea name="note" class="form-control form-control-sm" rows="2" placeholder="Optional note"></textarea>
                                         </div>
+
+                                        {{-- Partial Price Field (hidden by default) --}}
+                                        <div class="col-12 partial-price d-none" id="partial-price-{{ $assignment->id }}">
+                                            <input type="number" name="partial_price" class="form-control form-control-sm" placeholder="Enter received amount (e.g. 1000)" min="0" step="0.01">
+                                        </div>
                                     </form>
                                 </div>
+                                
                             </div>
                         </div><!-- card-body -->
                     </div><!-- card -->
@@ -287,3 +295,22 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.querySelectorAll('.status-select').forEach(function(select){
+    select.addEventListener('change', function(){
+        let id = this.getAttribute('data-id');
+        let partialBox = document.getElementById('partial-price-' + id);
+
+        if(this.value === 'partially_delivered'){
+            partialBox.classList.remove('d-none');
+        } else {
+            partialBox.classList.add('d-none');
+            partialBox.querySelector('input').value = ''; // clear input if hidden
+        }
+    });
+});
+</script>
+@endpush
+

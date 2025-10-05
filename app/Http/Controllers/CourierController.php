@@ -88,31 +88,62 @@ class CourierController extends Controller
     public function updateStatus(Request $request, Shipment $shipment)
     {
         $courier = Auth::user()->courierProfile;
+
         if ($shipment->courier_id !== $courier->id) abort(403);
 
+        // Validate inputs
         $data = $request->validate([
-            'status'=>'required|in:picked,hold,delivered,partially_delivered,cancelled',
-            'note'=>'nullable|string'
+            'status' => 'required|in:picked,hold,delivered,partially_delivered,cancelled',
+            'note' => 'nullable|string',
+            'partial_price' => 'nullable|numeric|min:0'
         ]);
 
-        $shipment->update(['status'=>$data['status']]);
-
-        ShipmentStatusLog::create([
-            'shipment_id'=>$shipment->id,
-            'user_id'=>Auth::id(),
-            'status'=>$data['status'],
-            'changed_by'=>Auth::id(),
-            'note'=>$data['note'] ?? 'Updated by courier'
-        ]);
-
-        // Release courier if delivered
-        if ($data['status'] === 'delivered') {
-            $courier->update(['status'=>'available']);
-        } else {
-            $courier->update(['status'=>'busy']);
+        // If partially delivered, require received amount
+        if ($data['status'] === 'partially_delivered' && empty($data['partial_price'])) {
+            return back()->withErrors(['partial_price' => 'Received amount is required for partially delivered shipments.']);
         }
 
-        return back()->with('success','Status updated');
+        // Update shipment status
+        $shipment->status = $data['status'];
+
+        // Handle partial delivery
+        if ($data['status'] === 'partially_delivered') {
+            // Update with received amount
+            $shipment->price = $data['partial_price'];
+        }
+
+        // Handle delivered OR partially delivered → recalc balance_cost
+        if (in_array($data['status'], ['delivered', 'partially_delivered'])) {
+            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
+
+            $totalPriceOfProduct = $shipment->price; // final price (full or partial)
+
+            if ($totalPriceOfProduct == 0) {
+                $shipment->balance_cost = $costOfDeliveryAmount;
+            } else {
+                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
+            }
+        }
+
+        $shipment->save();
+
+        // Log status change
+        ShipmentStatusLog::create([
+            'shipment_id' => $shipment->id,
+            'user_id' => Auth::id(),
+            'status' => $data['status'],
+            'changed_by' => Auth::id(),
+            'note' => $data['note'] ?? 'Updated by courier'
+        ]);
+
+        // Courier availability
+        if ($data['status'] === 'delivered') {
+            $courier->update(['status' => 'available']);
+        } else {
+            $courier->update(['status' => 'busy']);
+        }
+
+        return back()->with('success', 'Status updated successfully');
     }
 
     public function updateLocation(Request $request)

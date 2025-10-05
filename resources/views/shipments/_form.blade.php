@@ -18,24 +18,24 @@
 
             <div class="mb-3">
                 <label class="form-label fw-medium">District</label>
-                <select id="drop_district" class="form-select" required></select>
+                <select id="drop_district" class="form-select"></select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-medium">Police Station</label>
-                <select id="drop_police" class="form-select" required></select>
+                <select id="drop_police" class="form-select"></select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-medium">Area</label>
-                <select id="drop_area" class="form-select" required></select>
+                <select id="drop_area" class="form-select"></select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-medium">Street / House / Road</label>
                 <input type="text" id="drop_street" name="drop_street" class="form-control"
                        placeholder="e.g. Lane #5, Flat #A2"
-                       value="{{ old('drop_street', $shipment->drop_street ?? '') }}" required>
+                       value="{{ old('drop_street', $shipment->drop_street ?? '') }}">
             </div>
 
             <div class="mb-3">
