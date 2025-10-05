@@ -18,11 +18,29 @@ class ShipmentController extends Controller
 
         $query = Shipment::where('user_id', $user->id);
 
-        // Apply date range filter if provided
+        // 🔍 Search filter (tracking number, addresses, name, phone)
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('tracking_number', 'like', "%{$search}%")
+                ->orWhere('pickup_address', 'like', "%{$search}%")
+                ->orWhere('drop_address', 'like', "%{$search}%")
+                ->orWhere('pickup_name', 'like', "%{$search}%")
+                ->orWhere('drop_name', 'like', "%{$search}%")
+                ->orWhere('pickup_phone', 'like', "%{$search}%")
+                ->orWhere('drop_phone', 'like', "%{$search}%");
+            });
+        }
+
+        // 📌 Status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // 📅 Date range filter
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
-
         if ($request->filled('end_date')) {
             $query->whereDate('created_at', '<=', $request->end_date);
         }
@@ -30,7 +48,7 @@ class ShipmentController extends Controller
         // Recent shipments (latest 20)
         $shipments = $query->latest()->paginate(20);
 
-        // Summary counts (respect date filter too)
+        // Summary counts (respect filters applied above except pagination)
         $summary = [
             'pending' => Shipment::where('status', 'pending')->count(),
             'picked' => Shipment::where('status', 'picked')->count(),
@@ -41,19 +59,20 @@ class ShipmentController extends Controller
             'partially_delivered' => Shipment::where('status', 'partially_delivered')->count(),
         ];
 
-        // Balance cost for delivered shipments only
-        $balanceCost = (clone $query)->whereIn('status', ['delivered','partially_delivered'])->sum('balance_cost');
+        // Balance cost for delivered + partially delivered
+        $balanceCost = Shipment::whereIn('status', ['delivered','partially_delivered'])
+            ->sum('balance_cost');
 
-        // Monthly cost (delivered only)
+        // Monthly cost breakdown
         $monthlyCosts = Shipment::where('user_id', $user->id)
-                                            ->whereIn('status', ['delivered','partially_delivered'])
-                                            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(balance_cost) as total")
-                                            ->groupBy('month')
-                                            ->orderBy('month', 'desc')
-                                            ->get();
+            ->whereIn('status', ['delivered','partially_delivered'])
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(balance_cost) as total")
+            ->groupBy('month')
+            ->orderBy('month', 'desc')
+            ->get();
 
         return view('shipments.dashboard', compact('shipments', 'summary', 'balanceCost', 'monthlyCosts'))
-            ->with('filters', $request->only(['start_date','end_date']));
+            ->with('filters', $request->only(['q','status','start_date','end_date']));
     }
 
     public function create()

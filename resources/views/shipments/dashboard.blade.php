@@ -34,13 +34,16 @@
         @endphp
 
         @foreach($cards as $key => $card)
-        <div class="col-6 col-md-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
-                <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
-                <h6 class="fw-bold text-muted">{{ $card['label'] }}</h6>
-                <h4 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h4>
+            <div class="col-6 col-md-3">
+                <a href="{{ route('shipments.dashboard', array_merge(request()->all(), ['status' => $key])) }}"
+                class="text-decoration-none">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                        <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
+                        <h6 class="fw-bold text-muted">{{ $card['label'] }}</h6>
+                        <h4 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h4>
+                    </div>
+                </a>
             </div>
-        </div>
         @endforeach
 
         <!-- Total Cost -->
@@ -87,20 +90,44 @@
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
 
-        <div class="col-md-8 mt-4 ms-4">
-            <!-- Date Filter -->
-            <form method="GET" action="{{ route('shipments.dashboard') }}" class="row g-2 mb-3">
+        <div class="col-md-12 mt-4">
+            <form method="GET" action="{{ route('shipments.dashboard') }}" class="row g-2 mb-3 align-items-center">
+
+                <!-- Search -->
                 <div class="col-md-3">
-                    <input type="date" name="start_date" class="form-control"
+                    <input type="text" name="q" value="{{ $filters['q'] ?? '' }}"
+                        class="form-control form-control-sm"
+                        placeholder="🔍 Search tracking, address, name or phone">
+                </div>
+
+                <!-- Status Dropdown -->
+                <div class="col-md-3">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All Status</option>
+                        <option value="pending" @selected(($filters['status'] ?? '')=='pending')>Pending</option>
+                        <option value="picked" @selected(($filters['status'] ?? '')=='picked')>Picked</option>
+                        <option value="in_transit" @selected(($filters['status'] ?? '')=='in_transit')>In Transit</option>
+                        <option value="delivered" @selected(($filters['status'] ?? '')=='delivered')>Delivered</option>
+                        <option value="partially_delivered" @selected(($filters['status'] ?? '')=='partially_delivered')>Partially Delivered</option>
+                        <option value="hold" @selected(($filters['status'] ?? '')=='hold')>Hold</option>
+                        <option value="cancelled" @selected(($filters['status'] ?? '')=='cancelled')>Cancelled</option>
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div class="col-md-2">
+                    <input type="date" name="start_date" class="form-control form-control-sm"
                         value="{{ $filters['start_date'] ?? '' }}">
                 </div>
-                <div class="col-md-3">
-                    <input type="date" name="end_date" class="form-control"
+                <div class="col-md-2">
+                    <input type="date" name="end_date" class="form-control form-control-sm"
                         value="{{ $filters['end_date'] ?? '' }}">
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-dark w-60">Filter</button>
-                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-outline-secondary w-60">Clear</a>
+
+                <!-- Actions -->
+                <div class="col-md-2 d-flex gap-1">
+                    <button type="submit" class="btn btn-sm btn-dark w-100">Filter</button>
+                    <a href="{{ route('shipments.dashboard') }}" class="btn btn-sm btn-outline-dark w-100">Clear</a>
                 </div>
             </form>
         </div>
