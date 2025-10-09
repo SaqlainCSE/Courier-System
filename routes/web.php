@@ -6,6 +6,9 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\CourierController;
 use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\Admin\ShipmentAdminController;
+use App\Http\Controllers\Admin\CourierAdminController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ReportController;
 
 Route::get('/', function () {
     if(\Illuminate\Support\Facades\Auth::check()){
@@ -60,10 +63,21 @@ Route::middleware('auth')->group(function() {
 
     // admin
     Route::prefix('admin')->middleware('role:admin')->group(function(){
+
+        Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+
         Route::get('/shipments', [ShipmentAdminController::class,'index'])->name('admin.shipments.index');
         Route::get('/shipments/{shipment}', [ShipmentAdminController::class,'show'])->name('admin.shipments.show');
         Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class,'assignCourier'])->name('admin.shipments.assign');
         Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class,'updateStatus'])->name('admin.shipments.updateStatus');
+
+        // Couriers (management)
+        Route::resource('couriers', CourierAdminController::class, ['as' => 'admin']);
+
+        // Reports / Export
+        Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
+
     });
 });
 

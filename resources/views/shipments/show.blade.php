@@ -291,13 +291,13 @@
                                             <div class="text-muted small mt-1">{{ $log->note }}</div>
                                         @endif
 
-                                        @if($log->deliveryMan)
+                                        {{-- @if($log->deliveryMan)
                                             <div class="mt-2 small">
                                                 <i class="fas fa-user-tie text-info me-1"></i>
                                                 {{ $log->deliveryMan->name }}
                                                 <span class="text-muted">({{ $log->deliveryMan->phone ?? 'N/A' }})</span>
                                             </div>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                     <div class="text-muted small">
                                         <i class="fas fa-clock me-1"></i>

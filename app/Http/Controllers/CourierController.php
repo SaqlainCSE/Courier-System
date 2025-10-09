@@ -140,7 +140,7 @@ class CourierController extends Controller
         if ($data['status'] === 'delivered') {
             $courier->update(['status' => 'available']);
         } else {
-            $courier->update(['status' => 'busy']);
+            $courier->update(['status' => 'available']);
         }
 
         return back()->with('success', 'Status updated successfully');
