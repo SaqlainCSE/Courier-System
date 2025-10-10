@@ -12,7 +12,7 @@
         }
         .sidebar {
             height: 100vh;
-            background: #1e293b;
+            background: #111;
             color: white;
             position: fixed;
             left: 0;
@@ -51,7 +51,7 @@
     <div class="sidebar">
         <h5>
             <a class="navbar-brand fw-bold d-flex align-items-center" href="http://127.0.0.1:8000">
-                <i class="fas fa-shipping-fast text-danger me-2"></i>StepUp<span class="text-danger">Courier</span>
+                <i class="fas fa-shipping-fast text-danger me-2"></i><span class="text-light">StepUp<span class="text-danger">Courier</span>
             </a>
         </h5>
 
@@ -59,23 +59,23 @@
             <i class="fas fa-chart-line me-2"></i> Dashboard
         </a>
 
-        <a href="{{ route('admin.shipments.index') }}">
+        <a href="{{ route('admin.shipments.index') }}" class="{{ request()->routeIs('admin.shipments.index') ? 'active' : '' }}">
             <i class="fas fa-boxes me-2"></i> Shipments
         </a>
 
-        <a href="#">
+        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-motorcycle me-2"></i> Delivery Man
         </a>
 
-        <a href="#">
+        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-users me-2"></i> Merchants
         </a>
 
-        <a href="#">
+        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-money-bill me-2"></i> Payments
         </a>
 
-        <a href="#">
+        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-cogs me-2"></i> Settings
         </a>
 
