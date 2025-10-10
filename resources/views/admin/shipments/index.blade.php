@@ -133,11 +133,10 @@
                                     <div class="small text-muted">{{ $s->created_at->format('d M Y') }}</div>
                                 </td>
                                 <td>
-                                    <div>{{ Str::limit($s->pickup_address,40) }}</div>
-                                    <div class="small text-muted">{{ Str::limit($s->drop_address,40) }}</div>
+                                    <div>{{ $s->customer->business_name }} - {{ $s->customer->phone}} <br> {{ Str::limit($s->pickup_address,40) }}</div>
                                 </td>
                                 <td>
-                                    <div class="small text-muted">{{ Str::limit($s->drop_address,40) }}</div>
+                                    <div class="small text-muted">{{ $s->drop_name }} - {{ $s->drop_phone }} <br> {{ Str::limit($s->drop_address,40) }}</div>
                                 </td>
                                 <td>{{ $s->courier?->user?->name ?? '-' }}</td>
                                 <td>

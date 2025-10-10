@@ -35,14 +35,14 @@
 
                     <!-- Pickup -->
                     <div class="small mb-1">
-                        <strong>Pickup:</strong><br>
+                        <strong>Merchant:</strong><br>
                         Name: {{ $shipment->customer?->business_name ?? '-' }}<br>Phone: {{ $shipment->customer?->phone ?? '-' }}<br>
                         <span class="text-muted">Address: {{ $shipment->customer?->business_address ?? '-' }}</span>
                     </div>
 
                     <!-- Dropoff -->
                     <div class="small mb-1">
-                        <strong>Dropoff:</strong><br>
+                        <strong>Customer:</strong><br>
                         Name: {{ $shipment->drop_name }} <br>Phone: {{ $shipment->drop_phone }}<br>
                         <span class="text-muted">Address: {{ $shipment->drop_address }}</span>
                     </div>
