@@ -79,7 +79,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
-            Shipment #<span class="text-danger">{{ $shipment->tracking_number }}
+            Tracking #<span class="text-danger">{{ $shipment->tracking_number }}
         </h4>
         <a href="{{ route('admin.shipments.index') }}" class="btn btn-outline-dark">
             <i class="fas fa-arrow-left me-1"></i>Back

@@ -10,66 +10,74 @@
             {{-- Stats Cards --}}
             <div class="row g-3 mb-4">
             {{-- Total Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Total Shipments</div>
                     <div class="h4 fw-bold text-primary">{{ $totalShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Pending Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Pending Shipments</div>
                     <div class="h4 fw-bold text-warning">{{ $pendingShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Delivered Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Delivered Shipments</div>
                     <div class="h4 fw-bold text-success">{{ $deliveredShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Picked Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Picked Shipments</div>
                     <div class="h4 fw-bold text-success">{{ $pickedShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- In Transit Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">In Transit Shipments</div>
                     <div class="h4 fw-bold text-primary">{{ $inTransitShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Partially Delivered Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Partially Delivered Shipments</div>
                     <div class="h4 fw-bold text-success">{{ $partiallyDeliveredShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Hold Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Hold Shipments</div>
                     <div class="h4 fw-bold text-secondary">{{ $holdShipments }}</div>
                 </div>
-            </div>
+            </div> --}}
 
             {{-- Cancelled Shipments --}}
-            <div class="col-6 col-md-3">
+            {{-- <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Cancelled Shipments</div>
                     <div class="h4 fw-bold text-danger">{{ $cancelledShipments }}</div>
+                </div>
+            </div> --}}
+
+            {{-- Total Earnings --}}
+            <div class="col-6 col-md-3">
+                <div class="card text-center p-3 shadow-sm border-0">
+                    <div class="small text-muted">Total Earnings</div>
+                    <div class="h4 fw-bold text-success">৳ {{ number_format($totalEarnings,2) }}</div>
                 </div>
             </div>
 
@@ -81,11 +89,27 @@
                 </div>
             </div>
 
+            {{-- Last 7 Days Earnings --}}
+            <div class="col-6 col-md-3">
+                <div class="card text-center p-3 shadow-sm border-0">
+                    <div class="small text-muted">Last 7 Days Earnings</div>
+                    <div class="h4 fw-bold text-success">৳ {{ number_format($last7Earnings,2) }}</div>
+                </div>
+            </div>
+
             {{-- Last 30 Days Earnings --}}
             <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
                     <div class="small text-muted">Last 30 Days Earnings</div>
-                    <div class="h4 fw-bold text-primary">৳ {{ number_format($last30Earnings,2) }}</div>
+                    <div class="h4 fw-bold text-success">৳ {{ number_format($last30Earnings,2) }}</div>
+                </div>
+            </div>
+
+            {{-- Last 365 Days Earnings --}}
+            <div class="col-6 col-md-3">
+                <div class="card text-center p-3 shadow-sm border-0">
+                    <div class="small text-muted">Last 365 Days Earnings</div>
+                    <div class="h4 fw-bold text-success">৳ {{ number_format($last365Earnings,2) }}</div>
                 </div>
             </div>
 
@@ -108,7 +132,7 @@
             {{-- Pending Value --}}
             <div class="col-6 col-md-3">
                 <div class="card text-center p-3 shadow-sm border-0">
-                    <div class="small text-muted">Pending Value</div>
+                    <div class="small text-muted">Pending Amount</div>
                     <div class="h4 fw-bold text-warning">৳ {{ number_format($pendingValue,2) }}</div>
                 </div>
             </div>

@@ -5,24 +5,25 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
 use App\Models\Courier;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $totalShipments = Shipment::count();
-        $todayEarnings = Shipment::whereDate('created_at', today())->sum('price');
-        $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->sum('price');
-        $averageShipmentPrice = Shipment::avg('price');
-        $pendingShipments = Shipment::where('status', 'pending')->count();
-        $deliveredShipments = Shipment::where('status', 'delivered')->count();
-        $holdShipments = Shipment::where('status', 'hold')->count();
-        $pickedShipments = Shipment::where('status', 'picked')->count();
-        $inTransitShipments = Shipment::where('status', 'in_transit')->count();
-        $partiallyDeliveredShipments = Shipment::where('status', 'partially_delivered')->count();
-        $cancelledShipments = Shipment::where('status', 'cancelled')->count();
+        // $totalShipments = Shipment::count();
+        $totalEarnings = Shipment::where('status','delivered')->sum('cost_of_delivery_amount');
+        $todayEarnings = Shipment::whereDate('created_at', today())->where('status','delivered')->sum('cost_of_delivery_amount');
+        $last7Earnings = Shipment::where('created_at', '>=', now()->subDays(7))->where('status','delivered')->sum('cost_of_delivery_amount');
+        $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->where('status','delivered')->sum('cost_of_delivery_amount');
+        $last365Earnings = Shipment::where('created_at', '>=', now()->subDays(365))->where('status','delivered')->sum('cost_of_delivery_amount');
+        $averageShipmentPrice = Shipment::where('status','delivered')->avg('price');
+        // $pendingShipments = Shipment::where('status', 'pending')->count();
+        // $deliveredShipments = Shipment::where('status', 'delivered')->count();
+        // $holdShipments = Shipment::where('status', 'hold')->count();
+        // $pickedShipments = Shipment::where('status', 'picked')->count();
+        // $inTransitShipments = Shipment::where('status', 'in_transit')->count();
+        // $partiallyDeliveredShipments = Shipment::where('status', 'partially_delivered')->count();
+        // $cancelledShipments = Shipment::where('status', 'cancelled')->count();
         $cancelledAmount = Shipment::where('status', 'cancelled')->sum('price');
         $pendingValue = Shipment::where('status', 'pending')->sum('price');
         $activeCouriers = Courier::count();
@@ -38,22 +39,25 @@ class DashboardController extends Controller
         // Chart Data
         $chartData = [
             'dates' => collect(range(6,0,-1))->map(fn($d) => now()->subDays($d)->format('d M'))->toArray(),
-            'earnings' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereDate('created_at', now()->subDays($d))->sum('price'))->toArray(),
+            'earnings' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereDate('created_at', now()->subDays($d))->sum('cost_of_delivery_amount'))->toArray(),
             'shipments' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereDate('created_at', now()->subDays($d))->count())->toArray(),
         ];
 
         return view('admin.dashboard', compact(
-            'totalShipments',
+            // 'totalShipments',
+            'totalEarnings',
             'todayEarnings',
+            'last7Earnings',
             'last30Earnings',
+            'last365Earnings',
             'averageShipmentPrice',
-            'pendingShipments',
-            'deliveredShipments',
-            'holdShipments',
-            'pickedShipments',
-            'inTransitShipments',
-            'partiallyDeliveredShipments',
-            'cancelledShipments',
+            // 'pendingShipments',
+            // 'deliveredShipments',
+            // 'holdShipments',
+            // 'pickedShipments',
+            // 'inTransitShipments',
+            // 'partiallyDeliveredShipments',
+            // 'cancelledShipments',
             'cancelledAmount',
             'pendingValue',
             'activeCouriers',
