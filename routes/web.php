@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function() {
         Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
 
-        Route::get('/shipments/print/all', [ShipmentAdminController::class, 'printAll'])->name('admin.shipments.print.all');
+        Route::get('/shipments/print/all', [ReportController::class, 'printAll'])->name('admin.shipments.print.all');
 
     });
 });

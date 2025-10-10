@@ -48,4 +48,14 @@ class ReportController extends Controller
         $response->headers->set('Content-Disposition','attachment; filename="'.$fileName.'"');
         return $response;
     }
+
+    public function printAll(Request $request)
+    {
+        $shipments = Shipment::with(['courier', 'customer', 'statusLogs'])
+                                    ->whereIn('status', ['assigned', 'pending'])
+                                    ->latest()
+                                    ->get();
+
+        return view('admin.reports.print-multi', compact('shipments'));
+    }
 }
