@@ -11,12 +11,12 @@ class DashboardController extends Controller
     public function index()
     {
         // $totalShipments = Shipment::count();
-        $totalEarnings = Shipment::where('status','delivered')->sum('cost_of_delivery_amount');
-        $todayEarnings = Shipment::whereDate('created_at', today())->where('status','delivered')->sum('cost_of_delivery_amount');
-        $last7Earnings = Shipment::where('created_at', '>=', now()->subDays(7))->where('status','delivered')->sum('cost_of_delivery_amount');
-        $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->where('status','delivered')->sum('cost_of_delivery_amount');
-        $last365Earnings = Shipment::where('created_at', '>=', now()->subDays(365))->where('status','delivered')->sum('cost_of_delivery_amount');
-        $averageShipmentPrice = Shipment::where('status','delivered')->avg('price');
+        $totalEarnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        $todayEarnings = Shipment::whereDate('created_at', today())->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        $last7Earnings = Shipment::where('created_at', '>=', now()->subDays(7))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        $last365Earnings = Shipment::where('created_at', '>=', now()->subDays(365))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        $averageShipmentPrice = Shipment::whereIn('status',['delivered', 'partially_delivered'])->avg('price');
         // $pendingShipments = Shipment::where('status', 'pending')->count();
         // $deliveredShipments = Shipment::where('status', 'delivered')->count();
         // $holdShipments = Shipment::where('status', 'hold')->count();
@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $activeCouriers = Courier::count();
 
         $topCouriers = Courier::with('user')
-            ->withCount(['shipments as delivered_count' => fn($q) => $q->where('status', 'delivered')])
+            ->withCount(['shipments as delivered_count' => fn($q) => $q->whereIn('status', ['delivered','partially_delivered'])])
             ->orderByDesc('delivered_count')
             ->take(4)
             ->get();

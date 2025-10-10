@@ -203,21 +203,38 @@
     <div class="card shadow-sm border-0 rounded-3 mb-4">
         <div class="card-header bg-success text-white">Update Status</div>
         <div class="card-body">
-            <form action="{{ route('admin.shipments.updateStatus',$shipment) }}" method="POST" class="row g-3">
+            <form action="{{ route('admin.shipments.updateStatus', $shipment) }}" method="POST" class="row g-3">
                 @csrf
+
+                <!-- Status dropdown -->
                 <div class="col-md-4">
-                    <select name="status" class="form-select">
+                    <select name="status" id="statusSelect" class="form-select">
                         <option value="">-- Change Status --</option>
                         @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $status)
-                            <option value="{{ $status }}" {{ $shipment->status===$status?'selected':'' }}>
-                                {{ ucfirst(str_replace('_',' ',$status)) }}
+                            <option value="{{ $status }}" {{ $shipment->status === $status ? 'selected' : '' }}>
+                                {{ ucfirst(str_replace('_',' ', $status)) }}
                             </option>
                         @endforeach
                     </select>
                 </div>
+
+                <!-- Note textarea -->
                 <div class="col-md-8">
                     <textarea name="note" class="form-control" placeholder="Add note (optional)" rows="2"></textarea>
                 </div>
+
+                <!-- Partial price input (hidden by default) -->
+                <div class="col-md-4" id="partialPriceField" style="display: none;">
+                    <input
+                        type="number"
+                        name="partial_price"
+                        class="form-control"
+                        placeholder="Enter received amount"
+                        min="0"
+                        step="0.01"
+                    >
+                </div>
+
                 <div class="col-12 text-end">
                     <button class="btn btn-success">Update Status</button>
                 </div>
@@ -267,5 +284,28 @@ document.addEventListener("DOMContentLoaded", function(){
     progressBar.style.width = progress+"%";
 });
 </script>
+
+<!-- Script to toggle partial price field -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const statusSelect = document.getElementById('statusSelect');
+        const partialPriceField = document.getElementById('partialPriceField');
+
+        function togglePartialPriceField() {
+            if (statusSelect.value === 'partially_delivered') {
+                partialPriceField.style.display = 'block';
+            } else {
+                partialPriceField.style.display = 'none';
+            }
+        }
+
+        // Run on page load (in case status is preselected)
+        togglePartialPriceField();
+
+        // Run on change
+        statusSelect.addEventListener('change', togglePartialPriceField);
+    });
+</script>
+
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 @endpush
