@@ -197,9 +197,25 @@
                                 <tr>
                                     <td class="text-center">{{ $ship->tracking_number }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-{{ $ship->status == 'delivered' ? 'success' : ($ship->status == 'cancelled' ? 'danger' : 'secondary') }}">
-                                            {{ ucwords(str_replace('_',' ', $ship->status)) }}
+                                        @php
+                                            $statusColors = [
+                                                'pending' => 'warning',
+                                                'assigned' => 'info',
+                                                'picked' => 'primary',
+                                                'in_transit' => 'primary',
+                                                'hold' => 'dark',
+                                                'delivered' => 'success',
+                                                'partially_delivered' => 'dark',
+                                                'cancelled' => 'danger',
+                                            ];
+
+                                            $badgeColor = $statusColors[$ship->status] ?? 'secondary';
+                                        @endphp
+
+                                        <span class="badge bg-{{ $badgeColor }}">
+                                            {{ ucwords(str_replace('_', ' ', $ship->status)) }}
                                         </span>
+
                                     </td>
                                     <td class="text-center">{{ $ship->courier?->user?->name ?? 'N/A' }}</td>
                                     <td class="text-center">৳ {{ number_format($ship->price,2) }}</td>

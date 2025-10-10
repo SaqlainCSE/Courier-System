@@ -17,7 +17,7 @@
             $cards = [
                 'pending' => ['color' => 'warning', 'icon' => 'hourglass-half', 'label' => 'Pending'],
                 'assigned' => ['color' => 'info', 'icon' => 'user-check', 'label' => 'Assigned'],
-                'picked' => ['color' => 'info', 'icon' => 'box-open', 'label' => 'Picked'],
+                'picked' => ['color' => 'primary', 'icon' => 'box-open', 'label' => 'Picked'],
                 'in_transit' => ['color' => 'primary', 'icon' => 'truck-moving', 'label' => 'In Transit'],
                 'delivered' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Delivered'],
                 'hold' => ['color' => 'secondary', 'icon' => 'pause-circle', 'label' => 'On Hold'],
@@ -74,7 +74,7 @@
                 <div class="col-md-2">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
-                        @foreach(['pending','assigned','picked','in_transit','delivered','cancelled'] as $s)
+                        @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $s)
                             <option value="{{ $s }}" @selected(request('status')==$s)>{{ ucwords(str_replace('_',' ', $s)) }}</option>
                         @endforeach
                     </select>
@@ -144,7 +144,7 @@
                                         $statusColors = [
                                             'pending' => 'warning',
                                             'assigned' => 'info',
-                                            'picked' => 'secondary',
+                                            'picked' => 'primary',
                                             'in_transit' => 'primary',
                                             'delivered' => 'success',
                                             'hold' => 'secondary',
