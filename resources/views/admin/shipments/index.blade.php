@@ -100,6 +100,7 @@
                     <a href="{{ route('admin.shipments.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">Reports</a>
                     <a href="{{ route('admin.reports.export', request()->all()) }}" class="btn btn-sm btn-primary">Export CSV</a>
+                    <a href="{{ route('admin.shipments.print.all') }}" target="_blank" class="btn btn-sm btn-success">Print</a>
                 </div>
             </form>
         </div>
