@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Courier;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
 
 class CourierAdminController extends Controller
@@ -15,83 +16,162 @@ class CourierAdminController extends Controller
         return view('admin.couriers.index', compact('couriers'));
     }
 
+    public function view(Request $request, $id)
+    {
+        // Fetch courier with user info
+        $courier = Courier::with('user')->findOrFail($id);
+
+        // Get filter inputs
+        $status = $request->input('status');
+        $from = $request->input('from');
+        $to = $request->input('to');
+
+        // Shipments query for this courier
+        $query = $courier->shipments()->with('customer');
+
+        // Filter by status
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        // Filter by date range
+        if ($from && $to) {
+            $query->whereBetween('created_at', [$from, $to]);
+        }
+
+        $shipments = $query->latest()->get();
+
+        // Status summary for all shipments of this courier
+        $allStatuses = ['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'];
+        $statusSummary = [];
+        foreach ($allStatuses as $st) {
+            $statusSummary[$st] = $courier->shipments()->where('status', $st)->count();
+        }
+
+        // Total delivered shipments
+        $totalDeliveredShipments = $courier->shipments()
+            ->whereIn('status', ['delivered','partially_delivered'])
+            ->count();
+
+        // Total earnings based on fixed commission amount
+        $commission = $totalDeliveredShipments * $courier->commission_rate;
+
+        // Total delivered amount (optional, if you want total price delivered)
+        $totalDeliveredAmount = $courier->shipments()
+            ->whereIn('status', ['delivered','partially_delivered'])
+            ->sum('price');
+
+        return view('admin.couriers.view', compact(
+            'courier',
+            'shipments',
+            'statusSummary',
+            'commission',
+            'totalDeliveredAmount',
+            'totalDeliveredShipments',
+            'status',
+            'from',
+            'to'
+        ));
+    }
+
     public function create()
     {
-        return view('admin.couriers.create');
+        $users = User::where('role', 'courier')->get();
+        return view('admin.couriers.create', compact('users'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name'=>'required|string|max:191',
-            'email'=>'required|email|unique:users,email',
-            'phone'=>'nullable|string|max:30',
-            'vehicle_type'=>'nullable|string',
-            'vehicle_number'=>'nullable|string',
-            'commission_rate'=>'nullable|numeric|min:0',
-            'password'=>'required|string|min:6|confirmed'
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'commission_rate' => 'required|numeric|min:0|max:100',
+            'vehicle_type' => 'nullable|string|max:255',
+            'vehicle_number' => 'nullable|string|max:255',
+            'status' => 'required|in:available,busy,off',
         ]);
 
-        $user = User::create([
-            'name'=>$data['name'],
-            'email'=>$data['email'],
-            'phone'=>$data['phone'] ?? null,
-            'role'=>'courier',
-            'password'=>Hash::make($data['password']),
-        ]);
+        Courier::create($validated);
 
-        $courier = Courier::create([
-            'user_id'=>$user->id,
-            'vehicle_type'=>$data['vehicle_type'] ?? null,
-            'vehicle_number'=>$data['vehicle_number'] ?? null,
-            'commission_rate'=>$data['commission_rate'] ?? 0,
-            'status'=>'available',
-        ]);
-
-        return redirect()->route('admin.couriers.index')->with('success','Courier created.');
+        return redirect()->route('admin.couriers.index')->with('success', 'Courier added successfully.');
     }
 
     public function edit(Courier $courier)
     {
-        $courier->load('user');
-        return view('admin.couriers.edit', compact('courier'));
+        $users = User::where('role', 'courier')->get();
+        return view('admin.couriers.edit', compact('courier', 'users'));
     }
 
     public function update(Request $request, Courier $courier)
     {
-        $data = $request->validate([
-            'name'=>'required|string|max:191',
-            'email'=>'required|email|unique:users,email,'.$courier->user_id,
-            'phone'=>'nullable|string|max:30',
-            'vehicle_type'=>'nullable|string',
-            'vehicle_number'=>'nullable|string',
-            'commission_rate'=>'nullable|numeric|min:0',
-            'password'=>'nullable|string|min:6|confirmed'
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'commission_rate' => 'required|numeric|min:0|max:100',
+            'vehicle_type' => 'nullable|string|max:255',
+            'vehicle_number' => 'nullable|string|max:255',
+            'status' => 'required|in:available,busy,off',
         ]);
 
-        $courier->user->update([
-            'name'=>$data['name'],
-            'email'=>$data['email'],
-            'phone'=>$data['phone'] ?? null,
-        ]);
+        $courier->update($validated);
 
-        $courier->update([
-            'vehicle_type'=>$data['vehicle_type'] ?? $courier->vehicle_type,
-            'vehicle_number'=>$data['vehicle_number'] ?? $courier->vehicle_number,
-            'commission_rate'=>$data['commission_rate'] ?? $courier->commission_rate,
-        ]);
-
-        if (!empty($data['password'])) {
-            $courier->user->update(['password'=>Hash::make($data['password'])]);
-        }
-
-        return back()->with('success','Courier updated.');
+        return redirect()->route('admin.couriers.index')->with('success', 'Courier updated successfully.');
     }
 
     public function destroy(Courier $courier)
     {
-        $courier->user->delete();
         $courier->delete();
-        return back()->with('success','Courier removed.');
+        return redirect()->route('admin.couriers.index')->with('success', 'Courier deleted successfully.');
     }
+
+    public function print(Request $request, $id)
+    {
+        $courier = Courier::with('user')->findOrFail($id);
+
+        $status = $request->input('status');
+        $from = $request->input('from');
+        $to = $request->input('to');
+
+        // Build query with filters
+        $query = $courier->shipments();
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($from && $to) {
+            $query->whereBetween('created_at', [$from, $to]);
+        }
+
+        // Get shipments after filters
+        $shipments = $query->latest()->get();
+
+        // Total parcels based on filters
+        $totalParcel = $shipments->count();
+
+        // Total delivered/partially delivered amount based on filters
+        $totalDeliveredAmount = $query->whereIn('status', ['delivered', 'partially_delivered'])->sum('price');
+
+        // Status summary for cards in PDF
+        $statusSummary = $courier->shipments()
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        // Generate PDF
+        $pdf = Pdf::loadView('admin.couriers.print', compact(
+            'courier',
+            'shipments',
+            'statusSummary',
+            'totalParcel',
+            'totalDeliveredAmount',
+            'status',
+            'from',
+            'to'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->stream('delivery-man-'.$courier->user->name.'-report.pdf');
+    }
+
 }

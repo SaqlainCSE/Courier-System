@@ -63,7 +63,7 @@
             <i class="fas fa-boxes me-2"></i> Shipments
         </a>
 
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.couriers.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-motorcycle me-2"></i> Delivery Man
         </a>
 

@@ -31,7 +31,8 @@ class Courier extends Model
 
     public function shipments()
     {
-        return $this->hasMany(\App\Models\Shipment::class, 'courier_id');
+        return $this->hasMany(Shipment::class, 'courier_id');
     }
+
 
 }

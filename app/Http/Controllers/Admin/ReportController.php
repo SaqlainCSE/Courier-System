@@ -110,7 +110,7 @@ class ReportController extends Controller
     public function printAll(Request $request)
     {
         $shipments = Shipment::with(['courier', 'customer', 'statusLogs'])
-                                    ->whereIn('status', ['assigned', 'pending'])
+                                    ->whereIn('status', ['assigned', 'pending','hold'])
                                     ->latest()
                                     ->get();
 

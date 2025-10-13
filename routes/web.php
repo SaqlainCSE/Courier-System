@@ -73,7 +73,9 @@ Route::middleware('auth')->group(function() {
 
         // Couriers (management)
         Route::resource('couriers', CourierAdminController::class, ['as' => 'admin']);
-
+        Route::get('couriers/{courier}/view', [CourierAdminController::class, 'view'])->name('admin.couriers.view');
+        Route::get('couriers/{id}/print', [CourierAdminController::class, 'print'])
+            ->name('admin.couriers.print');
         // Reports / Export
         Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
