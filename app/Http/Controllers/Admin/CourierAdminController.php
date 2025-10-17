@@ -53,6 +53,11 @@ class CourierAdminController extends Controller
             ->whereIn('status', ['delivered','partially_delivered'])
             ->count();
 
+        $todayEarnings = $courier->shipments()
+                                            ->whereIn('status', ['delivered', 'partially_delivered'])
+                                            ->whereDate('updated_at', today())
+                                            ->count() * $courier->commission_rate;
+
         // Total earnings based on fixed commission amount
         $commission = $totalDeliveredShipments * $courier->commission_rate;
 
@@ -68,6 +73,7 @@ class CourierAdminController extends Controller
             'commission',
             'totalDeliveredAmount',
             'totalDeliveredShipments',
+            'todayEarnings',
             'status',
             'from',
             'to'

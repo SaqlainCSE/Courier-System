@@ -38,6 +38,7 @@
                         <div class="col-12 mt-2">
                             <div class="alert alert-info mb-0">
                                 <strong>Total Earnings:</strong> ৳{{ number_format($commission, 2) }} <br>
+                                <strong>Today's Earning:</strong> ৳{{ number_format($todayEarnings, 2) }} <br>
                                 <strong>Total Delivered:</strong> {{ $totalDeliveredShipments }}
                             </div>
                         </div>
