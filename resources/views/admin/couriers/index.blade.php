@@ -30,7 +30,7 @@
             @else
                 <div class="table-responsive">
                     <table class="table align-middle table-striped mb-0">
-                        <thead class="table-light">
+                        <thead class="table-dark">
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>

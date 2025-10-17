@@ -81,7 +81,7 @@
         <h4 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
             Tracking #<span class="text-danger">{{ $shipment->tracking_number }}
         </h4>
-        <a href="{{ route('admin.shipments.index') }}" class="btn btn-outline-dark">
+        <a href="{{ url()->previous() }}" class="btn btn-outline-dark">
             <i class="fas fa-arrow-left me-1"></i>Back
         </a>
     </div>

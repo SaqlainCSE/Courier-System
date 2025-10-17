@@ -67,7 +67,7 @@
             <i class="fas fa-motorcycle me-2"></i> Delivery Man
         </a>
 
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.merchants.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-users me-2"></i> Merchants
         </a>
 

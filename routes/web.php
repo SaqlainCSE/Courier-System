@@ -8,6 +8,7 @@ use App\Http\Controllers\TrackingController;
 use App\Http\Controllers\Admin\ShipmentAdminController;
 use App\Http\Controllers\Admin\CourierAdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MerchantController;
 use App\Http\Controllers\Admin\ReportController;
 
 Route::get('/', function () {
@@ -71,11 +72,15 @@ Route::middleware('auth')->group(function() {
         Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class,'assignCourier'])->name('admin.shipments.assign');
         Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class,'updateStatus'])->name('admin.shipments.updateStatus');
 
+        // Merchants (management)
+        Route::resource('merchants', MerchantController::class, ['as' => 'admin']);
+
         // Couriers (management)
         Route::resource('couriers', CourierAdminController::class, ['as' => 'admin']);
         Route::get('couriers/{courier}/view', [CourierAdminController::class, 'view'])->name('admin.couriers.view');
         Route::get('couriers/{id}/print', [CourierAdminController::class, 'print'])
             ->name('admin.couriers.print');
+
         // Reports / Export
         Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
