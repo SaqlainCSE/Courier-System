@@ -71,7 +71,7 @@
             <i class="fas fa-users me-2"></i> Merchants
         </a>
 
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-money-bill me-2"></i> Payments
         </a>
 
