@@ -16,7 +16,7 @@
             <button type="submit" class="btn btn-sm btn-dark">
                 Search
             </button>
-                <a href="{{ route('admin.payments.index') }}" class="btn btn-sm btn-outline-secondary ms-2 me-2">
+                <a href="{{ route('admin.payments.index') }}" class="btn btn-sm btn-outline-secondary ms-2">
                     Clear
                 </a>
         </form>
@@ -132,8 +132,8 @@
 @endsection
 
 @push('scripts')
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 $(document).ready(function() {
