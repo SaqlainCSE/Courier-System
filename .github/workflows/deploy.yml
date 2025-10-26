@@ -1,0 +1,25 @@
+name: Deploy to CPanel
+
+on:
+  push:
+    branches: ["main"]   # change to "master" if your repo uses master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to Shared Hosting via SSH
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd /home/stepupco/www/Courier-System
+          git fetch --all
+          git reset --hard origin/main
+          composer install --no-dev --optimize-autoloader
+          php artisan migrate --force
+          php artisan optimize:clear
