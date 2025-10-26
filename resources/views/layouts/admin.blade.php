@@ -75,9 +75,9 @@
             <i class="fas fa-money-bill me-2"></i> Payments
         </a>
 
-        <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        {{-- <a href="#" class="{{ request()->routeIs('#') ? 'active' : '' }}">
             <i class="fas fa-cogs me-2"></i> Settings
-        </a>
+        </a> --}}
 
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <i class="fas fa-sign-out-alt me-2"></i> Logout
