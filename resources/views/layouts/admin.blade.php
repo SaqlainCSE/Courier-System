@@ -63,15 +63,15 @@
             <i class="fas fa-boxes me-2"></i> Shipments
         </a>
 
-        <a href="{{ route('admin.couriers.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.couriers.index') }}" class="{{ request()->routeIs('admin.couriers.index') ? 'active' : '' }}">
             <i class="fas fa-motorcycle me-2"></i> Delivery Man
         </a>
 
-        <a href="{{ route('admin.merchants.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.merchants.index') }}" class="{{ request()->routeIs('admin.merchants.index') ? 'active' : '' }}">
             <i class="fas fa-users me-2"></i> Merchants
         </a>
 
-        <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('#') ? 'active' : '' }}">
+        <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
             <i class="fas fa-money-bill me-2"></i> Payments
         </a>
 
