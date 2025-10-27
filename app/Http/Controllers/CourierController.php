@@ -89,7 +89,7 @@ class CourierController extends Controller
     {
         $courier = Auth::user()->courierProfile;
 
-        if ($shipment->courier_id !== $courier->id) abort(403);
+        // if ($shipment->courier_id !== $courier->id) abort(403);
 
         // Validate inputs
         $data = $request->validate([
@@ -133,7 +133,7 @@ class CourierController extends Controller
             'user_id' => Auth::id(),
             'status' => $data['status'],
             'changed_by' => Auth::id(),
-            'note' => $data['note'] ?? 'Updated by courier'
+            'note' => $data['note'] ?? 'Updated by delivery man'
         ]);
 
         // Courier availability
@@ -178,7 +178,7 @@ class CourierController extends Controller
     public function show(Shipment $shipment)
     {
         $courier = Auth::user()->courierProfile;
-        if ($shipment->courier_id !== $courier->id) abort(403);
+        // if ($shipment->courier_id !== $courier->id) abort(403);
 
         return view('courier.show', compact('shipment'));
     }

@@ -151,9 +151,9 @@ class ShipmentController extends Controller
         $user = Auth::user();
 
         // Authorization: only allow the owner (customer) to view
-        if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
-            abort(403, 'Unauthorized access.');
-        }
+        // if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
+        //     abort(403, 'Unauthorized access.');
+        // }
 
         // Estimated delivery formatting
         $estimated = $shipment->estimated_delivery_at
