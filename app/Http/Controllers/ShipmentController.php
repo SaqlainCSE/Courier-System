@@ -50,17 +50,17 @@ class ShipmentController extends Controller
 
         // Summary counts (respect filters applied above except pagination)
         $summary = [
-            'pending' => Shipment::where('status', 'pending')->count(),
-            'picked' => Shipment::where('status', 'picked')->count(),
-            'in_transit' => Shipment::where('status', 'in_transit')->count(),
-            'delivered' => Shipment::where('status', 'delivered')->count(),
-            'hold' => Shipment::where('status', 'hold')->count(),
-            'cancelled' => Shipment::where('status', 'cancelled')->count(),
-            'partially_delivered' => Shipment::where('status', 'partially_delivered')->count(),
+            'pending' => Shipment::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'picked' => Shipment::where('user_id', $user->id)->where('status', 'picked')->count(),
+            'in_transit' => Shipment::where('user_id', $user->id)->where('status', 'in_transit')->count(),
+            'delivered' => Shipment::where('user_id', $user->id)->where('status', 'delivered')->count(),
+            'hold' => Shipment::where('user_id', $user->id)->where('status', 'hold')->count(),
+            'cancelled' => Shipment::where('user_id', $user->id)->where('status', 'cancelled')->count(),
+            'partially_delivered' => Shipment::where('user_id', $user->id)->where('status', 'partially_delivered')->count(),
         ];
 
         // Balance cost for delivered + partially delivered
-        $balanceCost = Shipment::whereIn('status', ['delivered','partially_delivered'])
+        $balanceCost = Shipment::where('user_id', $user->id)->whereIn('status', ['delivered','partially_delivered'])
             ->sum('balance_cost');
 
         // Monthly cost breakdown
