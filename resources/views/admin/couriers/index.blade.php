@@ -8,9 +8,9 @@
         <h3 class="fw-bold text-dark mb-3 mb-md-0">
             <i class="fas fa-motorcycle me-2"></i> Delivery Man Management
         </h3>
-        {{-- <a href="{{ route('admin.couriers.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.couriers.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i> Add New
-        </a> --}}
+        </a>
     </div>
 
     <!-- Table Card -->

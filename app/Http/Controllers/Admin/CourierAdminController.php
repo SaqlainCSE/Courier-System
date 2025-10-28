@@ -7,7 +7,7 @@ use App\Models\Courier;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 class CourierAdminController extends Controller
 {
     public function index()
@@ -82,23 +82,50 @@ class CourierAdminController extends Controller
 
     public function create()
     {
-        $users = User::where('role', 'courier')->get();
-        return view('admin.couriers.create', compact('users'));
+        return view('admin.couriers.create'); // form to register delivery man
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            // User fields
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20|unique:users,phone',
+            'business_name' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string|max:255',
+            'password' => 'required|string|min:6|confirmed',
+
+            // Courier fields
             'commission_rate' => 'required|numeric|min:0|max:100',
             'vehicle_type' => 'nullable|string|max:255',
             'vehicle_number' => 'nullable|string|max:255',
             'status' => 'required|in:available,busy,off',
         ]);
 
-        Courier::create($validated);
+        DB::transaction(function () use ($validated) {
 
-        return redirect()->route('admin.couriers.index')->with('success', 'Courier added successfully.');
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'business_name' => $validated['business_name'] ?? null,
+                'business_address' => $validated['business_address'] ?? null,
+                'password' => Hash::make($validated['password']),
+                'role' => 'courier',
+            ]);
+
+            Courier::create([
+                'user_id' => $user->id,
+                'commission_rate' => $validated['commission_rate'],
+                'vehicle_type' => $validated['vehicle_type'] ?? null,
+                'vehicle_number' => $validated['vehicle_number'] ?? null,
+                'status' => $validated['status'],
+            ]);
+        });
+
+        return redirect()->route('admin.couriers.index')
+                        ->with('success', 'Delivery man registered successfully!');
     }
 
     public function edit(Courier $courier)
@@ -136,7 +163,6 @@ class CourierAdminController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
-        // Build query with filters
         $query = $courier->shipments();
 
         if ($status) {

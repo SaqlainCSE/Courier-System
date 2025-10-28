@@ -47,26 +47,6 @@
             @endforeach
         </div>
 
-        {{-- Charts Section --}}
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-md-6">
-                <div class="card shadow-sm border-0 p-3 h-100">
-                    <h6 class="fw-semibold mb-3">
-                        <i class="fas fa-chart-bar me-2"></i> Earnings Overview
-                    </h6>
-                    <canvas id="earningsChart" height="150"></canvas>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="card shadow-sm border-0 p-3 h-100">
-                    <h6 class="fw-semibold mb-3">
-                        <i class="fas fa-truck-moving me-2"></i> Shipments Overview
-                    </h6>
-                    <canvas id="shipmentsChart" height="150"></canvas>
-                </div>
-            </div>
-        </div>
-
         {{-- Top Couriers --}}
         <h5 class="mt-4 mb-3">
             <i class="fas fa-trophy me-2 text-warning"></i>Top Delivery Man (by Deliveries)
