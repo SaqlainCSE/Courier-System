@@ -130,23 +130,54 @@ class CourierAdminController extends Controller
 
     public function edit(Courier $courier)
     {
-        $users = User::where('role', 'courier')->get();
-        return view('admin.couriers.edit', compact('courier', 'users'));
+        $courier->load('user');
+        return view('admin.couriers.edit', compact('courier'));
     }
 
     public function update(Request $request, Courier $courier)
     {
+        $user = $courier->user;
+
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'required|string|max:20|unique:users,phone,' . $user->id,
+            'business_name' => 'nullable|string|max:255',
+            'business_address' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:6|confirmed',
+
             'commission_rate' => 'required|numeric|min:0|max:100',
             'vehicle_type' => 'nullable|string|max:255',
             'vehicle_number' => 'nullable|string|max:255',
             'status' => 'required|in:available,busy,off',
         ]);
 
-        $courier->update($validated);
+        DB::transaction(function () use ($validated, $user, $courier) {
 
-        return redirect()->route('admin.couriers.index')->with('success', 'Courier updated successfully.');
+            $userData = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'business_name' => $validated['business_name'] ?? null,
+                'business_address' => $validated['business_address'] ?? null,
+            ];
+
+            if (!empty($validated['password'])) {
+                $userData['password'] = Hash::make($validated['password']);
+            }
+
+            $user->update($userData);
+
+            $courier->update([
+                'commission_rate' => $validated['commission_rate'],
+                'vehicle_type' => $validated['vehicle_type'] ?? null,
+                'vehicle_number' => $validated['vehicle_number'] ?? null,
+                'status' => $validated['status'],
+            ]);
+        });
+
+        return redirect()->route('admin.couriers.index')
+                        ->with('success', 'Delivery man details updated successfully!');
     }
 
     public function destroy(Courier $courier)
