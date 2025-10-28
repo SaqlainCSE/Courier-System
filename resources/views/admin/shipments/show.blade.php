@@ -73,23 +73,97 @@
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+/* --- Responsive Tweaks --- */
+@media (max-width: 768px) {
+    .progress-tracker::before {
+        top: 20px;
+        height: 4px;
+    }
+
+    .step .circle {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .step p {
+        font-size: 0.75rem;
+    }
+
+    .progress-tracker {
+        margin: 20px 0 40px 0;
+    }
+
+    .d-flex.justify-content-between.mb-3 > div {
+        font-size: 0.9rem;
+    }
+
+    h4.fw-bold {
+        font-size: 1.1rem;
+    }
+
+    .btn-outline-dark {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .steps {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .progress-tracker::before,
+    .progress-bar {
+        display: none;
+    }
+
+    .step {
+        flex: 0 0 calc(50% - 1rem);
+    }
+
+    .step p {
+        margin-top: 6px;
+    }
+
+    .card-header {
+        font-size: 0.9rem;
+    }
+
+    .card-body {
+        font-size: 0.9rem;
+    }
+
+    .form-select, .form-control {
+        font-size: 0.85rem;
+    }
+
+    textarea.form-control {
+        height: 70px;
+    }
+}
 </style>
 
 <div class="container py-4">
+
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold"><i class="fas fa-shipping-fast text-danger me-2"></i>
-            Tracking #<span class="text-danger">{{ $shipment->tracking_number }}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h4 class="fw-bold mb-0">
+            <i class="fas fa-shipping-fast text-danger me-2"></i>
+            Tracking #<span class="text-danger">{{ $shipment->tracking_number }}</span>
         </h4>
         <a href="{{ url()->previous() }}" class="btn btn-outline-dark">
-            <i class="fas fa-arrow-left me-1"></i>Back
+            <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
 
     <!-- Shipment Status & Tracker -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
         <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
+            <div class="d-flex justify-content-between flex-wrap gap-2 mb-3 text-muted small">
                 <div><strong>Status:</strong>
                     @php
                         $statusColors = [
@@ -104,7 +178,6 @@
                 </div>
                 <div><strong>Weight:</strong> {{ $shipment->weight_kg }} kg</div>
                 <div><strong>Amount:</strong> ৳ {{ $shipment->price }}</div>
-
             </div>
 
             @php
@@ -148,16 +221,16 @@
     <!-- Pickup & Dropoff Details -->
     <div class="row g-4 mb-4">
         <div class="col-md-6">
-            <div class="card shadow-sm border-0 rounded-3 p-3">
-                <h5 class="fw-bold text-danger mb-2"><i class="fas fa-location-arrow me-1"></i>Pickup</h5>
+            <div class="card shadow-sm border-0 rounded-3 p-3 h-100">
+                <h5 class="fw-bold text-danger mb-2"><i class="fas fa-location-arrow me-1"></i> Pickup</h5>
                 <p class="mb-1"><strong>Name:</strong> {{ $shipment->customer?->business_name ?? '-' }}</p>
                 <p class="mb-1"><strong>Phone:</strong> {{ $shipment->customer?->phone ?? '-' }}</p>
                 <p class="text-muted small mb-0"><strong>Address:</strong> {{ $shipment->customer?->business_address ?? '-' }}</p>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card shadow-sm border-0 rounded-3 p-3">
-                <h5 class="fw-bold text-success mb-2"><i class="fas fa-map-marker-alt me-1"></i>Dropoff</h5>
+            <div class="card shadow-sm border-0 rounded-3 p-3 h-100">
+                <h5 class="fw-bold text-success mb-2"><i class="fas fa-map-marker-alt me-1"></i> Dropoff</h5>
                 <p class="mb-1"><strong>Name:</strong> {{ $shipment->drop_name }}</p>
                 <p class="mb-1"><strong>Phone:</strong> {{ $shipment->drop_phone }}</p>
                 <p class="text-muted small mb-0"><strong>Address:</strong> {{ $shipment->drop_address }}</p>
@@ -168,8 +241,8 @@
     <!-- Assigned Delivery Man -->
     @if($assignedCourier)
     <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-body d-flex align-items-center">
-            <i class="fas fa-user-tie fa-2x text-primary me-3"></i>
+        <div class="card-body d-flex align-items-center flex-wrap">
+            <i class="fas fa-user-tie fa-2x text-primary me-3 mb-2"></i>
             <div>
                 <h6 class="mb-1 fw-bold">Assigned Delivery Man</h6>
                 <p class="mb-0">{{ $assignedCourier->name }} {{ $assignedCourier->phone ? '('.$assignedCourier->phone.')' : '' }}</p>
@@ -180,11 +253,11 @@
 
     <!-- Assign Courier -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-secondary text-white">Assign Delivery Man</div>
+        <div class="card-header bg-secondary text-white fw-bold">Assign Delivery Man</div>
         <div class="card-body">
-            <form action="{{ route('admin.shipments.assign',$shipment) }}" method="POST" class="row g-2">
+            <form action="{{ route('admin.shipments.assign',$shipment) }}" method="POST" class="row g-2 align-items-center">
                 @csrf
-                <div class="col-md-8">
+                <div class="col-12 col-md-8">
                     <select name="courier_id" class="form-select" required>
                         <option value="">-- Select Delivery Man --</option>
                         @foreach($couriers as $c)
@@ -192,7 +265,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2 d-grid">
+                <div class="col-12 col-md-2 d-grid">
                     <button class="btn btn-primary">Assign</button>
                 </div>
             </form>
@@ -201,13 +274,11 @@
 
     <!-- Update Status -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-success text-white">Update Status</div>
+        <div class="card-header bg-success text-white fw-bold">Update Status</div>
         <div class="card-body">
             <form action="{{ route('admin.shipments.updateStatus', $shipment) }}" method="POST" class="row g-3">
                 @csrf
-
-                <!-- Status dropdown -->
-                <div class="col-md-4">
+                <div class="col-12 col-md-4">
                     <select name="status" id="statusSelect" class="form-select">
                         <option value="">-- Change Status --</option>
                         @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $status)
@@ -218,21 +289,12 @@
                     </select>
                 </div>
 
-                <!-- Note textarea -->
-                <div class="col-md-8">
+                <div class="col-12 col-md-8">
                     <textarea name="note" class="form-control" placeholder="Add note (optional)" rows="2"></textarea>
                 </div>
 
-                <!-- Partial price input (hidden by default) -->
-                <div class="col-md-4" id="partialPriceField" style="display: none;">
-                    <input
-                        type="number"
-                        name="partial_price"
-                        class="form-control"
-                        placeholder="Enter received amount"
-                        min="0"
-                        step="0.01"
-                    >
+                <div class="col-12 col-md-4" id="partialPriceField" style="display: none;">
+                    <input type="number" name="partial_price" class="form-control" placeholder="Enter received amount" min="0" step="0.01">
                 </div>
 
                 <div class="col-12 text-end">
@@ -251,7 +313,7 @@
             @foreach($logs as $log)
                 <div class="card mb-3 shadow-sm border-0">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
                             <div>
                                 <strong><i class="fas fa-circle-check text-success me-2"></i>{{ ucfirst(str_replace('_',' ', $log->status)) }}</strong>
                                 @if(!empty($log->note))<div class="text-muted small mt-1">{{ $log->note }}</div>@endif
@@ -259,14 +321,13 @@
                                     <div class="mt-2 small"><i class="fas fa-user-tie text-info me-1"></i>{{ $log->user->name }} <span class="text-muted">({{ $log->user->phone ?? 'N/A' }})</span></div>
                                 @endif
                             </div>
-                            <div class="text-muted small"><i class="fas fa-clock me-1"></i>{{ $log->created_at->format('d M Y, H:i') }}</div>
+                            <div class="text-muted small mt-2 mt-md-0"><i class="fas fa-clock me-1"></i>{{ $log->created_at->format('d M Y, H:i') }}</div>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
-
 </div>
 
 @endsection
@@ -279,33 +340,19 @@ document.addEventListener("DOMContentLoaded", function(){
     let totalSteps = @json(count($statuses)-1);
     if(!progressBar || totalSteps<=0) return;
     let progress = (currentIndex/totalSteps)*100;
-    if(!isFinite(progress)||progress<0) progress=0;
-    if(progress>100) progress=100;
-    progressBar.style.width = progress+"%";
+    progressBar.style.width = (progress>100?100:progress<0?0:progress) + "%";
+});
+
+// Partial price field toggle
+document.addEventListener('DOMContentLoaded', function () {
+    const statusSelect = document.getElementById('statusSelect');
+    const partialPriceField = document.getElementById('partialPriceField');
+    function toggleField() {
+        partialPriceField.style.display = statusSelect.value === 'partially_delivered' ? 'block' : 'none';
+    }
+    toggleField();
+    statusSelect.addEventListener('change', toggleField);
 });
 </script>
-
-<!-- Script to toggle partial price field -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const statusSelect = document.getElementById('statusSelect');
-        const partialPriceField = document.getElementById('partialPriceField');
-
-        function togglePartialPriceField() {
-            if (statusSelect.value === 'partially_delivered') {
-                partialPriceField.style.display = 'block';
-            } else {
-                partialPriceField.style.display = 'none';
-            }
-        }
-
-        // Run on page load (in case status is preselected)
-        togglePartialPriceField();
-
-        // Run on change
-        statusSelect.addEventListener('change', togglePartialPriceField);
-    });
-</script>
-
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 @endpush

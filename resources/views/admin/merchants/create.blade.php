@@ -17,6 +17,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <form method="POST" action="{{ route('admin.merchants.store') }}" autocomplete="off">
+                @csrf
                 @include('admin.merchants._form')
             </form>
         </div>

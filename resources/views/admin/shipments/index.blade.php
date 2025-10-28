@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container py-5">
+<div class="container py-4">
 
     <!-- Branding / Header -->
     <div class="text-center mb-5">
         <h1 class="fw-bold">
             <i class="fas fa-shipping-fast text-danger me-2"></i> StepUp<span class="text-danger">Courier</span> Admin
         </h1>
-        <p class="text-muted">Manage, Track, and Assign Shipments with Ease</p>
+        <p class="text-muted small">Manage, Track, and Assign Shipments with Ease</p>
     </div>
 
     <!-- Dashboard Summary Cards -->
@@ -36,12 +36,12 @@
 
         {{-- Status Cards --}}
         @foreach($cards as $key => $card)
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                 <a href="{{ route('admin.shipments.index', array_merge(request()->all(), ['status' => $key])) }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                    <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100">
                         <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
-                        <h6 class="fw-bold text-muted">{{ $card['label'] }}</h6>
-                        <h4 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h4>
+                        <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
+                        <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
                     </div>
                 </a>
             </div>
@@ -49,12 +49,12 @@
 
         {{-- Period Cards --}}
         @foreach($periods as $key => $card)
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                 <a href="{{ route('admin.shipments.index', array_merge(request()->all(), ['period' => $key])) }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                    <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100">
                         <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
-                        <h6 class="fw-bold text-muted">{{ $card['label'] }}</h6>
-                        <h4 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h4>
+                        <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
+                        <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
                     </div>
                 </a>
             </div>
@@ -63,15 +63,19 @@
 
     <!-- Filters -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-header bg-gradient text-dark fw-bold rounded-top-4">
-            <i class="fas fa-filter me-2"></i> Filter Shipments
+        <div class="card-header bg-gradient text-dark fw-bold rounded-top-4 d-flex align-items-center justify-content-between">
+            <span><i class="fas fa-filter me-2"></i> Filter Shipments</span>
+            <button class="btn btn-sm btn-outline-dark d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                <i class="fas fa-sliders-h"></i>
+            </button>
         </div>
-        <div class="card-body">
+
+        <div class="card-body collapse show" id="filterCollapse">
             <form method="GET" class="row g-2 align-items-center">
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
                     <input type="text" name="q" class="form-control form-control-sm" placeholder="Search tracking, address, name..." value="{{ request('q') }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
                         @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $s)
@@ -79,7 +83,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <select name="courier_id" class="form-select form-select-sm">
                         <option value="">All Couriers</option>
                         @foreach($couriers as $c)
@@ -89,13 +93,13 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
                 </div>
-                <div class="col-md-12 mt-2 d-flex gap-2">
+                <div class="col-12 mt-2 d-flex flex-wrap gap-2">
                     <button class="btn btn-sm btn-dark"><i class="fas fa-search me-1"></i> Filter</button>
                     <a href="{{ route('admin.shipments.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">Reports</a>
@@ -114,7 +118,7 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+                    <thead class="table-light text-nowrap">
                         <tr>
                             <th>Tracking</th>
                             <th>Pickup</th>
@@ -132,11 +136,17 @@
                                     <strong>{{ $s->tracking_number }}</strong>
                                     <div class="small text-muted">{{ $s->created_at->format('d M Y') }}</div>
                                 </td>
-                                <td>
-                                    <div>{{ $s->customer->business_name }} - {{ $s->customer->phone}} <br> {{ Str::limit($s->pickup_address,40) }}</div>
+                                <td class="text-truncate" style="max-width: 200px;">
+                                    <div class="small text-muted">
+                                        {{ $s->customer->business_name }} - {{ $s->customer->phone }} <br>
+                                        {{ Str::limit($s->pickup_address, 40) }}
+                                    </div>
                                 </td>
-                                <td>
-                                    <div class="small text-muted">{{ $s->drop_name }} - {{ $s->drop_phone }} <br> {{ Str::limit($s->drop_address,40) }}</div>
+                                <td class="text-truncate" style="max-width: 200px;">
+                                    <div class="small text-muted">
+                                        {{ $s->drop_name }} - {{ $s->drop_phone }} <br>
+                                        {{ Str::limit($s->drop_address, 40) }}
+                                    </div>
                                 </td>
                                 <td>{{ $s->courier?->user?->name ?? '-' }}</td>
                                 <td>
@@ -163,7 +173,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="7" class="text-center py-5 text-muted">
                                     <i class="fas fa-truck-loading fa-2x mb-2"></i><br>No shipments found.
                                 </td>
                             </tr>
@@ -183,15 +193,34 @@
 .bg-gradient {
     background: linear-gradient(45deg, #4facfe, #00f2fe);
 }
+.hover-card {
+    transition: transform 0.3s ease;
+}
 .hover-card:hover {
     transform: translateY(-5px);
-    transition: 0.3s ease;
+}
+.table-responsive {
+    overflow-x: auto;
+}
+@media (max-width: 576px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    .hover-card h5 {
+        font-size: 1rem;
+    }
+    .card-header .btn {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+    .table {
+        font-size: 0.85rem;
+    }
 }
 </style>
 @endpush
 
 @push('scripts')
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
 @endpush
 @endsection

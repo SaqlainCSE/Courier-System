@@ -2,41 +2,45 @@
 
 @section('content')
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-motorcycle me-2 text-primary"></i>{{ $courier->user->name }} — Delivery Man</h2>
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h2 class="fw-bold mb-3 mb-md-0">
+            <i class="fas fa-motorcycle me-2 text-primary"></i>{{ $courier->user->name }} — Delivery Man
+        </h2>
         <a href="{{ route('admin.couriers.index') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
 
-    <!-- Courier Info -->
+    <!-- Courier Info Card -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="row g-4 align-items-center">
-                <div class="col-md-4 text-center">
+                <div class="col-12 col-md-4 text-center">
                     <i class="fas fa-user-circle text-primary" style="font-size: 5rem;"></i>
-                    <h5 class="mt-3 mb-0">{{ $courier->user->name }}</h5>
+                    <h5 class="mt-3 mb-1">{{ $courier->user->name }}</h5>
                     <small class="text-muted">{{ $courier->user->email }}</small>
                 </div>
-                <div class="col-md-8">
+                <div class="col-12 col-md-8">
                     <div class="row g-2">
-                        <div class="col-sm-6">
+                        <div class="col-6 col-sm-6">
                             <strong>Vehicle Type:</strong> {{ $courier->vehicle_type ?? 'N/A' }}
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-6 col-sm-6">
                             <strong>Vehicle Number:</strong> {{ $courier->vehicle_number ?? 'N/A' }}
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-6 col-sm-6">
                             <strong>Status:</strong>
-                            <span class="badge bg-{{ $courier->status == 'available' ? 'success' : ($courier->status == 'busy' ? 'warning' : 'secondary') }}">
+                            <span class="badge bg-{{ $courier->status == 'available' ? 'success' : ($courier->status == 'busy' ? 'warning text-dark' : 'secondary') }}">
                                 {{ ucfirst($courier->status) }}
                             </span>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-6 col-sm-6">
                             <strong>Commission:</strong> {{ $courier->commission_rate }} BDT / shipment
                         </div>
                         <div class="col-12 mt-2">
-                            <div class="alert alert-info mb-0">
+                            <div class="alert alert-info mb-0 small">
                                 <strong>Total Earnings:</strong> ৳{{ number_format($commission, 2) }} <br>
                                 <strong>Today's Earning:</strong> ৳{{ number_format($todayEarnings, 2) }} <br>
                                 <strong>Total Delivered:</strong> {{ $totalDeliveredShipments }}
@@ -65,10 +69,10 @@
         @endphp
 
         @foreach($allStatuses as $st)
-            <div class="col-md-3 col-sm-6">
+            <div class="col-6 col-md-3">
                 <div class="card shadow-sm text-center border-0">
-                    <div class="card-body">
-                        <h6 class="text-capitalize text-muted">{{ str_replace('_',' ',$st) }}</h6>
+                    <div class="card-body p-3">
+                        <h6 class="text-capitalize text-muted mb-2">{{ str_replace('_',' ',$st) }}</h6>
                         <h4 class="text-{{ $statusColors[$st] ?? 'secondary' }}">
                             {{ $statusSummary[$st] ?? 0 }}
                         </h4>
@@ -81,8 +85,8 @@
     <!-- Filter Form -->
     <form method="GET" class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-4">
+            <div class="row g-2 align-items-end flex-wrap">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-semibold">Status</label>
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
@@ -91,20 +95,20 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-semibold">From</label>
                     <input type="date" name="from" class="form-control form-control-sm" value="{{ $from }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-semibold">To</label>
                     <input type="date" name="to" class="form-control form-control-sm" value="{{ $to }}">
                 </div>
-                <div class="col-md-2 d-grid gap-2">
+                <div class="col-6 col-md-2 d-grid gap-2">
                     <button type="submit" class="btn btn-dark btn-sm"><i class="fas fa-filter me-1"></i> Filter</button>
                     <a href="{{ route('admin.couriers.view', $courier->id) }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-redo me-1"></i> Clear</a>
                 </div>
-                <div class="col-md-2">
-                    <a href="{{ route('admin.couriers.print', ['id'=>$courier->id, 'status'=>$status, 'from'=>$from, 'to'=>$to]) }}" target="_blank" class="btn btn-success btn-sm">
+                <div class="col-6 col-md-2 mt-2 mt-md-0">
+                    <a href="{{ route('admin.couriers.print', ['id'=>$courier->id, 'status'=>$status, 'from'=>$from, 'to'=>$to]) }}" target="_blank" class="btn btn-success btn-sm w-100">
                         <i class="fas fa-print me-1"></i> Print
                     </a>
                 </div>
@@ -114,16 +118,16 @@
 
     <!-- Shipments Table -->
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0"><i class="fas fa-boxes me-2"></i> Shipments Assigned</h5>
-            <span class="badge bg-light text-dark">Total: {{ $shipments->count() }}</span>
+            <span class="badge bg-light text-dark mt-2 mt-md-0">Total: {{ $shipments->count() }}</span>
         </div>
         <div class="card-body p-0">
             @if($shipments->isEmpty())
                 <p class="text-center py-4 text-muted">No shipments assigned yet.</p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered mb-0 align-middle">
+                    <table class="table table-hover table-bordered mb-0 align-middle small">
                         <thead class="table-light">
                             <tr>
                                 <th>Tracking</th>

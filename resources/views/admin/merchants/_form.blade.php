@@ -6,29 +6,29 @@
         <div class="row g-3">
 
             {{-- Name --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-user me-1 text-dark"></i>Name
                 </label>
-                <input name="name" class="form-control form-control-lg"
+                <input name="name" type="text" class="form-control form-control-lg"
                        value="{{ old('name', $merchant->name ?? '') }}" required>
             </div>
 
             {{-- Phone --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-phone me-1 text-dark"></i>Phone
                 </label>
-                <input name="phone" class="form-control form-control-lg"
+                <input name="phone" type="text" class="form-control form-control-lg"
                        value="{{ old('phone', $merchant->phone ?? '') }}">
             </div>
 
             {{-- Business Name --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-briefcase me-1 text-dark"></i>Business Name
                 </label>
-                <input name="business_name" class="form-control form-control-lg"
+                <input name="business_name" type="text" class="form-control form-control-lg"
                        value="{{ old('business_name', $merchant->business_name ?? '') }}">
             </div>
 
@@ -42,7 +42,7 @@
             </div>
 
             {{-- Email --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-envelope me-1 text-dark"></i>Email
                 </label>
@@ -51,7 +51,7 @@
             </div>
 
             {{-- Password --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-lock me-1 text-dark"></i>Password
                     <small class="text-muted">(leave empty to keep unchanged)</small>
@@ -60,7 +60,7 @@
             </div>
 
             {{-- Confirm Password --}}
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">
                     <i class="fas fa-key me-1 text-dark"></i>Confirm Password
                 </label>
@@ -75,7 +75,7 @@
         <a href="{{ route('admin.merchants.index') }}" class="btn btn-outline-secondary px-4">
             <i class="fas fa-arrow-left me-1"></i>Cancel
         </a>
-        <button class="btn btn-primary px-4">
+        <button type="submit" class="btn btn-primary px-4">
             <i class="fas fa-save me-1"></i>{{ isset($merchant) ? 'Update' : 'Create' }}
         </button>
     </div>

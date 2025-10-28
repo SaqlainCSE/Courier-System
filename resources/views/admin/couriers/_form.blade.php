@@ -5,7 +5,7 @@
     <div class="row g-3">
 
         {{-- Delivery Man User --}}
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <label for="user_id" class="form-label fw-semibold">Delivery Man (User)</label>
             <select name="user_id" id="user_id" class="form-select" required>
                 <option value="">-- Select User --</option>
@@ -19,21 +19,21 @@
         </div>
 
         {{-- Vehicle Type --}}
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <label for="vehicle_type" class="form-label fw-semibold">Vehicle Type</label>
             <input type="text" name="vehicle_type" id="vehicle_type" class="form-control"
                    value="{{ old('vehicle_type', $courier->vehicle_type ?? '') }}" placeholder="e.g., Bike, Car, Van">
         </div>
 
         {{-- Vehicle Number --}}
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <label for="vehicle_number" class="form-label fw-semibold">Vehicle Number</label>
             <input type="text" name="vehicle_number" id="vehicle_number" class="form-control"
                    value="{{ old('vehicle_number', $courier->vehicle_number ?? '') }}" placeholder="e.g., DHA-1234">
         </div>
 
         {{-- Commission Rate --}}
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <label for="commission_rate" class="form-label fw-semibold">Commission Rate (%)</label>
             <input type="number" step="0.01" min="0" max="100"
                    name="commission_rate" id="commission_rate" class="form-control"
@@ -41,7 +41,7 @@
         </div>
 
         {{-- Status --}}
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <label for="status" class="form-label fw-semibold">Status</label>
             <select name="status" id="status" class="form-select">
                 @foreach(['available', 'busy', 'off'] as $status)
@@ -54,8 +54,8 @@
         </div>
 
         {{-- Buttons --}}
-        <div class="col-12 text-end mt-4">
-            <button type="submit" class="btn btn-primary me-2">
+        <div class="col-12 text-center text-md-end mt-4">
+            <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0">
                 <i class="fas fa-save me-1"></i> {{ isset($courier) ? 'Update' : 'Create' }}
             </button>
             <a href="{{ route('admin.couriers.index') }}" class="btn btn-outline-secondary">

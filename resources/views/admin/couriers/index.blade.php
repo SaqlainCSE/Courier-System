@@ -4,22 +4,22 @@
 <div class="container py-4">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark mb-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <h3 class="fw-bold text-dark mb-3 mb-md-0">
             <i class="fas fa-motorcycle me-2"></i> Delivery Man Management
         </h3>
-        <a href="{{ route('admin.couriers.create') }}" class="btn btn-primary">
+        {{-- <a href="{{ route('admin.couriers.create') }}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i> Add New
-        </a>
+        </a> --}}
     </div>
 
     <!-- Table Card -->
     <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0 fw-semibold text-dark">
                 <i class="fas fa-list me-2 text-dark"></i> All Delivery Men
             </h5>
-            <span class="badge bg-secondary">Total: {{ $couriers->count() }}</span>
+            <span class="badge bg-secondary mt-2 mt-md-0">Total: {{ $couriers->count() }}</span>
         </div>
 
         <div class="card-body p-0">
@@ -29,16 +29,16 @@
                 </div>
             @else
                 <div class="table-responsive">
-                    <table class="table align-middle table-striped mb-0">
+                    <table class="table align-middle table-striped mb-0 table-hover">
                         <thead class="table-dark">
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th class="text-center">Phone</th>
-                                <th>Commission (BDT)</th>
-                                <th>Vehicle</th>
+                                <th class="text-center d-none d-sm-table-cell">Phone</th>
+                                <th class="d-none d-md-table-cell">Commission (BDT)</th>
+                                <th class="d-none d-lg-table-cell">Vehicle</th>
                                 <th>Status</th>
-                                <th class="text-center">Joined</th>
+                                <th class="text-center d-none d-sm-table-cell">Joined</th>
                                 <th class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -46,10 +46,15 @@
                             @foreach($couriers as $index => $courier)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ $courier->user->name ?? '—' }}</td>
-                                    <td>{{ $courier->user->phone ?? '—' }}</td>
-                                    <td class="text-center">{{ $courier->commission_rate }}</td>
                                     <td>
+                                        <div class="d-flex flex-column">
+                                            <span>{{ $courier->user->name ?? '—' }}</span>
+                                            <small class="text-muted d-sm-none">{{ $courier->user->phone ?? '—' }}</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center d-none d-sm-table-cell">{{ $courier->user->phone ?? '—' }}</td>
+                                    <td class="d-none d-md-table-cell text-center">{{ $courier->commission_rate }}</td>
+                                    <td class="d-none d-lg-table-cell">
                                         {{ $courier->vehicle_type ?? '—' }}<br>
                                         <small class="text-muted">{{ $courier->vehicle_number ?? '' }}</small>
                                     </td>
@@ -67,28 +72,30 @@
                                         </span>
                                     </td>
 
-                                    <td>{{ $courier->created_at->format('d M Y') }}</td>
+                                    <td class="text-center d-none d-sm-table-cell">{{ $courier->created_at->format('d M Y') }}</td>
 
                                     <td class="text-center">
-                                        <a href="{{ route('admin.couriers.view', $courier->id) }}"
-                                            class="btn btn-sm btn-outline-info me-1">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        <div class="d-flex flex-wrap justify-content-center gap-1">
+                                            <a href="{{ route('admin.couriers.view', $courier->id) }}"
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
 
-                                        <a href="{{ route('admin.couriers.edit', $courier->id) }}"
-                                           class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+                                            <a href="{{ route('admin.couriers.edit', $courier->id) }}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
 
-                                        <form action="{{ route('admin.couriers.destroy', $courier->id) }}"
-                                              method="POST" class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to delete this delivery man?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                            <form action="{{ route('admin.couriers.destroy', $courier->id) }}"
+                                                  method="POST" class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to delete this delivery man?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
