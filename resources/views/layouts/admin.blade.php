@@ -100,7 +100,7 @@
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <h5>
-      <a class="navbar-brand fw-bold d-flex align-items-center px-3" href="http://127.0.0.1:8000">
+      <a class="navbar-brand fw-bold d-flex align-items-center px-3" href="/">
         <i class="fas fa-shipping-fast text-danger me-2"></i>
         <span class="text-light">StepUp<span class="text-danger">Courier</span></span>
       </a>
