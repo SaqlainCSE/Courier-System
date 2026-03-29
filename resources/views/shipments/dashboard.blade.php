@@ -24,7 +24,8 @@
         @php
             $cards = [
                 'pending' => ['color' => 'warning', 'icon' => 'hourglass-half', 'label' => 'Pending'],
-                'picked' => ['color' => 'info', 'icon' => 'box-open', 'label' => 'Picked'],
+                'assigned' => ['color' => 'info', 'icon' => 'user-check', 'label' => 'Assigned'],
+                'picked' => ['color' => 'primary', 'icon' => 'box-open', 'label' => 'Picked'],
                 'in_transit' => ['color' => 'primary', 'icon' => 'truck-moving', 'label' => 'In Transit'],
                 'delivered' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Delivered'],
                 'hold' => ['color' => 'secondary', 'icon' => 'pause-circle', 'label' => 'On Hold'],

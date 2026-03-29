@@ -51,6 +51,7 @@ class ShipmentController extends Controller
         // Summary counts (respect filters applied above except pagination)
         $summary = [
             'pending' => Shipment::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'assigned' => Shipment::where('user_id', $user->id)->where('status', 'assigned')->count(),
             'picked' => Shipment::where('user_id', $user->id)->where('status', 'picked')->count(),
             'in_transit' => Shipment::where('user_id', $user->id)->where('status', 'in_transit')->count(),
             'delivered' => Shipment::where('user_id', $user->id)->where('status', 'delivered')->count(),
