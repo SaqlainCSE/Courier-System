@@ -34,6 +34,10 @@ class Shipment extends Model
         'notes',
     ];
 
+    protected $casts = [
+        'user_id' => 'integer',
+    ];
+
     // Relationships
     public function user() { return $this->belongsTo(User::class); }
     public function courier() { return $this->belongsTo(Courier::class); }

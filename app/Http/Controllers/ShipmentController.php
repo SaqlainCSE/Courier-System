@@ -193,7 +193,7 @@ class ShipmentController extends Controller
         $user = Auth::user();
 
         // Authorization: only allow the owner (customer) to edit
-        if ($user->role !== 'customer' || $shipment->user_id != $user->id) {
+        if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -205,7 +205,7 @@ class ShipmentController extends Controller
         $user = Auth::user();
 
         // Authorization again
-        if ($user->role !== 'customer' || $shipment->user_id != $user->id) {
+        if ($user->role !== 'customer' || $shipment->user_id !== $user->id) {
             abort(403, 'Unauthorized access.');
         }
 
