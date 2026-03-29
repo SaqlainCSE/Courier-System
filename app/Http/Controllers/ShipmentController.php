@@ -165,7 +165,7 @@ class ShipmentController extends Controller
         $courier = $shipment->courier; // Shipment -> Courier model
         $courierUser = $courier?->user; // Courier -> User model
 
-        $courierName = $courierUser?->business_name ?? 'Not Assigned';
+        $courierName = $courierUser?->name ?? 'Not Assigned';
         $courierPhone = $courierUser?->phone ?? '';
 
         $costDetails = [
