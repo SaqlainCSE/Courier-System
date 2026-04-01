@@ -267,22 +267,25 @@ class ShipmentController extends Controller
     // }
 
     public function getDropoffDetails(Request $request)
-    {
-        $phone = $request->get('drop_phone');
-        $shipment = Shipment::where('drop_phone', $phone)->latest()->first();
+{
+    $phone = $request->get('drop_phone');
+    $shipment = Shipment::where('drop_phone', $phone)->latest()->first();
 
-        if ($shipment) {
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'drop_name' => $shipment->drop_name,
-                    'drop_address' => $shipment->drop_address,
-                ]
-            ]);
-        }
-
-        return response()->json(['success' => false]);
+    if ($shipment) {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'drop_name' => $shipment->drop_name,
+                'drop_address' => $shipment->drop_address,
+                'drop_district' => $shipment->drop_district,
+                'drop_area' => $shipment->drop_area,
+                'drop_street' => $shipment->drop_street,
+            ]
+        ]);
     }
+
+    return response()->json(['success' => false]);
+}
 
     public function print(Shipment $shipment)
     {

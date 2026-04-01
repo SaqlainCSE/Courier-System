@@ -279,4 +279,41 @@
     });
 </script>
 
+<script>
+    $(document).on("input", "#drop_phone", function () {
+        let phone = $(this).val();
+        let regex = /^01[3-9][0-9]{8}$/;
+
+        if (regex.test(phone)) {
+            $("#phone_error").addClass("d-none");
+            $(this).removeClass("is-invalid").addClass("is-valid");
+
+            // AJAX to fetch data
+            $.ajax({
+                url: "{{ url('/get-dropoff-details') }}",
+                method: "GET",
+                data: { drop_phone: phone },
+                success: function (response) {
+                    if (response.success) {
+
+                        $("input[name='drop_name']").val(response.data.drop_name);
+                        $("#drop_district").val(response.data.drop_district).trigger('change');
+
+                        setTimeout(() => {
+                            $("#drop_area").val(response.data.drop_area).trigger('change');
+                        }, 300);
+
+                        $("#drop_street").val(response.data.drop_street);
+                        $("#drop_address").val(response.data.drop_address);
+                    }
+                }
+            });
+
+        } else {
+            $("#phone_error").removeClass("d-none");
+            $(this).removeClass("is-valid").addClass("is-invalid");
+        }
+    });
+</script>
+
 @endpush
