@@ -67,13 +67,14 @@
 
         <div class="table-responsive">
             <table class="table align-middle table-hover mb-0">
-                <thead class="table-dark d-none d-md-table-header-group">
+                <thead class="table-dark d-md-table-header-group">
                     <tr>
                         <th>Name</th>
                         <th>Business</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th class="text-center">Shipments</th>
+                        <th class="text-center">Delivery Fee</th>
                         <th class="text-center">Joined</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -87,6 +88,7 @@
                             <td data-label="Email">{{ $m->email }}</td>
                             <td data-label="Phone">{{ $m->phone ?? '—' }}</td>
                             <td data-label="Shipments" class="text-center">{{ $m->shipments()->count() }}</td>
+                            <td data-label="Delivery Fee" class="text-center">৳{{ number_format($m->delivery_fee, 2) }}</td>
                             <td data-label="Joined" class="text-center">{{ $m->created_at->format('d M Y') }}</td>
                             <td data-label="Actions" class="text-center">
                                 <div class="btn-group d-flex d-md-inline-flex flex-wrap gap-1 justify-content-center">

@@ -41,6 +41,15 @@
                           placeholder="Enter full business address...">{{ old('business_address', $merchant->business_address ?? '') }}</textarea>
             </div>
 
+            {{-- Delivery Fee --}}
+            <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">
+                    <i class="fas fa-coins me-1 text-dark"></i>Delivery Fee
+                </label>
+                <input name="delivery_fee" type="number" class="form-control form-control-lg" step="0.01" min="0"
+                       value="{{ old('delivery_fee', $merchant->delivery_fee ?? 60) }}">
+            </div>
+
             {{-- Email --}}
             <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">

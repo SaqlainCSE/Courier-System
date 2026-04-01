@@ -91,6 +91,15 @@
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
 
+        <div class="mb-3 d-flex gap-2">
+            <a href="{{ route('shipments.export.excel', request()->all()) }}" class="btn btn-success btn-sm">
+                <i class="fas fa-file-excel"></i> Export Excel
+            </a>
+            <a href="{{ route('shipments.export.pdf', request()->all()) }}" class="btn btn-danger btn-sm">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </a>
+        </div>
+
         <div class="col-md-12 mt-4">
             <form method="GET" action="{{ route('shipments.dashboard') }}" class="row g-2 mb-3 align-items-center">
 
@@ -106,6 +115,7 @@
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
                         <option value="pending" @selected(($filters['status'] ?? '')=='pending')>Pending</option>
+                        <option value="assigned" @selected(($filters['status'] ?? '')=='assigned')>Assigned</option>
                         <option value="picked" @selected(($filters['status'] ?? '')=='picked')>Picked</option>
                         <option value="in_transit" @selected(($filters['status'] ?? '')=='in_transit')>In Transit</option>
                         <option value="delivered" @selected(($filters['status'] ?? '')=='delivered')>Delivered</option>

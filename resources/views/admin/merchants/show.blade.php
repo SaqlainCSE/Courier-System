@@ -41,6 +41,10 @@
                         <div class="small text-muted">Phone</div>
                         <div>{{ $merchant->phone ?? '—' }}</div>
                     </div>
+                    <div class="mb-3">
+                        <div class="small text-muted">Delivery Fee</div>
+                        <div class="fw-semibold">৳{{ number_format($merchant->delivery_fee, 2) }}</div>
+                    </div>
                 </div>
             </div>
         </div>

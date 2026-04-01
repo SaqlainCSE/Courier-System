@@ -252,7 +252,7 @@
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Delivery Charge</span>
-                    <span class="text-danger">-৳ {{ number_format(60, 2) }}</span>
+                    <span class="text-danger">-৳ {{ number_format($shipment->user->delivery_fee ?? 60, 2) }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <span>Additional Charge</span>
@@ -260,7 +260,7 @@
                 <hr>
                 <div class="d-flex justify-content-between fw-bold fs-5">
                     <span>Payable Amount</span>
-                    <span class="text-success">৳ {{ number_format($shipment->price - (60 + $shipment->additional_charge), 2) }}</span>
+                    <span class="text-success">৳ {{ number_format($shipment->price - ($shipment->additional_charge + $shipment->user->delivery_fee ?? 60), 2) }}</span>
                 </div>
             </div><br>
             @if($shipment->status === 'pending')

@@ -7,9 +7,14 @@
 
             <div class="mb-3">
                 <label class="form-label fw-medium">Phone</label>
-                <input type="text" name="drop_phone" class="form-control"
-                       value="{{ old('drop_phone', $shipment->drop_phone ?? '') }}" required>
+                <input type="text" name="drop_phone" id="drop_phone" class="form-control"
+                    value="{{ old('drop_phone', $shipment->drop_phone ?? '') }}" required>
+
+                <small id="phone_error" class="text-danger d-none">
+                    Invalid Bangladesh phone number
+                </small>
             </div>
+
             <div class="mb-3">
                 <label class="form-label fw-medium">Name</label>
                 <input type="text" name="drop_name" class="form-control"
@@ -21,10 +26,10 @@
                 <select id="drop_district" class="form-select"></select>
             </div>
 
-            <div class="mb-3">
+            {{--  <div class="mb-3">
                 <label class="form-label fw-medium">Police Station</label>
                 <select id="drop_police" class="form-select"></select>
-            </div>
+            </div>  --}}
 
             <div class="mb-3">
                 <label class="form-label fw-medium">Area</label>
@@ -53,8 +58,12 @@
     <div class="col-md-4">
         <label class="form-label fw-medium">Total Price of Product</label>
         <input type="number" id="price" name="price"
-               class="form-control" step="0.1" min="0"
-               value="{{ old('price', $shipment->price ?? '') }}" required>
+            class="form-control" step="0.1" min="0"
+            value="{{ old('price', $shipment->price ?? '') }}" required>
+
+        <small id="price_error" class="text-danger d-none">
+            Price must be 0 or greater
+        </small>
     </div>
     <div class="col-md-4">
         <label class="form-label fw-medium">Weight (kg)</label>
@@ -94,135 +103,178 @@
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Locations data (static, no DB)
-    const locations = {
-        "Dhaka": {
-            "Dhanmondi": ["Dhanmondi 1", "Dhanmondi 2", "Dhanmondi 3", "Dhanmondi 4", "Dhanmondi 5", "Dhanmondi 6", "Dhanmondi 7", "Dhanmondi 8", "Dhanmondi 9", "Dhanmondi 10"],
-            "Gulshan": ["Gulshan 1", "Gulshan 2"],
-            "Banani": ["Block A", "Block B", "Block C", "Block D"],
-            "Motijheel": ["Motijheel North", "Motijheel South"],
-            "Mirpur": ["Section 1", "Section 2", "Section 6", "Section 10", "Pallabi", "Kafrul", "Tongi"],
-            "Uttara": ["Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5", "Sector 6", "Sector 7", "Sector 8", "Sector 9", "Sector 10", "Sector 11", "Sector 12", "Sector 13", "Sector 14", "Sector 15", "Sector 16", "Sector 17", "Sector 18", "Sector 19", "Sector 20", "Sector 21", "Sector 22", "Sector 23", "Sector 24"],
-            "Mohammadpur": ["Block A", "Block B", "Block C", "Block D", "Shyamoli"],
-            "Tejgaon": ["Tejgaon I/A", "Tejgaon I/B", "Tejgaon II/A", "Tejgaon II/B", "Tejgaon Industrial Area"],
-            "Khilgaon": [
-                                    "Taltola",
-                                    "Sipahibag",
-                                    "Chowdhury Para)",
-                                    "Meradia",
-                                    "Goran",
-                                    "Tilpapara",
-                                    "Nayabasti",
-                                    "East Khilgaon",
-                                    "West Khilgaon","Bashabo", "Mugda"],
-            "Rampura": ["Rampura North", "Rampura South", "Rampura DOHS"],
-            "Shahbagh": ["Shahbagh Main", "Shahbagh Extension", "Bangla Motor"],
-            "Paltan": ["Paltan Main", "Paltan South", "Paltan North"],
-            "Mohakhali": ["Mohakhali DOHS", "Mohakhali Main", "Mohakhali Residential Area", "Tejgaon Industrial Area"],
-            "Badda": ["Badda East", "Badda West", "Middle Badda", "Merul Badda"],
-            "Uttarkhan": ["Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5"],
-            "Jatrabari": ["North", "South", "Central"],
-            "Kamrangirchar": ["Zone 1", "Zone 2", "Zone 3", "Zone 4"],
-            "Shyamoli": ["Block A", "Block B", "Block C"],
-            "Doyagonj": ["Area 1", "Area 2", "Area 3"],
-            "Mohammadpur Thana": ["Mohammadpur Main", "Shyamoli", "Green Road"],
-            "New Market": ["Kakrail", "Green Road", "Old Elephant Road", "New Elephant Road"],
-            "Mirpur DOHS": ["Block A", "Block B", "Block C"],
-            "Tejgaon Industrial": ["Tejgaon I/A", "Tejgaon I/B", "Tejgaon II/A", "Tejgaon II/B"],
-            "Rampura DOHS": ["Sector 1", "Sector 2", "Sector 3"]
+    document.addEventListener('DOMContentLoaded', function() {
+        // Locations data (static, no DB)
+        const locations = {
+            "Dhaka": [
+                "Dhanmondi",
+                "Gulshan",
+                "Banani",
+                "Motijheel",
+                "Mirpur",
+                "Uttara",
+                "Mohammadpur",
+                "Tejgaon",
+                "Khilgaon",
+                "Rampura",
+                "Shahbagh",
+                "Paltan",
+                "Mohakhali",
+                "Badda",
+                "Uttarkhan",
+                "Jatrabari",
+                "Kamrangirchar",
+                "Shyamoli",
+                "Doyagonj",
+                "New Market"
+            ]
+        };
+
+
+        // Generic helpers
+        function populateSelect(select, options){
+            select.innerHTML = '<option value="">Select</option>';
+            Object.keys(options).forEach(key => select.innerHTML += `<option value="${key}">${key}</option>`);
         }
-    };
 
-
-    // Generic helpers
-    function populateSelect(select, options){
-        select.innerHTML = '<option value="">Select</option>';
-        Object.keys(options).forEach(key => select.innerHTML += `<option value="${key}">${key}</option>`);
-    }
-
-    function populateChild(parent, child, obj){
-        child.innerHTML = '<option value="">Select</option>';
-        if(parent.value && obj[parent.value]){
-            Object.keys(obj[parent.value]).forEach(k => child.innerHTML += `<option value="${k}">${k}</option>`);
+        function populateChild(parent, child, obj){
+            child.innerHTML = '<option value="">Select</option>';
+            if(parent.value && obj[parent.value]){
+                Object.keys(obj[parent.value]).forEach(k => child.innerHTML += `<option value="${k}">${k}</option>`);
+            }
         }
-    }
 
-    function populateGrandchild(parent, child, grandchild, obj){
-        grandchild.innerHTML = '<option value="">Select</option>';
-        if(parent.value && child.value && obj[parent.value][child.value]){
-            obj[parent.value][child.value].forEach(v => grandchild.innerHTML += `<option value="${v}">${v}</option>`);
+        function populateGrandchild(parent, child, grandchild, obj){
+            grandchild.innerHTML = '<option value="">Select</option>';
+            if(parent.value && child.value && obj[parent.value][child.value]){
+                obj[parent.value][child.value].forEach(v => grandchild.innerHTML += `<option value="${v}">${v}</option>`);
+            }
         }
-    }
 
-    function updateBreadcrumb(district, police, area, street, target){
-        const parts = [];
-        if(district.value) parts.push(district.value);
-        if(police.value) parts.push(police.value);
-        if(area.value) parts.push(area.value);
-        if(street.value) parts.push(street.value);
-        target.value = parts.join(' > ');
-    }
+        function populateArea(parent, child, obj){
+            child.innerHTML = '<option value="">Select Area</option>';
 
-    // Dropoff
-    const dropDistrict = document.getElementById('drop_district');
-    const dropPolice = document.getElementById('drop_police');
-    const dropArea = document.getElementById('drop_area');
-    const dropStreet = document.getElementById('drop_street');
-    const dropAddress = document.getElementById('drop_address');
+            if(parent.value && obj[parent.value]){
+                obj[parent.value].forEach(area => {
+                    child.innerHTML += `<option value="${area}">${area}</option>`;
+                });
+            }
+        }
 
-    populateSelect(dropDistrict, locations);
-    dropDistrict.addEventListener('change', ()=> populateChild(dropDistrict, dropPolice, locations));
-    dropPolice.addEventListener('change', ()=> populateGrandchild(dropDistrict, dropPolice, dropArea, locations));
-    [dropDistrict, dropPolice, dropArea, dropStreet].forEach(el=>{
-        el.addEventListener('change', ()=> updateBreadcrumb(dropDistrict, dropPolice, dropArea, dropStreet, dropAddress));
+        function updateBreadcrumb(district, area, street, target){
+            const parts = [];
+            if(district.value) parts.push(district.value);
+            // if(police.value) parts.push(police.value);
+            if(area.value) parts.push(area.value);
+            if(street.value) parts.push(street.value);
+            target.value = parts.join(' > ');
+        }
+
+        // Dropoff
+        const dropDistrict = document.getElementById('drop_district');
+        // const dropPolice = document.getElementById('drop_police');
+        const dropArea = document.getElementById('drop_area');
+        const dropStreet = document.getElementById('drop_street');
+        const dropAddress = document.getElementById('drop_address');
+
+        populateSelect(dropDistrict, locations);
+
+        dropDistrict.addEventListener('change', () => {
+            populateArea(dropDistrict, dropArea, locations);
+        });
+
+        // dropPolice.addEventListener('change', ()=> populateGrandchild(dropDistrict, dropPolice, dropArea, locations));
+        [dropDistrict, /* dropPolice, */ dropArea, dropStreet].forEach(el=>{
+            el.addEventListener('change', ()=> updateBreadcrumb(dropDistrict, /* dropPolice, */ dropArea, dropStreet, dropAddress));
+        });
+
+        // Live Price Calculation
+        const weightInput = document.getElementById('weight');
+        const deliveryFeeDisplay = document.getElementById('delivery_fee');
+        const deliveryFeeInput = document.getElementById('delivery_fee_input');
+
+        let baseFee = {{ auth()->user()->delivery_fee ?? 60 }};
+
+        function calculateDeliveryFee(weight) {
+
+            let fee = baseFee;
+            if(weight > 1){
+                let additionalKg = Math.ceil(weight - 1) * 10;
+                fee += additionalKg;
+            }
+            return fee;
+        }
+
+        // Initialize on page load
+        deliveryFeeDisplay.textContent = `৳ ${calculateDeliveryFee(parseFloat(weightInput.value) || 0)}`;
+        deliveryFeeInput.value = calculateDeliveryFee(parseFloat(weightInput.value) || 0);
+
+        // Update live when weight changes
+        weightInput.addEventListener('input', function() {
+            const weight = parseFloat(this.value) || 0;
+            const fee = calculateDeliveryFee(weight);
+            deliveryFeeDisplay.textContent = `৳ ${fee}`;
+            deliveryFeeInput.value = fee;
+        });
+
     });
-
-    // Live Price Calculation
-    const weightInput = document.getElementById('weight');
-    const deliveryFeeDisplay = document.getElementById('delivery_fee');
-    const deliveryFeeInput = document.getElementById('delivery_fee_input');
-
-    function calculateDeliveryFee(weight) {
-        let fee = 60; // minimum price
-        if(weight > 1){
-            let additionalKg = Math.ceil(weight - 1) * 10;
-            fee += additionalKg;
-        }
-        return fee;
-    }
-
-    // Initialize on page load
-    deliveryFeeDisplay.textContent = `৳ ${calculateDeliveryFee(parseFloat(weightInput.value) || 0)}`;
-    deliveryFeeInput.value = calculateDeliveryFee(parseFloat(weightInput.value) || 0);
-
-    // Update live when weight changes
-    weightInput.addEventListener('input', function() {
-        const weight = parseFloat(this.value) || 0;
-        const fee = calculateDeliveryFee(weight);
-        deliveryFeeDisplay.textContent = `৳ ${fee}`;
-        deliveryFeeInput.value = fee;
-    });
-
-});
 </script>
 
 <script>
-    $(document).on("blur", "input[name='drop_phone']", function () {
+    $(document).on("input", "#drop_phone", function () {
         let phone = $(this).val();
+        let regex = /^01[3-9][0-9]{8}$/;
 
-        if (phone.length > 0) {
-            $.ajax({
-                url: "/get-dropoff-details",
-                type: "GET",
-                data: { drop_phone: phone },
-                success: function (res) {
-                    if (res.success) {
-                        $("input[name='drop_name']").val(res.data.drop_name);
-                        $("input[name='drop_address']").val(res.data.drop_address);
-                    }
-                }
-            });
+        if (regex.test(phone)) {
+            $("#phone_error").addClass("d-none");
+            $(this).removeClass("is-invalid").addClass("is-valid");
+        } else {
+            $("#phone_error").removeClass("d-none");
+            $(this).removeClass("is-valid").addClass("is-invalid");
+        }
+    });
+
+    $("form").on("submit", function (e) {
+        let phone = $("#drop_phone").val();
+        let regex = /^01[3-9][0-9]{8}$/;
+
+        if (!regex.test(phone)) {
+            e.preventDefault();
+            $("#phone_error").removeClass("d-none");
+            $("#drop_phone").addClass("is-invalid");
+        }
+    });
+
+    $("#drop_phone").on("keypress", function (e) {
+        if (e.which < 48 || e.which > 57) {
+            return false;
+        }
+    });
+
+    document.addEventListener("input", function(e) {
+        if (e.target.id === "price") {
+            let value = parseFloat(e.target.value);
+
+            if (!isNaN(value) && value >= 0) {
+                document.getElementById("price_error").classList.add("d-none");
+                e.target.classList.remove("is-invalid");
+                e.target.classList.add("is-valid");
+            } else {
+                document.getElementById("price_error").classList.remove("d-none");
+                e.target.classList.remove("is-valid");
+                e.target.classList.add("is-invalid");
+            }
+        }
+    });
+
+    document.querySelector("form").addEventListener("submit", function(e) {
+        let priceInput = document.getElementById("price");
+        let value = parseFloat(priceInput.value);
+
+        if (isNaN(value) || value < 0) {
+            e.preventDefault();
+            document.getElementById("price_error").classList.remove("d-none");
+            priceInput.classList.add("is-invalid");
         }
     });
 </script>

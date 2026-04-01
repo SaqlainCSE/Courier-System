@@ -113,17 +113,19 @@ class MerchantController extends Controller
             'email' => ['required','email', Rule::unique('users','email')->ignore($merchant->id)],
             'phone' => 'nullable|string|max:50',
             'password' => 'nullable|string|min:6|confirmed',
+            'delivery_fee' => 'required|numeric|min:0',
         ]);
 
-        $merchant->name = $data['name'];
-        $merchant->business_name = $data['business_name'] ?? null;
-        $merchant->business_address = $data['business_address'] ?? null;
-        $merchant->email = $data['email'];
-        $merchant->phone = $data['phone'] ?? null;
+        // Only update fields if provided
+        if (isset($data['name'])) $merchant->name = $data['name'];
+        if (isset($data['business_name'])) $merchant->business_name = $data['business_name'];
+        if (isset($data['business_address'])) $merchant->business_address = $data['business_address'];
+        if (isset($data['email'])) $merchant->email = $data['email'];
+        if (isset($data['phone'])) $merchant->phone = $data['phone'];
+        if (!empty($data['password'])) $merchant->password = Hash::make($data['password']);
 
-        if (!empty($data['password'])) {
-            $merchant->password = Hash::make($data['password']);
-        }
+        // Always update delivery_fee
+        $merchant->delivery_fee = $data['delivery_fee'];
 
         $merchant->save();
 

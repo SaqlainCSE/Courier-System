@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function() {
         Route::post('/shipments/{shipment}/cancel', [ShipmentController::class,'cancel'])->name('shipments.cancel');
         Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
         Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
+
+        Route::get('shipments/export/excel', [ShipmentController::class, 'exportExcel'])->name('shipments.export.excel');
+        Route::get('shipments/export/pdf', [ShipmentController::class, 'exportPdf'])->name('shipments.export.pdf');
     });
 
     // courier

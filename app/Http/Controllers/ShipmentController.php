@@ -6,6 +6,9 @@ use App\Models\Shipment;
 use App\Models\ShipmentStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\ShipmentsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ShipmentController extends Controller
@@ -85,7 +88,7 @@ class ShipmentController extends Controller
     {
         $request->validate([
             'drop_name' => 'required|string|max:255',
-            'drop_phone' => 'required|string|max:20',
+            'drop_phone' => 'required|regex:/^01[3-9][0-9]{8}$/',
             'drop_address' => 'required|string',
             'weight_kg' => 'required|numeric|min:0.1',
             'notes' => 'nullable|string|max:500',
@@ -97,7 +100,7 @@ class ShipmentController extends Controller
         $total_price_of_product = $request->price;
 
         // ---- Cost Breakdown ----
-        $deliveryFee      = 60;
+        $deliveryFee = Auth::user()->delivery_fee ?? 60;
         $codFee           = 0;   // future feature
         $discount         = 0;   // future feature
         $promoDiscount    = 0;   // future feature
@@ -213,7 +216,7 @@ class ShipmentController extends Controller
         // Validation rules (similar to store)
         $request->validate([
             'drop_name'              => 'required|string|max:255',
-            'drop_phone'             => 'required|string|max:20',
+            'drop_phone'             => 'required|regex:/^01[3-9][0-9]{8}$/',
             'drop_address'           => 'required|string',
             'weight_kg'              => 'required|numeric|min:0.1',
             'notes'                  => 'nullable|string|max:500',
@@ -224,7 +227,7 @@ class ShipmentController extends Controller
         $weight = $request->weight_kg;
         $total_price_of_product = $request->price;
 
-        $deliveryFee      = 60;
+        $deliveryFee = Auth::user()->delivery_fee ?? 60;
         $codFee           = 0;
         $discount         = 0;
         $promoDiscount    = 0;
@@ -305,6 +308,40 @@ class ShipmentController extends Controller
                                     ->get();
 
         return view('shipments.print-multi', compact('shipments'));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->only(['q','status','start_date','end_date']);
+        $query = Shipment::where('user_id', Auth::id());
+
+        if (!empty($filters['q'])) {
+            $search = $filters['q'];
+            $query->where(function($q) use ($search) {
+                $q->where('tracking_number', 'like', "%{$search}%")
+                ->orWhere('pickup_address', 'like', "%{$search}%")
+                ->orWhere('drop_address', 'like', "%{$search}%")
+                ->orWhere('pickup_name', 'like', "%{$search}%")
+                ->orWhere('drop_name', 'like', "%{$search}%")
+                ->orWhere('pickup_phone', 'like', "%{$search}%")
+                ->orWhere('drop_phone', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($filters['status'])) $query->where('status', $filters['status']);
+        if (!empty($filters['start_date'])) $query->whereDate('created_at', '>=', $filters['start_date']);
+        if (!empty($filters['end_date'])) $query->whereDate('created_at', '<=', $filters['end_date']);
+
+        $shipments = $query->latest()->get();
+
+        $pdf = Pdf::loadView('shipments.exports.pdf', compact('shipments'));
+        return $pdf->download('shipments_' . date('Y-m-d') . '.pdf');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $filters = $request->only(['q','status','start_date','end_date']);
+        return Excel::download(new ShipmentsExport($filters), 'shipments_' . date('Y-m-d') . '.xlsx');
     }
 
 }
