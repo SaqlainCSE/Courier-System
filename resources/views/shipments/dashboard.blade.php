@@ -156,6 +156,7 @@
                             <th>Drop Address</th>
                             <th>Weight</th>
                             <th>Status</th>
+                            <th>Delivery Cost</th>
                             <th>Amount</th>
                             <th>Booked At</th>
                             <th class="text-end">Actions</th>
@@ -191,6 +192,7 @@
                                     {{ ucfirst(str_replace('_',' ', $shipment->status)) }}
                                 </span>
                             </td>
+                            <td>৳ {{ number_format($shipment->additional_charge + $shipment->user->delivery_fee ?? 60, 2) }}</td>
                             <td class="fw-bold text-success">৳ {{ number_format($shipment->price ) }}</td>
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
