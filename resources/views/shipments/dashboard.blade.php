@@ -47,14 +47,41 @@
             </div>
         @endforeach
 
-        <!-- Total Cost -->
+        <!-- Entry Balance -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                <i class="fas fa-inbox fa-2x text-info mb-2"></i>
+                <h6 class="fw-bold text-muted">Entry Balance</h6>
+                <h4 class="fw-bold text-info">৳ {{ number_format($entryBalance, 2) }}</h4>
+            </div>
+        </div>
+
+        <!-- COD (Cash On Delivery) Balance -->
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
                 <i class="fas fa-coins fa-2x text-warning mb-2"></i>
-                <h6 class="fw-bold text-muted">Total Balance</h6>
-                <h4 class="fw-bold text-success">৳ {{ number_format($balanceCost, 2) }}</h4>
+                <h6 class="fw-bold text-muted">COD Balance</h6>
+                <h4 class="fw-bold text-warning">৳ {{ number_format($codBalance, 2) }}</h4>
             </div>
         </div>
+
+        <!-- Paid Amount -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                <i class="fas fa-handshake fa-2x text-success mb-2"></i>
+                <h6 class="fw-bold text-muted">Paid Amount</h6>
+                <h4 class="fw-bold text-success">৳ {{ number_format($paidAmount, 2) }}</h4>
+            </div>
+        </div>
+
+        <!-- Remaining Balance -->
+        {{--  <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                <i class="fas fa-balance-scale fa-2x text-danger mb-2"></i>
+                <h6 class="fw-bold text-muted">New COD</h6>
+                <h4 class="fw-bold text-danger">৳ {{ number_format($newCOD, 2) }}</h4>
+            </div>
+        </div>  --}}
     </div>
 
     <!-- Monthly Wise Cost -->

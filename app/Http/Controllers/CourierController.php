@@ -44,12 +44,12 @@ class CourierController extends Controller
 
         // === Dashboard Stats ===
         $todayEarnings = $courier->assignedShipments()
-                                            ->whereIn('status', ['delivered', 'partially_delivered'])
+                                            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
                                             ->whereDate('updated_at', today())
                                             ->count() * $courier->commission_rate;
 
         $lastMonthEarnings = $courier->assignedShipments()
-                                                    ->whereIn('status', ['delivered', 'partially_delivered'])
+                                                    ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
                                                     ->whereBetween('updated_at', [now()->subMonth()->startOfDay(), now()])
                                                     ->count() * $courier->commission_rate;
 
@@ -109,15 +109,27 @@ class CourierController extends Controller
         // Handle partial delivery
         if ($data['status'] === 'partially_delivered') {
             // Update with received amount
-            $shipment->price = $data['partial_price'];
+            $shipment->partial_price = $data['partial_price'];
         }
 
-        // Handle delivered OR partially delivered → recalc balance_cost
-        if (in_array($data['status'], ['delivered', 'partially_delivered'])) {
+        // --- Handle Delivered or Partially Delivered: calculate balance cost ---
+        if (in_array($data['status'], ['delivered'])) {
             $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
+            $totalPriceOfProduct = $shipment->price; // may be full or partial
 
-            $totalPriceOfProduct = $shipment->price; // final price (full or partial)
+            // Balance cost = product price - delivery charge
+            if ($totalPriceOfProduct == 0) {
+                $shipment->balance_cost = $costOfDeliveryAmount;
+            } else {
+                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
+            }
+        }
 
+        if (in_array($data['status'], ['partially_delivered'])) {
+            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
+            $totalPriceOfProduct = $shipment->partial_price; // may be full or partial
+
+            // Balance cost = product price - delivery charge
             if ($totalPriceOfProduct == 0) {
                 $shipment->balance_cost = $costOfDeliveryAmount;
             } else {

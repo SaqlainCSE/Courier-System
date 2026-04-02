@@ -78,9 +78,41 @@
                             <h5 class="fw-bold text-warning">{{ $summary['partially_delivered'] ?? 0 }}</h5>
                         </div>
                         <div class="col-6 col-md-3">
-                            <div class="small text-muted">Balance</div>
-                            <h5 class="fw-bold text-primary">৳{{ number_format($summary['balance'] ?? 0, 2) }}</h5>
+                            <div class="small text-muted">Cancelled</div>
+                            <h5 class="fw-bold text-danger">{{ $summary['cancelled'] ?? 0 }}</h5>
                         </div>
+                    </div>
+
+                    {{-- Balance Cards --}}
+                    <div class="row g-2 mb-3">
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center p-2">
+                                <i class="fas fa-inbox fa-lg text-info mb-1"></i>
+                                <div class="small text-muted">Entry Balance</div>
+                                <h6 class="fw-bold text-info">৳{{ number_format($summary['entry_balance'] ?? 0, 2) }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center p-2">
+                                <i class="fas fa-coins fa-lg text-warning mb-1"></i>
+                                <div class="small text-muted">COD Balance</div>
+                                <h6 class="fw-bold text-warning">৳{{ number_format($summary['cod_balance'] ?? 0, 2) }}</h6>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center p-2">
+                                <i class="fas fa-handshake fa-lg text-success mb-1"></i>
+                                <div class="small text-muted">Paid Amount</div>
+                                <h6 class="fw-bold text-success">৳{{ number_format($summary['paid_amount'] ?? 0, 2) }}</h6>
+                            </div>
+                        </div>
+                        {{--  <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center p-2">
+                                <i class="fas fa-balance-scale fa-lg text-danger mb-1"></i>
+                                <div class="small text-muted">New COD</div>
+                                <h6 class="fw-bold text-danger">৳{{ number_format($summary['new_cod'] ?? 0, 2) }}</h6>
+                            </div>
+                        </div>  --}}
                     </div>
 
                     {{-- Recent Shipments --}}

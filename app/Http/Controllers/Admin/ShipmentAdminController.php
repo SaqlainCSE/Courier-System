@@ -155,13 +155,25 @@ class ShipmentAdminController extends Controller
 
         // --- Handle Partial Delivery ---
         if ($data['status'] === 'partially_delivered') {
-            $shipment->price = $data['partial_price']; // Update shipment price with received amount
+            $shipment->partial_price = $data['partial_price']; // Update shipment price with received amount
         }
 
         // --- Handle Delivered or Partially Delivered: calculate balance cost ---
-        if (in_array($data['status'], ['delivered', 'partially_delivered'])) {
+        if (in_array($data['status'], ['delivered'])) {
             $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
             $totalPriceOfProduct = $shipment->price; // may be full or partial
+
+            // Balance cost = product price - delivery charge
+            if ($totalPriceOfProduct == 0) {
+                $shipment->balance_cost = $costOfDeliveryAmount;
+            } else {
+                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
+            }
+        }
+
+        if (in_array($data['status'], ['partially_delivered'])) {
+            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
+            $totalPriceOfProduct = $shipment->partial_price; // may be full or partial
 
             // Balance cost = product price - delivery charge
             if ($totalPriceOfProduct == 0) {

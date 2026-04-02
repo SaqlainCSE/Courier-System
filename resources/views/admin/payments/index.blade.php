@@ -53,7 +53,8 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-dark">
                                     <tr class="text-uppercase small text-center">
-                                        <th class="text-start ps-3">Tracking #</th>
+                                        <th class="text-start ps-3">Tracking</th>
+                                        <th class="text-center">Status</th>
                                         <th>Balance (৳)</th>
                                         <th>Action</th>
                                     </tr>
@@ -69,6 +70,24 @@
                                         <tr id="shipment-{{ $shipment->id }}"
                                             class="{{ $shipment->balance_cost > 0 ? 'table-warning' : '' }}">
                                             <td class="ps-3">{{ $shipment->tracking_number }}</td>
+                                            <td class="text-center">
+                                                @php
+                                                    $statusColors = [
+                                                        'pending' => 'secondary',
+                                                        'assigned' => 'info',
+                                                        'picked' => 'primary',
+                                                        'in_transit' => 'warning',
+                                                        'delivered' => 'success',
+                                                        'partially_delivered' => 'dark',
+                                                        'cancelled' => 'danger',
+                                                        'hold' => 'secondary',
+                                                    ];
+                                                @endphp
+
+                                                <span class="badge bg-{{ $statusColors[$shipment->status] ?? 'secondary' }} px-3 py-2 rounded-pill">
+                                                    {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
+                                                </span>
+                                            </td>
                                             <td class="balance text-center">{{ number_format($shipment->balance_cost, 2) }}</td>
                                             <td class="text-center">
                                                 @if($shipment->balance_cost > 0)
@@ -231,5 +250,16 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<script>
+document.getElementById('paymentForm').addEventListener('submit', function (e) {
+
+    setTimeout(() => {
+        this.reset();
+    }, 200);
+
+});
+</script>
+
 @endpush
 @endsection

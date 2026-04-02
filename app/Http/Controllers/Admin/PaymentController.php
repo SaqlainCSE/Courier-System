@@ -11,21 +11,28 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::whereHas('shipments');
+        $query = User::whereHas('shipments', function($q) {
+            $q->where('status', '=', 'delivered')
+              ->orWhere('status', '=', 'partially_delivered');
+        });
 
-        // Search filter
         if ($search = $request->input('search')) {
             $query->where(function($q) use ($search) {
                 $q->where('business_name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
                 ->orWhereHas('shipments', function($q2) use ($search) {
-                    $q2->where('tracking_number', 'like', "%{$search}%");
+                    $q2->where('tracking_number', 'like', "%{$search}%")
+                    ->where('status', '=', 'delivered')
+                    ->orWhere('status', '=', 'partially_delivered');
                 });
             });
         }
 
-        $merchants = $query->with(['shipments'])->paginate(20);
+        $merchants = $query->with(['shipments' => function($q) {
+            $q->where('status', '=', 'delivered')
+              ->orWhere('status', '=', 'partially_delivered');
+        }])->paginate(20);
 
         return view('admin.payments.index', compact('merchants'));
     }
@@ -46,6 +53,15 @@ class PaymentController extends Controller
         }
 
         $shipment->save();
+
+        // 📝 Create Payment record to track Paid Amount
+        \App\Models\Payment::create([
+            'shipment_id' => $shipment->id,
+            'amount' => $request->amount,
+            'method' => 'cash',
+            'status' => 'paid',
+            'meta' => json_encode(['adjusted_at' => now(), 'adjusted_by' => 'admin']),
+        ]);
 
         return response()->json([
             'success' => true,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Shipment;
 use App\Models\ShipmentStatusLog;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -63,9 +64,30 @@ class ShipmentController extends Controller
             'partially_delivered' => Shipment::where('user_id', $user->id)->where('status', 'partially_delivered')->count(),
         ];
 
-        // Balance cost for delivered + partially delivered
-        $balanceCost = Shipment::where('user_id', $user->id)->whereIn('status', ['delivered','partially_delivered'])
+        // 📊 BALANCE CALCULATION SYSTEM
+        // Entry Balance: Sum of all entry prices (initial product price)
+        $entryBalance = Shipment::where('user_id', $user->id)->sum('price');
+
+        // COD (Cash On Delivery):
+        // = balance_cost for delivered & partially_delivered
+        //   - cost_of_delivery_amount for cancelled
+        $codBalance = Shipment::where('user_id', $user->id)
+            ->whereIn('status', ['delivered', 'partially_delivered'])
             ->sum('balance_cost');
+
+        // Subtract cost_of_delivery_amount for cancelled shipments
+        $cancelledDeliveryCost = Shipment::where('user_id', $user->id)
+            ->where('status', 'cancelled')
+            ->sum('cost_of_delivery_amount');
+        $codBalance = $codBalance - $cancelledDeliveryCost;
+
+        // Paid Amount: Sum of all payments with 'paid' status
+        $paidAmount = Payment::whereHas('shipment', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->where('status', 'paid')->sum('amount');
+
+        // New COD: COD Balance - Paid Amount
+        $newCOD = $codBalance - $paidAmount;
 
         // Monthly cost breakdown
         $monthlyCosts = Shipment::where('user_id', $user->id)
@@ -75,7 +97,7 @@ class ShipmentController extends Controller
             ->orderBy('month', 'desc')
             ->get();
 
-        return view('shipments.dashboard', compact('shipments', 'summary', 'balanceCost', 'monthlyCosts'))
+        return view('shipments.dashboard', compact('shipments', 'summary', 'entryBalance', 'codBalance', 'paidAmount', 'newCOD', 'monthlyCosts'))
             ->with('filters', $request->only(['q','status','start_date','end_date']));
     }
 
@@ -267,25 +289,25 @@ class ShipmentController extends Controller
     // }
 
     public function getDropoffDetails(Request $request)
-{
-    $phone = $request->get('drop_phone');
-    $shipment = Shipment::where('drop_phone', $phone)->latest()->first();
+    {
+        $phone = $request->get('drop_phone');
+        $shipment = Shipment::where('drop_phone', $phone)->latest()->first();
 
-    if ($shipment) {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'drop_name' => $shipment->drop_name,
-                'drop_address' => $shipment->drop_address,
-                'drop_district' => $shipment->drop_district,
-                'drop_area' => $shipment->drop_area,
-                'drop_street' => $shipment->drop_street,
-            ]
-        ]);
+        if ($shipment) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'drop_name' => $shipment->drop_name,
+                    'drop_address' => $shipment->drop_address,
+                    'drop_district' => $shipment->drop_district,
+                    'drop_area' => $shipment->drop_area,
+                    'drop_street' => $shipment->drop_street,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false]);
     }
-
-    return response()->json(['success' => false]);
-}
 
     public function print(Shipment $shipment)
     {
