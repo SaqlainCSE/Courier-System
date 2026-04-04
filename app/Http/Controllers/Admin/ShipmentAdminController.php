@@ -202,7 +202,7 @@ class ShipmentAdminController extends Controller
     public function bulkAssignPage()
     {
         $shipments = Shipment::where('status', 'pending')
-            ->whereDate('created_at', now()->toDateString())
+            // ->whereDate('created_at', now()->toDateString())
             ->with(['customer', 'courier.user'])
             ->latest()
             ->get();
