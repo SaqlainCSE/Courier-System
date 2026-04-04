@@ -75,6 +75,8 @@ Route::middleware('auth')->group(function() {
         Route::get('/shipments/{shipment}', [ShipmentAdminController::class,'show'])->name('admin.shipments.show');
         Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class,'assignCourier'])->name('admin.shipments.assign');
         Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class,'updateStatus'])->name('admin.shipments.updateStatus');
+        Route::get('/shipments/bulk/assign', [ShipmentAdminController::class,'bulkAssignPage'])->name('admin.shipments.bulk.assign');
+        Route::post('/shipments/bulk/store', [ShipmentAdminController::class,'bulkAssign'])->name('admin.shipments.bulk.store');
 
         // Merchants (management)
         Route::resource('merchants', MerchantController::class, ['as' => 'admin']);

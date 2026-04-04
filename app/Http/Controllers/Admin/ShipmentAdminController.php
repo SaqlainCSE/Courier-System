@@ -198,4 +198,56 @@ class ShipmentAdminController extends Controller
         return back()->with('success', 'Shipment status updated successfully.');
     }
 
+    // Bulk Assign Page - Show today's pending shipments
+    public function bulkAssignPage()
+    {
+        $shipments = Shipment::where('status', 'pending')
+            ->whereDate('created_at', now()->toDateString())
+            ->with(['customer', 'courier.user'])
+            ->latest()
+            ->get();
+
+        $couriers = Courier::with('user')->where('status', 'available')->get();
+
+        return view('admin.shipments.bulk-assign', compact('shipments', 'couriers'));
+    }
+
+    // Handle Bulk Assignment
+    public function bulkAssign(Request $request)
+    {
+        $data = $request->validate([
+            'courier_id' => 'required|exists:couriers,id',
+            'shipment_ids' => 'required|array|min:1',
+            'shipment_ids.*' => 'exists:shipments,id'
+        ]);
+
+        $courierId = $data['courier_id'];
+        $shipmentIds = $data['shipment_ids'];
+        $courier = Courier::find($courierId);
+
+        // Assign all selected shipments to the courier
+        foreach ($shipmentIds as $shipmentId) {
+            $shipment = Shipment::find($shipmentId);
+
+            $shipment->update([
+                'courier_id' => $courierId,
+                'status' => 'assigned'
+            ]);
+
+            // Log the assignment
+            ShipmentStatusLog::create([
+                'shipment_id' => $shipment->id,
+                'user_id' => Auth::id(),
+                'status' => 'assigned',
+                'changed_by' => Auth::id(),
+                'note' => 'Assigned to delivery man (' . $courier->user->name . ' - ' . $courier->user->phone . ') via bulk assign.'
+            ]);
+        }
+
+        // Update courier status
+        $courier->update(['status' => 'available']);
+
+        return back()->with('success', count($shipmentIds) . ' shipment(s) assigned successfully to ' . $courier->user->name);
+    }
+
 }

@@ -105,6 +105,7 @@
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">Reports</a>
                     <a href="{{ route('admin.reports.export', request()->all()) }}" class="btn btn-sm btn-primary">Export CSV</a>
                     <a href="{{ route('admin.shipments.print.all') }}" target="_blank" class="btn btn-sm btn-success">Print</a>
+                    <a href="{{ route('admin.shipments.bulk.assign') }}" class="btn btn-sm btn-warning"><i class="fas fa-user-tie me-1"></i> Today Assign</a>
                 </div>
             </form>
         </div>
