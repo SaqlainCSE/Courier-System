@@ -13,14 +13,16 @@ class ShipmentAdminController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Shipment::query()->with(['courier.user', 'customer']);
+        $baseQuery = Shipment::query();
 
-        // Period filter from summary cards
+        // ================= FILTER APPLY =================
+        $query = (clone $baseQuery)->with(['courier.user', 'customer']);
+
+        // Period filter
         if ($request->filled('period')) {
-            $period = $request->period;
-            switch ($period) {
+            switch ($request->period) {
                 case 'today':
-                    $query->whereDate('created_at', now()->toDateString());
+                    $query->whereDate('created_at', today());
                     break;
                 case 'this_week':
                     $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
@@ -31,14 +33,10 @@ class ShipmentAdminController extends Controller
                 case 'this_year':
                     $query->whereYear('created_at', now()->year);
                     break;
-                case 'total':
-                default:
-                    // no filter, show all
-                    break;
             }
         }
 
-        // Other filters (search, status, courier, date range)
+        // Search
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sub) use ($q) {
@@ -66,25 +64,28 @@ class ShipmentAdminController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Fetch data
+        // ================= DATA =================
         $shipments = $query->latest()->paginate(20)->withQueryString();
         $couriers = Courier::with('user')->get();
 
-        // Dashboard summary
+        // ================= SUMMARY (OPTIMIZED) =================
+        $summaryQuery = (clone $baseQuery);
+
         $summary = [
-            'pending' => Shipment::where('status', 'pending')->count(),
-            'assigned' => Shipment::where('status', 'assigned')->count(),
-            'picked' => Shipment::where('status', 'picked')->count(),
-            'in_transit' => Shipment::where('status', 'in_transit')->count(),
-            'delivered' => Shipment::where('status', 'delivered')->count(),
-            'hold' => Shipment::where('status', 'hold')->count(),
-            'partially_delivered' => Shipment::where('status', 'partially_delivered')->count(),
-            'cancelled' => Shipment::where('status', 'cancelled')->count(),
-            'total' => Shipment::count(),
-            'today' => Shipment::whereDate('created_at', now()->toDateString())->count(),
-            'this_week' => Shipment::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'this_month' => Shipment::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
-            'this_year' => Shipment::whereYear('created_at', now()->year)->count(),
+            'pending' => (clone $summaryQuery)->where('status', 'pending')->count(),
+            'assigned' => (clone $summaryQuery)->where('status', 'assigned')->count(),
+            'picked' => (clone $summaryQuery)->where('status', 'picked')->count(),
+            'in_transit' => (clone $summaryQuery)->where('status', 'in_transit')->count(),
+            'delivered' => (clone $summaryQuery)->where('status', 'delivered')->count(),
+            'hold' => (clone $summaryQuery)->where('status', 'hold')->count(),
+            'partially_delivered' => (clone $summaryQuery)->where('status', 'partially_delivered')->count(),
+            'cancelled' => (clone $summaryQuery)->where('status', 'cancelled')->count(),
+
+            'total' => (clone $summaryQuery)->count(),
+            'today' => (clone $summaryQuery)->whereDate('created_at', today())->count(),
+            'this_week' => (clone $summaryQuery)->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'this_month' => (clone $summaryQuery)->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+            'this_year' => (clone $summaryQuery)->whereYear('created_at', now()->year)->count(),
         ];
 
         return view('admin.shipments.index', compact('shipments', 'couriers', 'summary'));
