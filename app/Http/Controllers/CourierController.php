@@ -45,12 +45,12 @@ class CourierController extends Controller
         // === Dashboard Stats ===
         $todayEarnings = $courier->assignedShipments()
                                             ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
-                                            ->whereDate('updated_at', today())
+                                            ->whereDate('delivered_at', today())
                                             ->count() * $courier->commission_rate;
 
         $lastMonthEarnings = $courier->assignedShipments()
                                                     ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
-                                                    ->whereBetween('updated_at', [now()->subMonth()->startOfDay(), now()])
+                                                    ->whereBetween('delivered_at', [now()->subMonth()->startOfDay(), now()])
                                                     ->count() * $courier->commission_rate;
 
 
@@ -180,7 +180,7 @@ class CourierController extends Controller
         $courier = Auth::user()->courierProfile;
         $history = $courier->assignedShipments()
             ->where('status','delivered')
-            ->orderBy('updated_at','desc')
+            ->orderBy('delivered_at','desc')
             ->get();
 
         return view('courier.history', compact('history'));

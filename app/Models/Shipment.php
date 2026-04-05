@@ -58,7 +58,7 @@ class Shipment extends Model
     {
         static::updating(function ($shipment) {
             if (
-                in_array($shipment->status, ['delivered', 'partially_delivered']) &&
+                in_array($shipment->status, ['delivered', 'partially_delivered', 'cancelled']) &&
                 is_null($shipment->delivered_at)
             ) {
                 $shipment->delivered_at = now();
