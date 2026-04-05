@@ -45,6 +45,10 @@
                         <div class="small text-muted">Delivery Fee</div>
                         <div class="fw-semibold">৳{{ number_format($merchant->delivery_fee, 2) }}</div>
                     </div>
+                    <div class="mb-3">
+                        <div class="small text-muted">Business Address</div>
+                        <div class="fw-semibold text-muted">{{ $merchant->business_address ?: '—' }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,12 +60,6 @@
                     <i class="fas fa-briefcase me-2"></i>Business Overview
                 </div>
                 <div class="card-body">
-
-                    {{-- Address --}}
-                    <div class="mb-3">
-                        <div class="small text-muted">Business Address</div>
-                        <div class="fw-semibold text-muted">{{ $merchant->business_address ?: '—' }}</div>
-                    </div>
 
                     {{-- Stats --}}
                     <div class="row text-center mb-3">
@@ -119,7 +117,7 @@
                     <h6 class="fw-semibold mb-3"><i class="fas fa-truck me-2"></i>Recent Shipments</h6>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover align-middle mb-0">
-                            <thead class="table-dark d-none d-md-table-header-group">
+                            <thead class="table-dark d-md-table-header-group">
                                 <tr>
                                     <th>Tracking</th>
                                     <th>Status</th>

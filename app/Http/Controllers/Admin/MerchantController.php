@@ -81,31 +81,25 @@ class MerchantController extends Controller
 
         $shipments = $merchant->shipments()->latest()->paginate(20);
 
-        // 📊 BALANCE CALCULATION SYSTEM
-        // Entry Balance: Sum of all entry prices
+        // ================= ENTRY BALANCE =================
         $entryBalance = $merchant->shipments()->sum('price');
 
-        // COD (Cash On Delivery):
-        // = balance_cost for delivered & partially_delivered
-        //   - cost_of_delivery_amount for cancelled
+        // ================= COD BALANCE =================
         $codBalance = $merchant->shipments()
             ->whereIn('status', ['delivered', 'partially_delivered'])
             ->sum('balance_cost');
 
-        // Subtract cost_of_delivery_amount for cancelled shipments
-        $cancelledDeliveryCost = $merchant->shipments()
-            ->where('status', 'cancelled')
-            ->sum('cost_of_delivery_amount');
-        $codBalance = $codBalance - $cancelledDeliveryCost;
-
-        // Paid Amount: Sum of all payments with 'paid' status
+        // ================= PAID AMOUNT =================
         $paidAmount = Payment::whereHas('shipment', function($q) use ($merchant) {
             $q->where('user_id', $merchant->id);
-        })->where('status', 'paid')->sum('amount');
+        })
+        ->where('status', 'paid')
+        ->sum('amount');
 
-        // New COD: COD Balance - Paid Amount
+        // ================= FINAL DUE =================
         $newCOD = $codBalance - $paidAmount;
 
+        // ================= SUMMARY =================
         $summary = [
             'total_shipments' => $merchant->shipments()->count(),
             'delivered' => $merchant->shipments()->where('status','delivered')->count(),
@@ -116,13 +110,19 @@ class MerchantController extends Controller
             'assigned' => $merchant->shipments()->where('status','assigned')->count(),
             'picked' => $merchant->shipments()->where('status','picked')->count(),
             'pending' => $merchant->shipments()->where('status','pending')->count(),
+
+            // 💰 balances
             'entry_balance' => $entryBalance,
             'cod_balance' => $codBalance,
             'paid_amount' => $paidAmount,
             'new_cod' => $newCOD,
         ];
 
-        return view('admin.merchants.show', compact('merchant','shipments','summary'));
+        return view('admin.merchants.show', compact(
+            'merchant',
+            'shipments',
+            'summary'
+        ));
     }
 
     public function edit(User $merchant)
