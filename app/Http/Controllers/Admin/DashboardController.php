@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
 use App\Models\Courier;
+use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -16,16 +18,33 @@ class DashboardController extends Controller
         $last7Earnings = Shipment::where('created_at', '>=', now()->subDays(7))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
         $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
         $last365Earnings = Shipment::where('created_at', '>=', now()->subDays(365))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
-        $averageShipmentPrice = Shipment::whereIn('status',['delivered', 'partially_delivered'])->avg('price');
-        // $pendingShipments = Shipment::where('status', 'pending')->count();
-        // $deliveredShipments = Shipment::where('status', 'delivered')->count();
-        // $holdShipments = Shipment::where('status', 'hold')->count();
+
+        $TodayAllMarchantCODCollected = Shipment::whereDate('created_at', today())->whereIn('status', ['delivered', 'partially_delivered'])
+                                                ->select(DB::raw("
+                                                    SUM(
+                                                        CASE
+                                                            WHEN status = 'delivered' THEN price
+                                                            WHEN status = 'partially_delivered' THEN partial_price
+                                                            ELSE 0
+                                                        END
+                                                    ) as total
+                                                "))
+                                                ->value('total');
+
+        $todayMarchantPaidAmount = Payment::whereDate('created_at', today())->whereIn('status',['paid'])->sum('amount');
+        $todayMarchantUnpaidAmount = Payment::whereDate('created_at', today())->whereNotIn('status', ['paid'])->sum('amount');
+        $todayPartialAmount = Shipment::whereDate('created_at', today())->whereIn('status',['partially_delivered'])->sum('partial_price');
+
+        // $averageShipmentPrice = Shipment::whereIn('status',['delivered', 'partially_delivered'])->avg('price');
+        $pendingShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['pending'])->count();
+        $deliveredShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['delivered'])->count();
+        $holdShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['hold'])->count();
         // $pickedShipments = Shipment::where('status', 'picked')->count();
-        // $inTransitShipments = Shipment::where('status', 'in_transit')->count();
-        // $partiallyDeliveredShipments = Shipment::where('status', 'partially_delivered')->count();
-        // $cancelledShipments = Shipment::where('status', 'cancelled')->count();
-        $cancelledAmount = Shipment::where('status', 'cancelled')->sum('price');
-        $pendingValue = Shipment::where('status', 'pending')->sum('price');
+        $inTransitShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['in_transit'])->count();
+        $partiallyDeliveredShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['partially_delivered'])->count();
+        $cancelledShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['cancelled'])->count();
+        // $cancelledAmount = Shipment::where('status', 'cancelled')->sum('price');
+        // $pendingValue = Shipment::where('status', 'pending')->sum('price');
         $activeCouriers = Courier::count();
 
         $topCouriers = Courier::with('user')
@@ -50,16 +69,20 @@ class DashboardController extends Controller
             'last7Earnings',
             'last30Earnings',
             'last365Earnings',
-            'averageShipmentPrice',
-            // 'pendingShipments',
-            // 'deliveredShipments',
-            // 'holdShipments',
+            'TodayAllMarchantCODCollected',
+            'todayMarchantPaidAmount',
+            'todayMarchantUnpaidAmount',
+            'todayPartialAmount',
+            // 'averageShipmentPrice',
+            'pendingShipments',
+            'deliveredShipments',
+            'holdShipments',
             // 'pickedShipments',
-            // 'inTransitShipments',
-            // 'partiallyDeliveredShipments',
-            // 'cancelledShipments',
-            'cancelledAmount',
-            'pendingValue',
+            'inTransitShipments',
+            'partiallyDeliveredShipments',
+            'cancelledShipments',
+            // 'cancelledAmount',
+            // 'pendingValue',
             'activeCouriers',
             'topCouriers',
             'recentShipments',

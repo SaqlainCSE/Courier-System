@@ -37,26 +37,30 @@
         {{-- Status Cards --}}
         @foreach($cards as $key => $card)
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="{{ route('admin.shipments.index', array_merge(request()->all(), ['status' => $key])) }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100">
-                        <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
-                        <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
-                        <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
-                    </div>
-                </a>
+                <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100 shipment-card"
+                    data-type="status"
+                    data-value="{{ $key }}"
+                    style="cursor:pointer;">
+
+                    <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
+                    <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
+                    <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
+                </div>
             </div>
         @endforeach
 
         {{-- Period Cards --}}
         @foreach($periods as $key => $card)
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <a href="{{ route('admin.shipments.index', array_merge(request()->all(), ['period' => $key])) }}" class="text-decoration-none">
-                    <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100">
-                        <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
-                        <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
-                        <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
-                    </div>
-                </a>
+                <div class="card border-0 shadow-sm rounded-4 text-center p-3 hover-card h-100 shipment-card"
+                    data-type="period"
+                    data-value="{{ $key }}"
+                    style="cursor:pointer;">
+
+                    <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
+                    <h6 class="fw-bold small text-muted mb-1">{{ $card['label'] }}</h6>
+                    <h5 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h5>
+                </div>
             </div>
         @endforeach
     </div>
@@ -187,38 +191,95 @@
             </div>
         </div>
     </div>
+
+    <!-- Shipment Modal -->
+    <div class="modal fade" id="shipmentModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtered Shipments</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" id="modalContent">
+                    <div class="text-center py-5">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+@push('scripts')
+    <script>
+    document.querySelectorAll('.shipment-card').forEach(card => {
+        card.addEventListener('click', function () {
+            let type = this.dataset.type;
+            let value = this.dataset.value;
+
+            let url = "{{ route('admin.shipments.index') }}?" + type + "=" + value;
+
+            // show modal
+            let modal = new bootstrap.Modal(document.getElementById('shipmentModal'));
+            modal.show();
+
+            // loading state
+            document.getElementById('modalContent').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            `;
+
+            // fetch data
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    // শুধু table অংশ extract করতে পারো (optional)
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    let table = doc.querySelector('.table-responsive');
+
+                    document.getElementById('modalContent').innerHTML = table
+                        ? table.outerHTML
+                        : html;
+                });
+        });
+    });
+    </script>
+@endpush
+
 @push('styles')
-<style>
-.bg-gradient {
-    background: linear-gradient(45deg, #4facfe, #00f2fe);
-}
-.hover-card {
-    transition: transform 0.3s ease;
-}
-.hover-card:hover {
-    transform: translateY(-5px);
-}
-.table-responsive {
-    overflow-x: auto;
-}
-@media (max-width: 576px) {
-    h1 {
-        font-size: 1.5rem;
+    <style>
+    .bg-gradient {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
     }
-    .hover-card h5 {
-        font-size: 1rem;
+    .hover-card {
+        transition: transform 0.3s ease;
     }
-    .card-header .btn {
-        font-size: 0.8rem;
-        padding: 4px 8px;
+    .hover-card:hover {
+        transform: translateY(-5px);
     }
-    .table {
-        font-size: 0.85rem;
+    .table-responsive {
+        overflow-x: auto;
     }
-}
-</style>
+    @media (max-width: 576px) {
+        h1 {
+            font-size: 1.5rem;
+        }
+        .hover-card h5 {
+            font-size: 1rem;
+        }
+        .card-header .btn {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+        .table {
+            font-size: 0.85rem;
+        }
+    }
+    </style>
 @endpush
 
 @push('scripts')
