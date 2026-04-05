@@ -136,7 +136,7 @@ class CourierController extends Controller
             'user_id' => Auth::id(),
             'status' => $data['status'],
             'changed_by' => Auth::id(),
-            'note' => $data['note'] ?? 'Updated by courier'
+            'note' => $data['note'] ?? 'Updated by delivery person'
         ]);
 
         // ================= COURIER STATUS =================
