@@ -26,7 +26,7 @@ class SoftwareManagementController extends Controller
     {
         $results = Shipment::select('status', DB::raw('COUNT(*) as count'))
             ->whereIn('status', self::EARNING_STATUSES)
-            ->whereBetween('created_at', [$from, $to])
+            ->whereBetween('updated_at', [$from, $to])
             ->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
