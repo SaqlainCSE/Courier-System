@@ -10,6 +10,29 @@
             </h4>
         </div>
 
+        {{-- Lifetime Earnings Banner --}}
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <div class="card p-3 shadow-sm border-0 bg-success text-white">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-infinity fa-2x opacity-75"></i>
+                        </div>
+                        <div class="col">
+                            <div class="small opacity-75">Lifetime Total Earnings</div>
+                            <div class="h4 fw-bold mb-0">৳ {{ number_format($earnings['lifetime']['total_earning'], 2) }}</div>
+                            <div class="small opacity-75 mt-1">
+                                {{ number_format($earnings['lifetime']['total_count']) }} total deliveries &nbsp;·&nbsp;
+                                Delivered: {{ number_format($earnings['lifetime']['delivered']) }} &nbsp;·&nbsp;
+                                Cancelled: {{ number_format($earnings['lifetime']['cancelled']) }} &nbsp;·&nbsp;
+                                Partial: {{ number_format($earnings['lifetime']['partially_delivered']) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Earnings Summary Cards --}}
         <div class="row g-3 mb-4">
             @php
@@ -53,14 +76,20 @@
                     <i class="fas fa-calendar-alt me-1"></i> Last 30 Days
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="lifetime-tab" data-bs-toggle="tab" data-bs-target="#lifetime" type="button">
+                    <i class="fas fa-infinity me-1"></i> Lifetime
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content" id="earningTabsContent">
 
             @foreach ([
-                'today' => ['id' => 'today', 'label' => "Today's"],
-                '7days' => ['id' => 'week',  'label' => 'Last 7 Days'],
-                '30days'=> ['id' => 'month', 'label' => 'Last 30 Days'],
+                'today'    => ['id' => 'today',    'label' => "Today's"],
+                '7days'    => ['id' => 'week',     'label' => 'Last 7 Days'],
+                '30days'   => ['id' => 'month',    'label' => 'Last 30 Days'],
+                'lifetime' => ['id' => 'lifetime', 'label' => 'Lifetime'],
             ] as $key => $meta)
 
                 <div class="tab-pane fade {{ $key === 'today' ? 'show active' : '' }}"
@@ -80,7 +109,7 @@
                             <div class="card text-center p-3 shadow-sm border-0 h-100">
                                 <div class="small text-muted">Total Deliveries</div>
                                 <div class="h5 fw-bold text-primary">
-                                    {{ $earnings[$key]['total_count'] }}
+                                    {{ number_format($earnings[$key]['total_count']) }}
                                 </div>
                             </div>
                         </div>
@@ -111,7 +140,7 @@
                                     <span class="small text-muted">Successful deliveries</span>
                                 </div>
                                 <div class="h5 fw-bold text-success mb-0">
-                                    {{ $earnings[$key]['delivered'] }}
+                                    {{ number_format($earnings[$key]['delivered']) }}
                                 </div>
                                 <div class="small text-muted mt-1">
                                     Earnings: <strong class="text-success">৳ {{ number_format($earnings[$key]['delivered_earning'], 2) }}</strong>
@@ -131,7 +160,7 @@
                                     <span class="small text-muted">Cancelled deliveries</span>
                                 </div>
                                 <div class="h5 fw-bold text-danger mb-0">
-                                    {{ $earnings[$key]['cancelled'] }}
+                                    {{ number_format($earnings[$key]['cancelled']) }}
                                 </div>
                                 <div class="small text-muted mt-1">
                                     Earnings: <strong class="text-danger">৳ {{ number_format($earnings[$key]['cancelled_earning'], 2) }}</strong>
@@ -151,7 +180,7 @@
                                     <span class="small text-muted">Partially delivered</span>
                                 </div>
                                 <div class="h5 fw-bold text-dark mb-0">
-                                    {{ $earnings[$key]['partially_delivered'] }}
+                                    {{ number_format($earnings[$key]['partially_delivered']) }}
                                 </div>
                                 <div class="small text-muted mt-1">
                                     Earnings: <strong class="text-dark">৳ {{ number_format($earnings[$key]['partial_earning'], 2) }}</strong>
@@ -183,25 +212,25 @@
                                     <tbody>
                                         <tr>
                                             <td><span class="badge bg-success">Delivered</span></td>
-                                            <td class="text-center small">{{ $earnings[$key]['delivered'] }}</td>
+                                            <td class="text-center small">{{ number_format($earnings[$key]['delivered']) }}</td>
                                             <td class="text-center small">৳ 10.00</td>
                                             <td class="text-center small fw-bold text-success">৳ {{ number_format($earnings[$key]['delivered_earning'], 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td><span class="badge bg-danger">Cancelled</span></td>
-                                            <td class="text-center small">{{ $earnings[$key]['cancelled'] }}</td>
+                                            <td class="text-center small">{{ number_format($earnings[$key]['cancelled']) }}</td>
                                             <td class="text-center small">৳ 10.00</td>
                                             <td class="text-center small fw-bold text-danger">৳ {{ number_format($earnings[$key]['cancelled_earning'], 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td><span class="badge bg-dark">Partially Delivered</span></td>
-                                            <td class="text-center small">{{ $earnings[$key]['partially_delivered'] }}</td>
+                                            <td class="text-center small">{{ number_format($earnings[$key]['partially_delivered']) }}</td>
                                             <td class="text-center small">৳ 10.00</td>
                                             <td class="text-center small fw-bold">৳ {{ number_format($earnings[$key]['partial_earning'], 2) }}</td>
                                         </tr>
                                         <tr class="table-success">
                                             <td class="fw-bold small">Total</td>
-                                            <td class="text-center small fw-bold">{{ $earnings[$key]['total_count'] }}</td>
+                                            <td class="text-center small fw-bold">{{ number_format($earnings[$key]['total_count']) }}</td>
                                             <td class="text-center small">—</td>
                                             <td class="text-center small fw-bold text-success">৳ {{ number_format($earnings[$key]['total_earning'], 2) }}</td>
                                         </tr>
