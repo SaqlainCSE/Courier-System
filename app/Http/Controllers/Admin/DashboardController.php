@@ -12,14 +12,30 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // $totalShipments = Shipment::count();
-        $totalEarnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
-        $todayEarnings = Shipment::whereDate('created_at', today())->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
-        $last7Earnings = Shipment::where('created_at', '>=', now()->subDays(7))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
-        $last30Earnings = Shipment::where('created_at', '>=', now()->subDays(30))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
-        $last365Earnings = Shipment::where('created_at', '>=', now()->subDays(365))->whereIn('status',['delivered', 'partially_delivered'])->sum('cost_of_delivery_amount');
+        // Total earnings
+        $totalEarnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])
+                            ->sum('cost_of_delivery_amount');
 
-        $TodayAllMarchantCODCollected = Shipment::whereDate('created_at', today())->whereIn('status', ['delivered', 'partially_delivered'])
+        // Earnings based on delivered_at
+        $todayEarnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])
+                            ->whereDate('delivered_at', today())
+                            ->sum('cost_of_delivery_amount');
+
+        $last7Earnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])
+                            ->where('delivered_at', '>=', now()->subDays(7))
+                            ->sum('cost_of_delivery_amount');
+
+        $last30Earnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])
+                            ->where('delivered_at', '>=', now()->subDays(30))
+                            ->sum('cost_of_delivery_amount');
+
+        $last365Earnings = Shipment::whereIn('status',['delivered', 'partially_delivered'])
+                            ->where('delivered_at', '>=', now()->subDays(365))
+                            ->sum('cost_of_delivery_amount');
+
+        // Total COD collected today
+        $TodayAllMarchantCODCollected = Shipment::whereIn('status', ['delivered', 'partially_delivered'])
+                                                ->whereDate('delivered_at', today())
                                                 ->select(DB::raw("
                                                     SUM(
                                                         CASE
@@ -31,39 +47,48 @@ class DashboardController extends Controller
                                                 "))
                                                 ->value('total');
 
-        $todayMarchantPaidAmount = Payment::whereDate('created_at', today())->whereIn('status',['paid'])->sum('amount');
-        $todayMarchantUnpaidAmount = Payment::whereDate('created_at', today())->whereNotIn('status', ['paid'])->sum('amount');
-        $todayPartialAmount = Shipment::whereDate('created_at', today())->whereIn('status',['partially_delivered'])->sum('partial_price');
+        // Today merchant payments
+        $todayMarchantPaidAmount = Payment::whereDate('created_at', today())
+                                        ->where('status','paid')
+                                        ->sum('amount');
 
-        // $averageShipmentPrice = Shipment::whereIn('status',['delivered', 'partially_delivered'])->avg('price');
-        $pendingShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['pending'])->count();
-        $deliveredShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['delivered'])->count();
-        $holdShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['hold'])->count();
-        // $pickedShipments = Shipment::where('status', 'picked')->count();
-        $inTransitShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['in_transit'])->count();
-        $partiallyDeliveredShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['partially_delivered'])->count();
-        $cancelledShipments = Shipment::whereDate('created_at', today())->whereIn('status', ['cancelled'])->count();
-        // $cancelledAmount = Shipment::where('status', 'cancelled')->sum('price');
-        // $pendingValue = Shipment::where('status', 'pending')->sum('price');
+        $todayMarchantUnpaidAmount = Payment::whereDate('created_at', today())
+                                            ->whereNotIn('status', ['paid'])
+                                            ->sum('amount');
+
+        $todayPartialAmount = Shipment::whereIn('status',['partially_delivered'])
+                                    ->whereDate('delivered_at', today())
+                                    ->sum('partial_price');
+
+        // Shipment counts (use delivered_at for delivered types)
+        $pendingShipments = Shipment::whereDate('created_at', today())->where('status', 'pending')->count();
+        $deliveredShipments = Shipment::whereIn('status', ['delivered'])->whereDate('delivered_at', today())->count();
+        $partiallyDeliveredShipments = Shipment::whereIn('status', ['partially_delivered'])->whereDate('delivered_at', today())->count();
+        $holdShipments = Shipment::whereDate('created_at', today())->where('status', 'hold')->count();
+        $inTransitShipments = Shipment::whereDate('created_at', today())->where('status', 'in_transit')->count();
+        $cancelledShipments = Shipment::whereDate('delivered_at', today())->where('status', 'cancelled')->count();
+
+        // Active couriers and top performers
         $activeCouriers = Courier::count();
-
         $topCouriers = Courier::with('user')
             ->withCount(['shipments as delivered_count' => fn($q) => $q->whereIn('status', ['delivered','partially_delivered'])])
             ->orderByDesc('delivered_count')
             ->take(4)
             ->get();
 
+        // Recent shipments
         $recentShipments = Shipment::latest()->take(10)->get();
 
-        // Chart Data
+        // Chart Data (last 7 days)
         $chartData = [
             'dates' => collect(range(6,0,-1))->map(fn($d) => now()->subDays($d)->format('d M'))->toArray(),
-            'earnings' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereDate('created_at', now()->subDays($d))->sum('cost_of_delivery_amount'))->toArray(),
+            'earnings' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereIn('status', ['delivered','partially_delivered'])
+                                                                        ->whereDate('delivered_at', now()->subDays($d))
+                                                                        ->sum('cost_of_delivery_amount'))->toArray(),
             'shipments' => collect(range(6,0,-1))->map(fn($d) => Shipment::whereDate('created_at', now()->subDays($d))->count())->toArray(),
         ];
 
         return view('admin.dashboard', compact(
-            // 'totalShipments',
             'totalEarnings',
             'todayEarnings',
             'last7Earnings',
@@ -73,16 +98,12 @@ class DashboardController extends Controller
             'todayMarchantPaidAmount',
             'todayMarchantUnpaidAmount',
             'todayPartialAmount',
-            // 'averageShipmentPrice',
             'pendingShipments',
             'deliveredShipments',
             'holdShipments',
-            // 'pickedShipments',
             'inTransitShipments',
             'partiallyDeliveredShipments',
             'cancelledShipments',
-            // 'cancelledAmount',
-            // 'pendingValue',
             'activeCouriers',
             'topCouriers',
             'recentShipments',
