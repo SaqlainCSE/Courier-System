@@ -22,7 +22,7 @@ class ShipmentController extends Controller
 
         $query = Shipment::where('user_id', $user->id);
 
-        // 🔍 Search filter (tracking number, addresses, name, phone)
+        // 🔍 Search filter
         if ($request->filled('q')) {
             $search = $request->q;
             $query->where(function($q) use ($search) {
@@ -41,7 +41,7 @@ class ShipmentController extends Controller
             $query->where('status', $request->status);
         }
 
-        // 📅 Date range filter
+        // 📅 Date filter (created date for listing)
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
@@ -49,10 +49,10 @@ class ShipmentController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        // Recent shipments (latest 20)
+        // 📦 Shipments list
         $shipments = $query->latest()->paginate(20);
 
-        // Summary counts (respect filters applied above except pagination)
+        // ================= SUMMARY =================
         $summary = [
             'pending' => Shipment::where('user_id', $user->id)->where('status', 'pending')->count(),
             'assigned' => Shipment::where('user_id', $user->id)->where('status', 'assigned')->count(),
@@ -64,41 +64,42 @@ class ShipmentController extends Controller
             'partially_delivered' => Shipment::where('user_id', $user->id)->where('status', 'partially_delivered')->count(),
         ];
 
-        // 📊 BALANCE CALCULATION SYSTEM
-        // Entry Balance: Sum of all entry prices (initial product price)
+        // ================= ENTRY BALANCE =================
         $entryBalance = Shipment::where('user_id', $user->id)->sum('price');
 
-        // COD (Cash On Delivery):
-        // = balance_cost for delivered & partially_delivered
-        //   - cost_of_delivery_amount for cancelled
+        // ================= COD BALANCE =================
         $codBalance = Shipment::where('user_id', $user->id)
             ->whereIn('status', ['delivered', 'partially_delivered'])
             ->sum('balance_cost');
 
-        // Subtract cost_of_delivery_amount for cancelled shipments
-        $cancelledDeliveryCost = Shipment::where('user_id', $user->id)
-            ->where('status', 'cancelled')
-            ->sum('cost_of_delivery_amount');
-        $codBalance = $codBalance - $cancelledDeliveryCost;
-
-        // Paid Amount: Sum of all payments with 'paid' status
+        // ================= PAID AMOUNT =================
         $paidAmount = Payment::whereHas('shipment', function($q) use ($user) {
             $q->where('user_id', $user->id);
-        })->where('status', 'paid')->sum('amount');
+        })
+        ->where('status', 'paid')
+        ->sum('amount');
 
-        // New COD: COD Balance - Paid Amount
+        // ================= FINAL DUE =================
         $newCOD = $codBalance - $paidAmount;
 
-        // Monthly cost breakdown
+        // ================= MONTHLY REPORT =================
         $monthlyCosts = Shipment::where('user_id', $user->id)
             ->whereIn('status', ['delivered','partially_delivered'])
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(balance_cost) as total")
+            ->whereNotNull('delivered_at')
+            ->selectRaw("DATE_FORMAT(delivered_at, '%Y-%m') as month, SUM(balance_cost) as total")
             ->groupBy('month')
             ->orderBy('month', 'desc')
             ->get();
 
-        return view('shipments.dashboard', compact('shipments', 'summary', 'entryBalance', 'codBalance', 'paidAmount', 'newCOD', 'monthlyCosts'))
-            ->with('filters', $request->only(['q','status','start_date','end_date']));
+        return view('shipments.dashboard', compact(
+            'shipments',
+            'summary',
+            'entryBalance',
+            'codBalance',
+            'paidAmount',
+            'newCOD',
+            'monthlyCosts'
+        ))->with('filters', $request->only(['q','status','start_date','end_date']));
     }
 
     public function create()
