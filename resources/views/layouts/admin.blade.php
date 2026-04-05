@@ -22,7 +22,7 @@
       position: fixed;
       left: 0;
       top: 0;
-      width: 250px;
+      width: 260px;
       padding-top: 1rem;
       overflow-y: auto;
       transition: all 0.3s ease;
@@ -51,7 +51,7 @@
     }
 
     .navbar {
-      margin-left: 250px;
+      margin-left: 260px;
       background-color: #fff;
       border-bottom: 1px solid #dee2e6;
       transition: margin-left 0.3s ease;
@@ -122,12 +122,12 @@
       <i class="fas fa-users me-2"></i> Merchants
     </a>
 
-    <a href="{{ route('admin.software-management.index') }}" class="{{ request()->routeIs('admin.software-management.index') ? 'active' : '' }}">
-      <i class="fas fa-calculator me-2"></i> Software Management
+    <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
+      <i class="fas fa-money-bill me-2"></i> Payment Management
     </a>
 
-    <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
-      <i class="fas fa-money-bill me-2"></i> Payments
+    <a href="{{ route('admin.software-management.index') }}" class="{{ request()->routeIs('admin.software-management.index') ? 'active' : '' }}">
+      <i class="fas fa-calculator me-2"></i> Software Management
     </a>
 
     <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
