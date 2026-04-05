@@ -32,6 +32,7 @@ class Shipment extends Model
         'status',
         'estimated_delivery_at',
         'notes',
+        'delivered_at',
     ];
 
     protected $casts = [
@@ -51,6 +52,18 @@ class Shipment extends Model
     public function customer()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    protected static function booted()
+    {
+        static::updating(function ($shipment) {
+            if (
+                in_array($shipment->status, ['delivered', 'partially_delivered']) &&
+                is_null($shipment->delivered_at)
+            ) {
+                $shipment->delivered_at = now();
+            }
+        });
     }
 
 }
