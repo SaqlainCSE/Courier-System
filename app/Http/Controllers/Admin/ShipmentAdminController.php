@@ -121,72 +121,50 @@ class ShipmentAdminController extends Controller
         return back()->with('success','Courier assigned.');
     }
 
-    // public function updateStatus(Request $request, Shipment $shipment)
-    // {
-    //     $data = $request->validate(['status'=>'required|in:pending,assigned,picked,in_transit,hold,delivered,partially_delivered,cancelled','note'=>'nullable|string']);
-    //     $shipment->update(['status'=>$data['status']]);
-    //     ShipmentStatusLog::create([
-    //         'shipment_id'=>$shipment->id,
-    //         'user_id'=>Auth::id(),
-    //         'status'=>$data['status'],
-    //         'changed_by'=>Auth::id(),
-    //         'note'=>$data['note'] ?? null]);
-
-    //     return back()->with('success','Status updated.');
-    // }
-
-
     public function updateStatus(Request $request, Shipment $shipment)
     {
-        // Validate input (admin can update all statuses)
+        // ================= VALIDATION =================
         $data = $request->validate([
             'status' => 'required|in:pending,assigned,picked,in_transit,hold,delivered,partially_delivered,cancelled',
             'note' => 'nullable|string',
-            'partial_price' => 'nullable|numeric|min:0'
+            'partial_price' => 'nullable|numeric|min:0|max:' . $shipment->price
         ]);
 
-        // If partially delivered, require received amount
         if ($data['status'] === 'partially_delivered' && empty($data['partial_price'])) {
-            return back()->withErrors(['partial_price' => 'Received amount is required for partially delivered shipments.']);
+            return back()->withErrors([
+                'partial_price' => 'Received amount is required for partially delivered shipments.'
+            ]);
         }
 
-        // Update shipment status
+        // ================= STATUS UPDATE =================
         $shipment->status = $data['status'];
 
-        // --- Handle Partial Delivery ---
-        if ($data['status'] === 'partially_delivered') {
-            $shipment->partial_price = $data['partial_price']; // Update shipment price with received amount
+        $deliveryCharge = $shipment->cost_of_delivery_amount ?? 0;
+
+        // ================= CALCULATION =================
+        if ($data['status'] === 'delivered') {
+
+            $collectedAmount = $shipment->price;
+
+            // Merchant balance (never negative)
+            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+
+        } elseif ($data['status'] === 'partially_delivered') {
+
+            $shipment->partial_price = $data['partial_price'];
+
+            $collectedAmount = $shipment->partial_price;
+
+            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+
+        } else {
+            $shipment->balance_cost = 0;
         }
 
-        // --- Handle Delivered or Partially Delivered: calculate balance cost ---
-        if (in_array($data['status'], ['delivered'])) {
-            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
-            $totalPriceOfProduct = $shipment->price; // may be full or partial
-
-            // Balance cost = product price - delivery charge
-            if ($totalPriceOfProduct == 0) {
-                $shipment->balance_cost = $costOfDeliveryAmount;
-            } else {
-                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
-            }
-        }
-
-        if (in_array($data['status'], ['partially_delivered'])) {
-            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
-            $totalPriceOfProduct = $shipment->partial_price; // may be full or partial
-
-            // Balance cost = product price - delivery charge
-            if ($totalPriceOfProduct == 0) {
-                $shipment->balance_cost = $costOfDeliveryAmount;
-            } else {
-                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
-            }
-        }
-
-        // Save shipment
+        // ================= SAVE =================
         $shipment->save();
 
-        // --- Log the status change ---
+        // ================= LOG =================
         ShipmentStatusLog::create([
             'shipment_id' => $shipment->id,
             'user_id' => Auth::id(),

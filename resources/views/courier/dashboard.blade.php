@@ -170,7 +170,7 @@
                         'in_transit' => 'bg-warning text-dark',
                         'delivered'  => 'bg-success',
                         'hold'       => 'bg-dark',
-                        'partially_delivered' => 'bg-secondary',
+                        'partially_delivered' => 'bg-dark',
                         'cancelled'  => 'bg-danger',
                         default      => 'bg-secondary'
                     };

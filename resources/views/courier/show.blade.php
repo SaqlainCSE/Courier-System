@@ -37,7 +37,7 @@
                                     'picked' => 'bg-primary',
                                     'hold' => 'bg-secondary',
                                     'delivered' => 'bg-success',
-                                    'partially_delivered' => 'bg-secondary',
+                                    'partially_delivered' => 'bg-dark',
                                     'cancelled' => 'bg-danger',
                                     'in_transit' => 'bg-warning text-dark',
                                     default => 'bg-secondary'
@@ -177,7 +177,9 @@
                             <form action="{{ route('courier.shipments.updateStatus', $shipment) }}" method="POST" class="mt-3">
                                 @csrf
                                 <div class="mb-2">
-                                    <select name="status" class="form-select form-select-sm" required>
+                                    <select name="status"
+                                        class="form-select form-select-sm status-select"
+                                        data-id="{{ $shipment->id }}">
                                         <option value="picked" @selected($shipment->status=='picked')>Picked</option>
                                         <option value="hold" @selected($shipment->status=='hold')>Hold</option>
                                         <option value="delivered" @selected($shipment->status=='delivered')>Delivered</option>
@@ -188,6 +190,15 @@
 
                                 <div class="mb-2">
                                     <textarea name="note" class="form-control form-control-sm" rows="2" placeholder="Optional note"></textarea>
+                                </div>
+
+                                <div class="mb-2 partial-price d-none" id="partial-price-{{ $shipment->id }}">
+                                    <input type="number"
+                                        name="partial_price"
+                                        class="form-control form-control-sm"
+                                        placeholder="Enter received amount (e.g. 1000)"
+                                        min="0"
+                                        step="0.01">
                                 </div>
 
                                 <div class="d-grid">
@@ -222,3 +233,35 @@
 .very-small { font-size: .72rem; color: #6c757d; }
 </style>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('.status-select').forEach(function(select){
+            select.addEventListener('change', function(){
+                let id = this.dataset.id;
+                let partialBox = document.getElementById('partial-price-' + id);
+
+                if (!partialBox) return;
+
+                if(this.value === 'partially_delivered'){
+                    partialBox.classList.remove('d-none');
+                } else {
+                    partialBox.classList.add('d-none');
+
+                    let input = partialBox.querySelector('input');
+                    if(input) input.value = '';
+                }
+            });
+
+            // page load check
+            if(select.value === 'partially_delivered'){
+                let id = select.dataset.id;
+                let partialBox = document.getElementById('partial-price-' + id);
+                if (partialBox) partialBox.classList.remove('d-none');
+            }
+        });
+
+    });
+</script>

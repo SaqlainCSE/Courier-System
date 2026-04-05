@@ -89,71 +89,58 @@ class CourierController extends Controller
     {
         $courier = Auth::user()->courierProfile;
 
-        // if ($shipment->courier_id !== $courier->id) abort(403);
-
-        // Validate inputs
+        // ================= VALIDATION =================
         $data = $request->validate([
             'status' => 'required|in:picked,hold,delivered,partially_delivered,cancelled',
             'note' => 'nullable|string',
             'partial_price' => 'nullable|numeric|min:0'
         ]);
 
-        // If partially delivered, require received amount
         if ($data['status'] === 'partially_delivered' && empty($data['partial_price'])) {
-            return back()->withErrors(['partial_price' => 'Received amount is required for partially delivered shipments.']);
+            return back()->withErrors([
+                'partial_price' => 'Received amount is required for partially delivered shipments.'
+            ]);
         }
 
-        // Update shipment status
+        // ================= STATUS UPDATE =================
         $shipment->status = $data['status'];
 
-        // Handle partial delivery
-        if ($data['status'] === 'partially_delivered') {
-            // Update with received amount
+        $deliveryCharge = $shipment->cost_of_delivery_amount ?? 0;
+
+        // ================= CALCULATION =================
+        if ($data['status'] === 'delivered') {
+
+            $collectedAmount = $shipment->price;
+
+            // Merchant balance (never negative)
+            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+
+        } elseif ($data['status'] === 'partially_delivered') {
+
             $shipment->partial_price = $data['partial_price'];
+
+            $collectedAmount = $shipment->partial_price;
+
+            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+
+        } else {
+            $shipment->balance_cost = 0;
         }
 
-        // --- Handle Delivered or Partially Delivered: calculate balance cost ---
-        if (in_array($data['status'], ['delivered'])) {
-            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
-            $totalPriceOfProduct = $shipment->price; // may be full or partial
-
-            // Balance cost = product price - delivery charge
-            if ($totalPriceOfProduct == 0) {
-                $shipment->balance_cost = $costOfDeliveryAmount;
-            } else {
-                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
-            }
-        }
-
-        if (in_array($data['status'], ['partially_delivered'])) {
-            $costOfDeliveryAmount = $shipment->cost_of_delivery_amount ?? 0;
-            $totalPriceOfProduct = $shipment->partial_price; // may be full or partial
-
-            // Balance cost = product price - delivery charge
-            if ($totalPriceOfProduct == 0) {
-                $shipment->balance_cost = $costOfDeliveryAmount;
-            } else {
-                $shipment->balance_cost = $totalPriceOfProduct - $costOfDeliveryAmount;
-            }
-        }
-
+        // ================= SAVE =================
         $shipment->save();
 
-        // Log status change
+        // ================= LOG =================
         ShipmentStatusLog::create([
             'shipment_id' => $shipment->id,
             'user_id' => Auth::id(),
             'status' => $data['status'],
             'changed_by' => Auth::id(),
-            'note' => $data['note'] ?? 'Updated by delivery man'
+            'note' => $data['note'] ?? 'Updated by courier'
         ]);
 
-        // Courier availability
-        if ($data['status'] === 'delivered') {
-            $courier->update(['status' => 'available']);
-        } else {
-            $courier->update(['status' => 'available']);
-        }
+        // ================= COURIER STATUS =================
+        $courier->update(['status' => 'available']);
 
         return back()->with('success', 'Status updated successfully');
     }
