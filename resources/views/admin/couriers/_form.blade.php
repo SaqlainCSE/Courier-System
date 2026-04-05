@@ -75,7 +75,7 @@
     </div>
 
     <div class="col-md-6">
-        <label class="form-label">Commission Rate (%)</label>
+        <label class="form-label">Commission (BDT)</label>
         <input type="number" name="commission_rate" step="0.01" min="0" max="100"
                class="form-control @error('commission_rate') is-invalid @enderror"
                value="{{ old('commission_rate', $courier->commission_rate ?? '30') }}" required>
