@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MerchantController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\SoftwareManagementController;
 
 Route::get('/', function () {
     if(\Illuminate\Support\Facades\Auth::check()){
@@ -93,6 +94,9 @@ Route::middleware('auth')->group(function() {
         Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.exportPdf');
 
         Route::get('/shipments/print/all', [ReportController::class, 'printAll'])->name('admin.shipments.print.all');
+
+        // Software Management
+        Route::get('/software-management', [SoftwareManagementController::class, 'index'])->name('admin.software-management.index');
 
         // Payment (management)
         Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
