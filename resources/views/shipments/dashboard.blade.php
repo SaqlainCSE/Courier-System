@@ -149,6 +149,7 @@
                         <option value="partially_delivered" @selected(($filters['status'] ?? '')=='partially_delivered')>Partially Delivered</option>
                         <option value="hold" @selected(($filters['status'] ?? '')=='hold')>Hold</option>
                         <option value="cancelled" @selected(($filters['status'] ?? '')=='cancelled')>Cancelled</option>
+                        <option value="paid" @selected(($filters['status'] ?? '')=='paid')>Paid</option>
                     </select>
                 </div>
 
@@ -218,6 +219,13 @@
                                 <span class="badge bg-{{ $statusColors[$shipment->status] }}">
                                     {{ ucfirst(str_replace('_',' ', $shipment->status)) }}
                                 </span>
+
+                                @if($shipment->is_paid)
+                                    <br>
+                                    <span class="badge bg-success mt-1">
+                                        <i class="fas fa-check-circle me-1"></i> Paid
+                                    </span>
+                                @endif
                             </td>
                             <td>৳ {{ number_format($shipment->additional_charge + $shipment->user->delivery_fee ?? 60, 2) }}</td>
                             <td class="fw-bold text-success">৳ {{ number_format($shipment->price ) }}</td>

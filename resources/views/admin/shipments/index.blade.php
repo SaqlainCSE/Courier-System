@@ -84,6 +84,7 @@
                         <option value="">All Status</option>
                         @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $s)
                             <option value="{{ $s }}" @selected(request('status')==$s)>{{ ucwords(str_replace('_',' ', $s)) }}</option>
+                            <option value="paid" @selected(request('status')=='paid')>Paid</option>
                         @endforeach
                     </select>
                 </div>
@@ -167,9 +168,18 @@
                                             'cancelled' => 'danger'
                                         ];
                                     @endphp
+
                                     <span class="badge bg-{{ $statusColors[$s->status] ?? 'light' }}">
                                         {{ ucfirst(str_replace('_',' ',$s->status)) }}
                                     </span>
+
+                                    @if(in_array($s->status, ['delivered','partially_delivered']) && $s->balance_cost <= 0)
+                                        <br>
+                                        <span class="badge bg-success mt-1">
+                                            <i class="fas fa-check-circle me-1"></i> Paid
+                                        </span>
+                                    @endif
+
                                 </td>
                                 <td>৳ {{ number_format($s->price,2) }}</td>
                                 <td>

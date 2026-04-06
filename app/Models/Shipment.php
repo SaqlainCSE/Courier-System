@@ -66,4 +66,10 @@ class Shipment extends Model
         });
     }
 
+    public function getIsPaidAttribute(): bool
+    {
+        return in_array($this->status, ['delivered', 'partially_delivered'])
+            && $this->balance_cost <= 0;
+    }
+
 }

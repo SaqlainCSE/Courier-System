@@ -144,9 +144,18 @@
                                             $status = strtolower($s->status);
                                             $badgeColor = $statusColors[$status] ?? '#adb5bd';
                                         @endphp
+
                                         <span class="badge text-light" style="background-color: {{ $badgeColor }}">
                                             {{ ucfirst(str_replace('_', ' ', $s->status)) }}
                                         </span>
+
+                                        @if(in_array($s->status, ['delivered','partially_delivered']) && $s->balance_cost <= 0)
+                                            <br>
+                                            <span class="badge bg-success mt-1">
+                                                <i class="fas fa-check-circle me-1"></i> Paid
+                                            </span>
+                                        @endif
+                                        
                                     </td>
                                     <td data-label="Price">৳{{ number_format($s->price, 2) }}</td>
                                     <td data-label="Date">{{ $s->created_at->format('d M Y') }}</td>

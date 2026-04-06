@@ -49,7 +49,12 @@ class ShipmentAdminController extends Controller
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'paid') {
+                $query->whereIn('status', ['delivered', 'partially_delivered'])
+                    ->where('balance_cost', '<=', 0);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         if ($request->filled('courier_id')) {

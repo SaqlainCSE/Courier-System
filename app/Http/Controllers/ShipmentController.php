@@ -36,17 +36,22 @@ class ShipmentController extends Controller
             });
         }
 
-        // 📌 Status filter
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
         // 📅 Date filter (created date for listing)
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
         }
         if ($request->filled('end_date')) {
             $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // 📌 Status filter
+        if ($request->filled('status')) {
+            if ($request->status === 'paid') {
+                $query->whereIn('status', ['delivered', 'partially_delivered'])
+                    ->where('balance_cost', '<=', 0);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // 📦 Shipments list
