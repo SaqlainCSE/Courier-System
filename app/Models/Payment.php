@@ -9,6 +9,13 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['shipment_id','amount','method','status','meta'];
+    protected $fillable = ['shipment_id','invoice_number','amount','method','status','meta'];
     public function shipment() { return $this->belongsTo(Shipment::class); }
+
+    protected static function booted()
+    {
+        static::creating(function ($payment) {
+            $payment->invoice_number = '#INV-' . strtoupper(uniqid());
+        });
+    }
 }

@@ -89,7 +89,7 @@
                                                 </span>
                                             </td>
                                             <td class="balance text-center">{{ number_format($shipment->balance_cost, 2) }}</td>
-                                            <td class="text-center">
+                                            <td class="text-center action-cell">
                                                 @if($shipment->balance_cost > 0)
                                                     <button
                                                         class="btn btn-sm btn-outline-success pay-btn"
@@ -102,6 +102,13 @@
                                                     <span class="badge bg-success rounded-pill px-3 py-2">
                                                         <i class="fas fa-check-circle me-1"></i> Paid
                                                     </span>
+                                                    @if($shipment->payments->isNotEmpty())
+                                                        <a href="{{ route('admin.payments.invoice', $shipment->payments->last()->id) }}"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-danger ms-1">
+                                                            <i class="fas fa-file-invoice me-1"></i> Invoice
+                                                        </a>
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>
@@ -205,6 +212,7 @@
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -215,51 +223,65 @@ $(document).ready(function() {
         $('#shipment_id').val($(this).data('id'));
         $('#tracking_number').val($(this).data('tracking'));
         $('#current_balance').val($(this).data('balance'));
+        $('input[name="amount"]').val('');
         modal.show();
     });
 
     // submit payment
     $('#paymentForm').on('submit', function(e) {
         e.preventDefault();
+        const shipmentId = $('#shipment_id').val();
+
         $.ajax({
             url: "{{ route('admin.payments.adjust') }}",
             method: "POST",
             data: $(this).serialize(),
             success: function(res) {
                 if (res.success) {
-                    const id = $('#shipment_id').val();
-                    const row = $('#shipment-' + id);
+                    const row = $('#shipment-' + shipmentId);
+
+                    // Balance update
                     row.find('.balance').text(res.balance_cost.toFixed(2));
 
                     if (res.balance_cost <= 0) {
-                        row.find('.pay-btn').remove();
-                        row.find('td:last').html(`
+                        row.removeClass('table-warning');
+                        row.find('.action-cell').html(`
                             <span class="badge bg-success rounded-pill px-3 py-2">
                                 <i class="fas fa-check-circle me-1"></i> Paid
                             </span>
+                            <a href="${res.invoice_url}" target="_blank" class="btn btn-sm btn-outline-danger ms-1">
+                                <i class="fas fa-file-invoice me-1"></i> Invoice
+                            </a>
                         `);
-                        row.removeClass('table-warning');
                     }
+
                     modal.hide();
+
+                    // SweetAlert invoice popup
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Payment Successful!',
+                        html: `Invoice No: <strong>${res.invoice_number}</strong><br><br>
+                               <a href="${res.invoice_url}" target="_blank"
+                                  class="btn btn-danger btn-sm">
+                                  <i class="fas fa-file-invoice me-1"></i> View & Print Invoice
+                               </a>`,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Close',
+                        confirmButtonColor: '#6c757d'
+                    });
                 }
             },
             error: function() {
-                alert('Something went wrong. Please try again.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Something went wrong. Please try again.',
+                });
             }
         });
     });
 });
 </script>
-
-<script>
-document.getElementById('paymentForm').addEventListener('submit', function (e) {
-
-    setTimeout(() => {
-        this.reset();
-    }, 200);
-
-});
-</script>
-
 @endpush
 @endsection

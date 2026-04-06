@@ -20,7 +20,7 @@ class ShipmentController extends Controller
     {
         $user = Auth::user();
 
-        $query = Shipment::where('user_id', $user->id);
+        $query = Shipment::with('payments')->where('user_id', $user->id);
 
         // 🔍 Search filter
         if ($request->filled('q')) {

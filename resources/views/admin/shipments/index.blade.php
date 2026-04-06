@@ -82,10 +82,25 @@
                 <div class="col-6 col-md-2">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
-                        @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $s)
-                            <option value="{{ $s }}" @selected(request('status')==$s)>{{ ucwords(str_replace('_',' ', $s)) }}</option>
-                            <option value="paid" @selected(request('status')=='paid')>Paid</option>
+
+                        @foreach([
+                            'pending',
+                            'assigned',
+                            'picked',
+                            'in_transit',
+                            'hold',
+                            'delivered',
+                            'partially_delivered',
+                            'cancelled'
+                        ] as $s)
+                            <option value="{{ $s }}" @selected(request('status') == $s)>
+                                {{ ucwords(str_replace('_',' ', $s)) }}
+                            </option>
                         @endforeach
+
+                        <option value="paid" @selected(request('status') == 'paid')>
+                            Paid
+                        </option>
                     </select>
                 </div>
                 <div class="col-6 col-md-3">
@@ -132,6 +147,7 @@
                             <th>Delivery Man</th>
                             <th>Status</th>
                             <th>Amount</th>
+                            <th>Partial Amount</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -182,6 +198,7 @@
 
                                 </td>
                                 <td>৳ {{ number_format($s->price,2) }}</td>
+                                <td>৳ {{ number_format($s->partial_price,2) }}</td>
                                 <td>
                                     <a href="{{ route('admin.shipments.show', $s) }}" class="btn btn-sm btn-outline-secondary">View</a>
                                 </td>

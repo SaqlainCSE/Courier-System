@@ -186,6 +186,7 @@
                             <th>Status</th>
                             <th>Delivery Cost</th>
                             <th>Amount</th>
+                            <th>Partial Amount</th>
                             <th>Booked At</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -229,6 +230,13 @@
                             </td>
                             <td>৳ {{ number_format($shipment->additional_charge + $shipment->user->delivery_fee ?? 60, 2) }}</td>
                             <td class="fw-bold text-success">৳ {{ number_format($shipment->price ) }}</td>
+
+                            @if($shipment->partial_price > 0)
+                                <td>৳ {{ number_format($shipment->partial_price, 2) }}</td>
+                            @else
+                                <td class="text-muted">৳ 0.00</td>
+                            @endif
+
                             <td>{{ $shipment->created_at->format('d M Y, H:i') }}</td>
                             <td class="text-end">
                                 <a href="{{ route('shipments.show', $shipment) }}" class="btn btn-sm btn-outline-info">View</a>
@@ -242,6 +250,14 @@
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                     </form>
                                 @endif --}}
+
+                                @if($shipment->payments && $shipment->payments->isNotEmpty() && $shipment->balance_cost <= 0)
+                                    <a href="{{ route('admin.payments.invoice', $shipment->payments->last()->id) }}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-outline-danger mt-1">
+                                        <i class="fas fa-file-invoice"></i> Invoice
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                     @empty

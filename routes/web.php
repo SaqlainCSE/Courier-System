@@ -101,8 +101,10 @@ Route::middleware('auth')->group(function() {
         // Payment (management)
         Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
         Route::post('/payments/adjust', [PaymentController::class, 'adjustPayment'])->name('admin.payments.adjust');
-
     });
+
+    //Invoice Generation
+    Route::get('admin/payments/{payment}/invoice', [PaymentController::class, 'invoice'])->name('admin.payments.invoice');
 });
 
 require __DIR__.'/auth.php';

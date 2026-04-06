@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('shipments', function (Blueprint $table) {
-            $table->timestamp('delivered_at')->nullable()->after('estimated_delivery_at');
+            if (!Schema::hasColumn('shipments', 'delivered_at')) {
+                $table->timestamp('delivered_at')->nullable()->after('estimated_delivery_at');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('shipments', function (Blueprint $table) {
-            $table->dropColumn('delivered_at');
+            if (Schema::hasColumn('shipments', 'delivered_at')) {
+                $table->dropColumn('delivered_at');
+            }
         });
     }
 };

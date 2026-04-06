@@ -72,4 +72,9 @@ class Shipment extends Model
             && $this->balance_cost <= 0;
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
 }

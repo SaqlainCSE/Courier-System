@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
@@ -31,7 +32,8 @@ class PaymentController extends Controller
 
         $merchants = $query->with(['shipments' => function($q) {
             $q->where('status', '=', 'delivered')
-              ->orWhere('status', '=', 'partially_delivered');
+              ->orWhere('status', '=', 'partially_delivered')
+              ->with('payments');
         }])->paginate(20);
 
         return view('admin.payments.index', compact('merchants'));
@@ -54,8 +56,7 @@ class PaymentController extends Controller
 
         $shipment->save();
 
-        // 📝 Create Payment record to track Paid Amount
-        \App\Models\Payment::create([
+        $payment = Payment::create([
             'shipment_id' => $shipment->id,
             'amount' => $request->amount,
             'method' => 'cash',
@@ -67,6 +68,14 @@ class PaymentController extends Controller
             'success' => true,
             'message' => 'Payment adjusted successfully.',
             'balance_cost' => $shipment->balance_cost,
+            'invoice_number' => $payment->invoice_number,
+            'invoice_url' => route('admin.payments.invoice', $payment->id),
         ]);
+    }
+
+    public function invoice(Payment $payment)
+    {
+        $payment->load('shipment.customer');
+        return view('admin.payments.invoice', compact('payment'));
     }
 }
