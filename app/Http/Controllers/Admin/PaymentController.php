@@ -78,4 +78,50 @@ class PaymentController extends Controller
         $payment->load('shipment.customer');
         return view('admin.payments.invoice', compact('payment'));
     }
+
+        public function invoices(Request $request)
+    {
+        $query = Payment::with(['shipment.user'])
+            ->orderByDesc('created_at');
+
+        // Merchant filter
+        if ($merchantId = $request->input('merchant_id')) {
+            $query->whereHas('shipment', function ($q) use ($merchantId) {
+                $q->where('user_id', $merchantId);
+            });
+        }
+
+        // Date range filter
+        if ($dateFrom = $request->input('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+        if ($dateTo = $request->input('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        // Search: invoice number, tracking
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('shipment', function ($q2) use ($search) {
+                      $q2->where('tracking_number', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Summary totals (before pagination)
+        $totalAmount   = (clone $query)->sum('amount');
+        $totalInvoices = (clone $query)->count();
+
+        $payments = $query->paginate(20);
+
+        // All merchants for dropdown
+        $merchants = \App\Models\User::where('role', 'customer')
+            ->orderBy('business_name')
+            ->get(['id', 'business_name', 'phone']);
+
+        return view('admin.payments.invoices', compact(
+            'payments', 'totalAmount', 'totalInvoices', 'merchants'
+        ));
+    }
 }

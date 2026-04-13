@@ -118,7 +118,7 @@
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
 
-        <div class="mb-3 d-flex gap-2">
+        <div class="mb-3 d-flex gap-2 mt-4">
             <a href="{{ route('shipments.export.excel', request()->all()) }}" class="btn btn-success btn-sm">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
@@ -251,13 +251,13 @@
                                     </form>
                                 @endif --}}
 
-                                @if($shipment->payments && $shipment->payments->isNotEmpty() && $shipment->balance_cost <= 0)
+                                {{--  @if($shipment->payments && $shipment->payments->isNotEmpty() && $shipment->balance_cost <= 0)
                                     <a href="{{ route('admin.payments.invoice', $shipment->payments->last()->id) }}"
                                     target="_blank"
                                     class="btn btn-sm btn-outline-danger mt-1">
                                         <i class="fas fa-file-invoice"></i> Invoice
                                     </a>
-                                @endif
+                                @endif  --}}
                             </td>
                         </tr>
                     @empty

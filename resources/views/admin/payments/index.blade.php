@@ -28,6 +28,10 @@
         </form>
     </div>
 
+    <a href="{{ route('admin.payments.invoices') }}" class="btn btn-sm btn-danger">
+        <i class="fas fa-file-invoice-dollar me-1"></i> Payment Invoices
+    </a><br><br>
+
     <!-- Merchant Accordion -->
     <div class="accordion" id="merchantAccordion">
         @foreach($merchants as $merchant)
@@ -102,13 +106,13 @@
                                                     <span class="badge bg-success rounded-pill px-3 py-2">
                                                         <i class="fas fa-check-circle me-1"></i> Paid
                                                     </span>
-                                                    @if($shipment->payments->isNotEmpty())
+                                                    {{--  @if($shipment->payments->isNotEmpty())
                                                         <a href="{{ route('admin.payments.invoice', $shipment->payments->last()->id) }}"
                                                            target="_blank"
                                                            class="btn btn-sm btn-outline-danger ms-1">
                                                             <i class="fas fa-file-invoice me-1"></i> Invoice
                                                         </a>
-                                                    @endif
+                                                    @endif  --}}
                                                 @endif
                                             </td>
                                         </tr>

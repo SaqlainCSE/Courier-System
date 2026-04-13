@@ -156,10 +156,6 @@
         style="padding: 10px 30px; background: #dc3545; color: #fff; border: none; border-radius: 8px; font-size: 15px; cursor: pointer;">
         🖨️ Print Invoice
     </button>
-    <a href="javascript:history.back()"
-        style="margin-left: 10px; padding: 10px 30px; background: #6c757d; color: #fff; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; text-decoration: none;">
-        ← Back
-    </a>
 </div>
 
 </body>

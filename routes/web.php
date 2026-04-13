@@ -85,8 +85,7 @@ Route::middleware('auth')->group(function() {
         // Couriers (management)
         Route::resource('couriers', CourierAdminController::class, ['as' => 'admin']);
         Route::get('couriers/{courier}/view', [CourierAdminController::class, 'view'])->name('admin.couriers.view');
-        Route::get('couriers/{id}/print', [CourierAdminController::class, 'print'])
-            ->name('admin.couriers.print');
+        Route::get('couriers/{id}/print', [CourierAdminController::class, 'print'])->name('admin.couriers.print');
 
         // Reports / Export
         Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
@@ -98,13 +97,12 @@ Route::middleware('auth')->group(function() {
         // Software Management
         Route::get('/software-management', [SoftwareManagementController::class, 'index'])->name('admin.software-management.index');
 
-        // Payment (management)
+        // Payments
         Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
         Route::post('/payments/adjust', [PaymentController::class, 'adjustPayment'])->name('admin.payments.adjust');
+        Route::get('/payments/invoices', [PaymentController::class, 'invoices'])->name('admin.payments.invoices');
+        Route::get('/payments/{payment}/invoice', [PaymentController::class, 'invoice'])->name('admin.payments.invoice');
     });
-
-    //Invoice Generation
-    Route::get('admin/payments/{payment}/invoice', [PaymentController::class, 'invoice'])->name('admin.payments.invoice');
 });
 
 require __DIR__.'/auth.php';
