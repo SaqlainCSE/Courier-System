@@ -118,18 +118,15 @@
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
 
-        <div class="mb-3 d-flex mt-4">
-            <a href="{{ route('shipments.invoices') }}" class="btn btn-danger">
-                Payment Invoices
-            </a>
-        </div>
-
         <div class="mb-3 d-flex gap-2 mt-4">
-            <a href="{{ route('shipments.export.excel', request()->all()) }}" class="btn btn-success btn-sm">
+            <a href="{{ route('shipments.export.excel', request()->all()) }}" class="btn btn-success">
                 <i class="fas fa-file-excel"></i> Export Excel
             </a>
-            <a href="{{ route('shipments.export.pdf', request()->all()) }}" class="btn btn-danger btn-sm">
+            <a href="{{ route('shipments.export.pdf', request()->all()) }}" class="btn btn-danger">
                 <i class="fas fa-file-pdf"></i> Export PDF
+            </a>
+            <a href="{{ route('shipments.invoices') }}" class="btn btn-warning">
+                <i class="fas fa-file-invoice"></i> Payment Invoices
             </a>
         </div>
 
