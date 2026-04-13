@@ -118,6 +118,12 @@
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
 
+        <div class="mb-3 d-flex mt-4">
+            <a href="{{ route('shipments.invoices') }}" class="btn btn-danger">
+                Payment Invoices
+            </a>
+        </div>
+
         <div class="mb-3 d-flex gap-2 mt-4">
             <a href="{{ route('shipments.export.excel', request()->all()) }}" class="btn btn-success btn-sm">
                 <i class="fas fa-file-excel"></i> Export Excel

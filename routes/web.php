@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function() {
 
         Route::get('shipments/export/excel', [ShipmentController::class, 'exportExcel'])->name('shipments.export.excel');
         Route::get('shipments/export/pdf', [ShipmentController::class, 'exportPdf'])->name('shipments.export.pdf');
+        Route::get('/payments/invoices', [ShipmentController::class, 'invoices'])->name('shipments.invoices');
+        Route::get('/payments/{payment}/invoice', [ShipmentController::class, 'invoice'])->name('shipments.invoice');
     });
 
     // courier

@@ -375,4 +375,49 @@ class ShipmentController extends Controller
         return Excel::download(new ShipmentsExport($filters), 'shipments_' . date('Y-m-d') . '.xlsx');
     }
 
+    public function invoice(Payment $payment)
+    {
+        $payment->load('shipment.customer');
+        return view('admin.payments.invoice', compact('payment'));
+    }
+
+    public function invoices(Request $request)
+    {
+        $user = Auth::user();
+
+        $query = Payment::with(['shipment'])
+            ->whereHas('shipment', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->orderByDesc('created_at');
+
+        // 📅 Date filter
+        if ($dateFrom = $request->input('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+        if ($dateTo = $request->input('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        // 🔍 Search
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                ->orWhereHas('shipment', function ($q2) use ($search) {
+                    $q2->where('tracking_number', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Summary
+        $totalAmount   = (clone $query)->sum('amount');
+        $totalInvoices = (clone $query)->count();
+
+        $payments = $query->paginate(20);
+
+        return view('shipments.invoices', compact(
+            'payments', 'totalAmount', 'totalInvoices'
+        ));
+    }
+
 }
