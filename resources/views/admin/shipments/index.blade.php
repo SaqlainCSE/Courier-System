@@ -219,6 +219,8 @@
         </div>
     </div>
 
+</div>
+
     <!-- Shipment Modal -->
     <div class="modal fade" id="shipmentModal" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -237,45 +239,7 @@
         </div>
     </div>
 
-</div>
-
-@push('scripts')
-    <script>
-    document.querySelectorAll('.shipment-card').forEach(card => {
-        card.addEventListener('click', function () {
-            let type = this.dataset.type;
-            let value = this.dataset.value;
-
-            let url = "{{ route('admin.shipments.index') }}?" + type + "=" + value;
-
-            // show modal
-            let modal = new bootstrap.Modal(document.getElementById('shipmentModal'));
-            modal.show();
-
-            // loading state
-            document.getElementById('modalContent').innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-spinner fa-spin"></i> Loading...
-                </div>
-            `;
-
-            // fetch data
-            fetch(url)
-                .then(res => res.text())
-                .then(html => {
-                    // শুধু table অংশ extract করতে পারো (optional)
-                    let parser = new DOMParser();
-                    let doc = parser.parseFromString(html, 'text/html');
-                    let table = doc.querySelector('.table-responsive');
-
-                    document.getElementById('modalContent').innerHTML = table
-                        ? table.outerHTML
-                        : html;
-                });
-        });
-    });
-    </script>
-@endpush
+@endsection
 
 @push('styles')
     <style>
@@ -311,5 +275,40 @@
 
 @push('scripts')
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    document.querySelectorAll('.shipment-card').forEach(card => {
+        card.addEventListener('click', function () {
+            let type = this.dataset.type;
+            let value = this.dataset.value;
+
+            let url = "{{ route('admin.shipments.index') }}?" + type + "=" + value;
+
+            // show modal
+            let modal = new bootstrap.Modal(document.getElementById('shipmentModal'));
+            modal.show();
+
+            // loading state
+            document.getElementById('modalContent').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            `;
+
+            // fetch data
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+                    let table = doc.querySelector('.table-responsive');
+
+                    document.getElementById('modalContent').innerHTML = table
+                        ? table.outerHTML
+                        : html;
+                });
+        });
+    });
+</script>
+
 @endpush
-@endsection
