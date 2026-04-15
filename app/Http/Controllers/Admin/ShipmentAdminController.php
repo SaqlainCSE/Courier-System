@@ -185,7 +185,7 @@ class ShipmentAdminController extends Controller
     // Bulk Assign Page - Show today's pending shipments
     public function bulkAssignPage()
     {
-        $shipments = Shipment::where('status', 'pending')
+        $shipments = Shipment::where('status', 'pending')->orWhere('status', 'hold')
             // ->whereDate('created_at', now()->toDateString())
             ->with(['customer', 'courier.user'])
             ->latest()
