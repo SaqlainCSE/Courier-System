@@ -36,14 +36,16 @@
 
         @foreach($cards as $key => $card)
             <div class="col-6 col-md-3">
-                <a href="{{ route('shipments.dashboard', array_merge(request()->all(), ['status' => $key])) }}"
-                class="text-decoration-none">
+                <div class="text-decoration-none shipment-card"
+                    data-status="{{ $key }}"
+                    data-label="{{ $card['label'] }}"
+                    style="cursor:pointer;">
                     <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
                         <i class="fas fa-{{ $card['icon'] }} fa-2x text-{{ $card['color'] }} mb-2"></i>
                         <h6 class="fw-bold text-muted">{{ $card['label'] }}</h6>
                         <h4 class="fw-bold text-{{ $card['color'] }}">{{ $summary[$key] ?? 0 }}</h4>
                     </div>
-                </a>
+                </div>
             </div>
         @endforeach
 
@@ -178,7 +180,7 @@
             <i class="fas fa-boxes me-2"></i> All Shipments
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
+            <div class="table-responsive" id="shipmentTable">
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -281,6 +283,25 @@
         </div>
     </div>
 </div>
+
+<!-- Shipment Modal -->
+<div class="modal fade" id="shipmentModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Shipments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="modalContent">
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -307,4 +328,42 @@
 
 @push('scripts')
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<script>
+    document.querySelectorAll('.shipment-card').forEach(card => {
+        card.addEventListener('click', function () {
+
+            let status = this.dataset.status;
+            let label = this.dataset.label;
+
+            let url = "{{ route('shipments.dashboard') }}?status=" + status;
+
+            let modal = new bootstrap.Modal(document.getElementById('shipmentModal'));
+            modal.show();
+
+            document.getElementById('modalTitle').innerText = label + " Shipments";
+
+            document.getElementById('modalContent').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            `;
+
+            fetch(url)
+                .then(res => res.text())
+                .then(html => {
+
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(html, 'text/html');
+
+                    // ✅ ONLY shipment table
+                    let table = doc.querySelector('#shipmentTable');
+
+                    document.getElementById('modalContent').innerHTML =
+                        table ? table.outerHTML : '<p>No data found</p>';
+                });
+        });
+    });
+</script>
+
 @endpush
