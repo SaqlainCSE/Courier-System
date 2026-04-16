@@ -3,7 +3,7 @@
 @section('content')
 
 <style>
-    
+
 .progress-tracker { position: relative; margin: 40px 10px; }
 .progress-tracker::before { content: ""; position: absolute; top: 25px; left: 0; width: 100%; height: 6px; border-radius: 10px; background: #e9ecef; z-index: 1; }
 .progress-bar { position: absolute; top: 25px; left: 0; height: 6px; border-radius: 10px; background: linear-gradient(90deg, #0d6efd, #20c997); width: 0; z-index: 2; transition: width 0.6s ease; }
@@ -19,8 +19,6 @@
     .step { display: flex; align-items: center; text-align: left; width: 100%; }
     .step .circle { margin: 0 15px 0 0; width: 40px; height: 40px; font-size: 16px; flex-shrink: 0; }
     .step p { margin-top: 0; font-size: 0.85rem; }
-    .step:not(:last-child)::after { content: ""; position: absolute; left: 34px; top: 40px; width: 2px; height: 25px; background: #dee2e6; z-index: -1; }
-    .step.active:not(:last-child)::after { background: #0d6efd; }
 }
 </style>
 
