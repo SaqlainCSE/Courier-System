@@ -3,76 +3,24 @@
 @section('content')
 
 <style>
-/* --- Progress Tracker Styles --- */
-.progress-tracker {
-    position: relative;
-    margin: 50px 20px;
-}
+    
+.progress-tracker { position: relative; margin: 40px 10px; }
+.progress-tracker::before { content: ""; position: absolute; top: 25px; left: 0; width: 100%; height: 6px; border-radius: 10px; background: #e9ecef; z-index: 1; }
+.progress-bar { position: absolute; top: 25px; left: 0; height: 6px; border-radius: 10px; background: linear-gradient(90deg, #0d6efd, #20c997); width: 0; z-index: 2; transition: width 0.6s ease; }
+.steps { position: relative; z-index: 3; display: flex; justify-content: space-between; }
+.step { flex: 1; text-align: center; }
+.step .circle { width: 50px; height: 50px; margin: 0 auto; border-radius: 50%; border: 3px solid #dee2e6; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #fff; transition: all 0.4s ease; }
+.step.active .circle { transform: scale(1.1); color: #fff; }
+.step p { margin-top: 8px; font-size: 0.75rem; font-weight: 600; }
 
-.progress-tracker::before {
-    content: "";
-    position: absolute;
-    top: 25px;
-    left: 0;
-    width: 100%;
-    height: 6px;
-    border-radius: 10px;
-    background: #e9ecef;
-    z-index: 1;
-}
-
-.progress-bar {
-    position: absolute;
-    top: 25px;
-    left: 0;
-    height: 6px;
-    border-radius: 10px;
-    background: linear-gradient(90deg, #0d6efd, #20c997);
-    width: 0;
-    z-index: 2;
-    transition: width 0.6s ease;
-}
-
-.steps {
-    position: relative;
-    z-index: 3;
-}
-
-.step {
-    flex: 1;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.step:hover {
-    transform: scale(1.05);
-}
-
-.step .circle {
-    width: 55px;
-    height: 55px;
-    margin: 0 auto;
-    border-radius: 50%;
-    border: 3px solid #dee2e6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    transition: all 0.4s ease;
-    background: #fff;
-}
-
-.step.active .circle {
-    transform: scale(1.1);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-    color: #fff;
-}
-
-.step p {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
+@media (max-width: 768px) {
+    .progress-tracker::before, .progress-bar { display: none; }
+    .steps { flex-direction: column; align-items: flex-start; gap: 20px; padding-left: 15px; }
+    .step { display: flex; align-items: center; text-align: left; width: 100%; }
+    .step .circle { margin: 0 15px 0 0; width: 40px; height: 40px; font-size: 16px; flex-shrink: 0; }
+    .step p { margin-top: 0; font-size: 0.85rem; }
+    .step:not(:last-child)::after { content: ""; position: absolute; left: 34px; top: 40px; width: 2px; height: 25px; background: #dee2e6; z-index: -1; }
+    .step.active:not(:last-child)::after { background: #0d6efd; }
 }
 </style>
 
@@ -178,14 +126,10 @@
 
             <div class="progress-tracker">
                 <div class="progress-bar"></div>
-
-                <div class="steps d-flex justify-content-between">
+                <div class="steps">
                     @foreach($statuses as $index => $status)
                         <div class="step {{ $index <= $currentIndex ? 'active' : '' }}">
-                            <div class="circle"
-                                style="border-color: {{ $colors[$status] }};
-                                       background: {{ $index <= $currentIndex ? $colors[$status] : '#fff' }};
-                                       color: {{ $index <= $currentIndex ? '#fff' : $colors[$status] }};">
+                            <div class="circle" style="border-color: {{ $colors[$status] }}; background: {{ $index <= $currentIndex ? $colors[$status] : '#fff' }}; color: {{ $index <= $currentIndex ? '#fff' : $colors[$status] }};">
                                 <i class="fas {{ $icons[$status] }}"></i>
                             </div>
                             <p style="color: {{ $index <= $currentIndex ? $colors[$status] : '#6c757d' }}">
@@ -335,6 +279,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
     progressBar.style.width = progress + "%";
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (window.innerWidth > 768) {
+        let currentIndex = parseInt(@json($currentIndex), 10);
+        let totalSteps = @json(count($statuses) - 1);
+        const progressBar = document.querySelector(".progress-bar");
+        if (progressBar && totalSteps > 0) {
+            let progress = (currentIndex / totalSteps) * 100;
+            progressBar.style.width = progress + "%";
+        }
+    }
+});
+
 </script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 @endpush
