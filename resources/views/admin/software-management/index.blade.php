@@ -117,7 +117,7 @@
                             <div class="card text-center p-3 shadow-sm border-0 h-100">
                                 <div class="small text-muted">Rate per Delivery</div>
                                 <div class="h5 fw-bold text-secondary">
-                                    ৳ 10.00
+                                    ৳ {{ $earnings[$key]['total_count'] > 0 ? number_format($earnings[$key]['total_earning'] / $earnings[$key]['total_count'], 2) : '10.00' }}
                                 </div>
                             </div>
                         </div>
@@ -213,19 +213,19 @@
                                         <tr>
                                             <td><span class="badge bg-success">Delivered</span></td>
                                             <td class="text-center small">{{ number_format($earnings[$key]['delivered']) }}</td>
-                                            <td class="text-center small">৳ 10.00</td>
+                                            <td class="text-center small">৳ {{ $earnings[$key]['delivered'] > 0 ? number_format($earnings[$key]['delivered_earning'] / $earnings[$key]['delivered'], 2) : '10.00' }}</td>
                                             <td class="text-center small fw-bold text-success">৳ {{ number_format($earnings[$key]['delivered_earning'], 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td><span class="badge bg-danger">Cancelled</span></td>
                                             <td class="text-center small">{{ number_format($earnings[$key]['cancelled']) }}</td>
-                                            <td class="text-center small">৳ 10.00</td>
+                                            <td class="text-center small">৳ {{ $earnings[$key]['cancelled'] > 0 ? number_format($earnings[$key]['cancelled_earning'] / $earnings[$key]['cancelled'], 2) : '10.00' }}</td>
                                             <td class="text-center small fw-bold text-danger">৳ {{ number_format($earnings[$key]['cancelled_earning'], 2) }}</td>
                                         </tr>
                                         <tr>
                                             <td><span class="badge bg-dark">Partially Delivered</span></td>
                                             <td class="text-center small">{{ number_format($earnings[$key]['partially_delivered']) }}</td>
-                                            <td class="text-center small">৳ 10.00</td>
+                                            <td class="text-center small">৳ {{ $earnings[$key]['partially_delivered'] > 0 ? number_format($earnings[$key]['partial_earning'] / $earnings[$key]['partially_delivered'], 2) : '10.00' }}</td>
                                             <td class="text-center small fw-bold">৳ {{ number_format($earnings[$key]['partial_earning'], 2) }}</td>
                                         </tr>
                                         <tr class="table-success">

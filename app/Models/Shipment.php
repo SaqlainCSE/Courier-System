@@ -30,6 +30,7 @@ class Shipment extends Model
         'additional_charge',
         'balance_cost',
         'status',
+        'earning',
         'estimated_delivery_at',
         'notes',
         'delivered_at',
@@ -57,11 +58,19 @@ class Shipment extends Model
     protected static function booted()
     {
         static::updating(function ($shipment) {
-            if (
-                in_array($shipment->status, ['delivered', 'partially_delivered', 'cancelled']) &&
-                is_null($shipment->delivered_at)
-            ) {
-                $shipment->delivered_at = now();
+            $rates = [
+                'delivered' => 10,
+                'cancelled' => 10,
+                'partially_delivered' => 10,
+            ];
+
+            if (in_array($shipment->status, ['delivered', 'partially_delivered', 'cancelled'])) {
+
+                $shipment->earning = $rates[$shipment->status] ?? 0;
+
+                if (is_null($shipment->delivered_at)) {
+                    $shipment->delivered_at = now();
+                }
             }
         });
     }
