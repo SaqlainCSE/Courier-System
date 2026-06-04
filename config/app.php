@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Open Graph / Social Preview Image
+    |--------------------------------------------------------------------------
+    |
+    | Absolute HTTPS URL for link previews (Facebook, WhatsApp, etc.).
+    | Set OG_IMAGE_URL on production if APP_URL is not yet correct.
+    |
+    */
+
+    'og_image' => env('OG_IMAGE_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
