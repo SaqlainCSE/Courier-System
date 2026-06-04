@@ -59,9 +59,9 @@ class Shipment extends Model
     {
         static::updating(function ($shipment) {
             $rates = [
-                'delivered' => 10,
-                'cancelled' => 10,
-                'partially_delivered' => 10,
+                'delivered' => 5,
+                'cancelled' => 5,
+                'partially_delivered' => 5,
             ];
 
             if (in_array($shipment->status, ['delivered', 'partially_delivered', 'cancelled'])) {
