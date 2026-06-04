@@ -3,7 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta -->
   <title>StepUp Courier</title>
+  <meta name="description" content="Fast, reliable courier and delivery services. Track your parcels in real-time with StepUp Courier.">
+  <meta name="keywords" content="courier, delivery, logistics, parcel tracking, express delivery">
+  <meta name="author" content="StepUp Courier">
+  <meta name="robots" content="index, follow">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://stepupcourier.com/">
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp previews) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://stepupcourier.com">
+  <meta property="og:title" content="StepUp Courier – Fast & Reliable Delivery">
+  <meta property="og:description" content="Fast, reliable courier and delivery services. Track your parcels in real-time with StepUp Courier.">
+  <meta property="og:image" content="{{ asset('meta.png') }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="StepUp Courier">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://stepupcourier.com">
+  <meta name="twitter:title" content="StepUp Courier – Fast & Reliable Delivery">
+  <meta name="twitter:description" content="Fast, reliable courier and delivery services. Track your parcels in real-time with StepUp Courier.">
+  <meta name="twitter:image" content="{{ asset('meta.png') }}">
+  <!-- <meta name="twitter:site" content="@yourhandle"> -->
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Add inside <head> of layouts/app.blade.php -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
