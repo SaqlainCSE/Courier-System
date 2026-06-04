@@ -19,7 +19,7 @@
   <meta property="og:url" content="https://stepupcourier.com">
   <meta property="og:title" content="StepUp Courier – Fast & Reliable Delivery">
   <meta property="og:description" content="Fast, reliable courier and delivery services. Track your parcels in real-time with StepUp Courier.">
-  <meta property="og:image" content="https://stepupcourier.com/meta.png">
+  <meta property="og:image" content="{{ asset('meta.png') }}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:site_name" content="StepUp Courier">
@@ -30,7 +30,7 @@
   <meta name="twitter:url" content="https://stepupcourier.com">
   <meta name="twitter:title" content="StepUp Courier – Fast & Reliable Delivery">
   <meta name="twitter:description" content="Fast, reliable courier and delivery services. Track your parcels in real-time with StepUp Courier.">
-  <meta name="twitter:image" content="https://stepupcourier.com/meta.png">
+  <meta name="twitter:image" content="{{ asset('meta.png') }}">
   <!-- <meta name="twitter:site" content="@yourhandle"> -->
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
