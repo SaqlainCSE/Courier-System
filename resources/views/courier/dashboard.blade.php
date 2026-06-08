@@ -113,7 +113,28 @@
     </div>
 </div>
 
-
+    <!-- Today's Collection Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info mb-0 shadow-sm">
+                <h6 class="fw-bold mb-2"><i class="bi bi-wallet2 me-1"></i> Today's Collection Summary</h6>
+                <div class="row small g-2 mb-2">
+                    <div class="col-sm-4">
+                        <strong>Today's Assigned Total:</strong> ৳{{ number_format($todayAssignedTotalAmount, 2) }}
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Today's Partially Delivered Total:</strong> ৳{{ number_format($todayPartialDeliveredTotal, 2) }}
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Today's Commission Deducted:</strong> ৳{{ number_format($todayAssignedCommission, 2) }}
+                    </div>
+                    <div class="col-sm-4">
+                        <strong>Today's Net (After Commission):</strong> ৳{{ number_format($todayNetAfterCommission, 2) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Assignments Header -->
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">

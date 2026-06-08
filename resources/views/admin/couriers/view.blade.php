@@ -43,7 +43,12 @@
                             <div class="alert alert-info mb-0 small">
                                 <strong>Total Earnings:</strong> ৳{{ number_format($commission, 2) }} <br>
                                 <strong>Today's Earning:</strong> ৳{{ number_format($todayEarnings, 2) }} <br>
-                                <strong>Total Delivered:</strong> {{ $totalDeliveredShipments }}
+                                <strong>Total Delivered:</strong> {{ $totalDeliveredShipments }} <br>
+                                <hr class="my-2">
+                                <strong>Today's Assigned Total:</strong> ৳{{ number_format($todayAssignedTotalAmount, 2) }} <br>
+                                <strong>Today's Partially Delivered Total:</strong> ৳{{ number_format($todayPartialDeliveredTotal, 2) }} <br>
+                                <strong>Today's Commission Deducted:</strong> ৳{{ number_format($todayAssignedCommission, 2) }} <br>
+                                <strong>Today's Net (After Commission):</strong> ৳{{ number_format($todayNetAfterCommission, 2) }}
                             </div>
                         </div>
                     </div>

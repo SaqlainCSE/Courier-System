@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Courier;
+use App\Models\ShipmentStatusLog;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
@@ -73,6 +74,32 @@ class CourierAdminController extends Controller
                 END
             "));
 
+        // ================= TODAY'S ASSIGNED SHIPMENTS =================
+        $todayAssignedShipmentIds = ShipmentStatusLog::query()
+            ->where('status', 'assigned')
+            ->whereDate('created_at', today())
+            ->whereHas('shipment', fn ($q) => $q->where('courier_id', $courier->id))
+            ->pluck('shipment_id')
+            ->unique();
+
+        $todayAssignedQuery = $courier->shipments()->whereIn('id', $todayAssignedShipmentIds);
+
+        $todayAssignedTotalAmount = (clone $todayAssignedQuery)->sum('price');
+
+        $todayAssignedCommission = (clone $todayAssignedQuery)
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->count() * $courier->commission_rate;
+
+        $todayPartialShortfall = (clone $todayAssignedQuery)
+            ->where('status', 'partially_delivered')
+            ->sum(DB::raw('price - partial_price'));
+
+        $todayPartialDeliveredTotal = (clone $todayAssignedQuery)
+            ->where('status', 'partially_delivered')
+            ->sum('partial_price');
+
+        $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall;
+
         return view('admin.couriers.view', compact(
             'courier',
             'shipments',
@@ -81,6 +108,10 @@ class CourierAdminController extends Controller
             'totalDeliveredAmount',
             'totalDeliveredShipments',
             'todayEarnings',
+            'todayAssignedTotalAmount',
+            'todayAssignedCommission',
+            'todayPartialDeliveredTotal',
+            'todayNetAfterCommission',
             'status',
             'from',
             'to'

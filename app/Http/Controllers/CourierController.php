@@ -6,6 +6,7 @@ use App\Models\Shipment;
 use App\Models\ShipmentStatusLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
 
 class CourierController extends Controller
@@ -70,6 +71,31 @@ class CourierController extends Controller
         $holdAssignments = $courier->assignedShipments()->where('status','hold')->count();
         $cancelledAssignments = $courier->assignedShipments()->where('status','cancelled')->count();
 
+        // ================= TODAY'S ASSIGNED SHIPMENTS =================
+        $todayAssignedShipmentIds = ShipmentStatusLog::query()
+            ->where('status', 'assigned')
+            ->whereDate('created_at', today())
+            ->whereHas('shipment', fn ($q) => $q->where('courier_id', $courier->id))
+            ->pluck('shipment_id')
+            ->unique();
+
+        $todayAssignedQuery = $courier->shipments()->whereIn('id', $todayAssignedShipmentIds);
+
+        $todayAssignedTotalAmount = (clone $todayAssignedQuery)->sum('price');
+
+        $todayAssignedCommission = (clone $todayAssignedQuery)
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->count() * $courier->commission_rate;
+
+        $todayPartialShortfall = (clone $todayAssignedQuery)
+            ->where('status', 'partially_delivered')
+            ->sum(DB::raw('price - partial_price'));
+
+        $todayPartialDeliveredTotal = (clone $todayAssignedQuery)
+            ->where('status', 'partially_delivered')
+            ->sum('partial_price');
+
+        $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall;
 
         return view('courier.dashboard', compact(
             'assignments',
@@ -80,7 +106,11 @@ class CourierController extends Controller
             'partiallyDeliveredAssignments',
             'inTransitAssignments',
             'holdAssignments',
-            'cancelledAssignments'
+            'cancelledAssignments',
+            'todayAssignedTotalAmount',
+            'todayAssignedCommission',
+            'todayPartialDeliveredTotal',
+            'todayNetAfterCommission'
         ));
     }
 

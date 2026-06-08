@@ -78,20 +78,31 @@
     </div>
 </div>
 
-<!-- Live Price Display -->
+<!-- Order Summary -->
 <div class="mt-4">
-    <div class="alert alert-info d-flex align-items-center justify-content-between">
-        <span><i class="fas fa-coins me-2"></i><strong>Delivery Fee:</strong></span>
-        <span id="delivery_fee" class="fs-5 fw-bold text-success">
-            ৳ {{ old('cost_of_delivery_amount', $shipment->cost_of_delivery_amount ?? 60) }}
-        </span>
+    <div class="card border-0 shadow-sm bg-light">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="fas fa-receipt me-2 text-primary"></i>Order Summary</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Total Price of Product</span>
+                <span id="summary_product_price" class="fw-semibold">৳ 0.00</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted">Delivery Fee (<span id="summary_weight">0</span> kg)</span>
+                <span id="summary_delivery_fee" class="fw-semibold text-danger">− ৳ 0.00</span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Grand Total</span>
+                <span id="summary_grand_total" class="fs-5 fw-bold text-primary">৳ 0.00</span>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Hidden input to store the calculated delivery fee -->
 <input type="hidden" name="cost_of_delivery_amount" id="delivery_fee_input"
        value="{{ old('cost_of_delivery_amount', $shipment->cost_of_delivery_amount ?? 60) }}">
-
 
 <!-- Buttons -->
 <div class="mt-3">
@@ -189,33 +200,46 @@
         });
 
         // Live Price Calculation
+        const priceInput = document.getElementById('price');
         const weightInput = document.getElementById('weight');
-        const deliveryFeeDisplay = document.getElementById('delivery_fee');
         const deliveryFeeInput = document.getElementById('delivery_fee_input');
 
         let baseFee = {{ auth()->user()->delivery_fee ?? 60 }};
 
         function calculateDeliveryFee(weight) {
-
             let fee = baseFee;
-            if(weight > 1){
+            if (weight > 1) {
                 let additionalKg = Math.ceil(weight - 1) * 10;
                 fee += additionalKg;
             }
             return fee;
         }
 
-        // Initialize on page load
-        deliveryFeeDisplay.textContent = `৳ ${calculateDeliveryFee(parseFloat(weightInput.value) || 0)}`;
-        deliveryFeeInput.value = calculateDeliveryFee(parseFloat(weightInput.value) || 0);
+        function formatCurrency(amount) {
+            return '৳ ' + amount.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
-        // Update live when weight changes
-        weightInput.addEventListener('input', function() {
-            const weight = parseFloat(this.value) || 0;
+        function updateOrderSummary() {
+            const price = parseFloat(priceInput.value) || 0;
+            const weight = parseFloat(weightInput.value) || 0;
             const fee = calculateDeliveryFee(weight);
-            deliveryFeeDisplay.textContent = `৳ ${fee}`;
+
+            document.getElementById('summary_product_price').textContent = formatCurrency(price);
+            document.getElementById('summary_weight').textContent = weight;
+            document.getElementById('summary_delivery_fee').textContent = '− ' + formatCurrency(fee);
+            document.getElementById('summary_grand_total').textContent = formatCurrency(Math.max(0, price - fee));
             deliveryFeeInput.value = fee;
-        });
+        }
+
+        // Initialize on page load
+        updateOrderSummary();
+
+        // Update live when price or weight changes
+        priceInput.addEventListener('input', updateOrderSummary);
+        weightInput.addEventListener('input', updateOrderSummary);
 
     });
 </script>
