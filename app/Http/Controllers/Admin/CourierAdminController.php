@@ -51,18 +51,19 @@ class CourierAdminController extends Controller
 
         // ================= DELIVERY QUERY =================
         $deliveryQuery = (clone $baseQuery)
-            ->whereIn('status', ['delivered','partially_delivered']);
-
+        ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled']);
         // ================= TOTAL DELIVERED SHIPMENTS =================
-        $totalDeliveredShipments = $deliveryQuery->count();
-
+        $totalDeliveredShipments = (clone $baseQuery)
+        ->whereIn('status', ['delivered', 'partially_delivered'])
+        ->count();
         // ================= TODAY EARNINGS =================
         $todayEarnings = (clone $deliveryQuery)
-            ->whereDate('delivered_at', today())
-            ->count() * $courier->commission_rate;
-
+        ->whereDate('delivered_at', today())
+        ->count() * $courier->commission_rate;
         // ================= TOTAL COMMISSION =================
-        $commission = $totalDeliveredShipments * $courier->commission_rate;
+        $commission = (clone $baseQuery)
+        ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+        ->count() * $courier->commission_rate;
 
         // ================= TOTAL COLLECTED AMOUNT =================
         $totalDeliveredAmount = (clone $deliveryQuery)
@@ -98,7 +99,11 @@ class CourierAdminController extends Controller
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
-        $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall;
+        $todayCancelledAmount = (clone $todayAssignedQuery)
+            ->where('status', 'cancelled')
+            ->sum('price');
+        
+        $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
 
         return view('admin.couriers.view', compact(
             'courier',
