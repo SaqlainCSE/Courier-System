@@ -47,7 +47,7 @@
                 </div>
                 <div class="col-auto mt-2 mt-md-0">
                     <button class="btn btn-sm btn-dark w-100 w-md-auto">
-                        <i class="fas fa-filter me-1"></i> Filter
+                        <i class="fas fa-filter me-1"></i> Search
                     </button>
                 </div>
                 <div class="col-auto mt-2 mt-md-0">

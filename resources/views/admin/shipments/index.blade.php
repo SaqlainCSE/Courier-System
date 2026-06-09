@@ -68,7 +68,7 @@
     <!-- Filters -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-header bg-gradient text-dark fw-bold rounded-top-4 d-flex align-items-center justify-content-between">
-            <span><i class="fas fa-filter me-2"></i> Filter Shipments</span>
+            <span><i class="fas fa-filter me-2"></i> Search Shipments</span>
             <button class="btn btn-sm btn-outline-dark d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
                 <i class="fas fa-sliders-h"></i>
             </button>
@@ -120,7 +120,7 @@
                     <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
                 </div>
                 <div class="col-12 mt-2 d-flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-dark"><i class="fas fa-search me-1"></i> Filter</button>
+                    <button class="btn btn-sm btn-dark"><i class="fas fa-search me-1"></i> Search</button>
                     <a href="{{ route('admin.shipments.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">Reports</a>
                     <a href="{{ route('admin.reports.export', request()->all()) }}" class="btn btn-sm btn-primary">Export CSV</a>
@@ -226,7 +226,7 @@
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content rounded-4">
                 <div class="modal-header">
-                    <h5 class="modal-title">Filtered Shipments</h5>
+                    <h5 class="modal-title">Searched Shipments</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 

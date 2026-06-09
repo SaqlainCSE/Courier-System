@@ -9,6 +9,8 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 class CourierAdminController extends Controller
 {
     public function index()
@@ -20,53 +22,52 @@ class CourierAdminController extends Controller
     public function view(Request $request, $id)
     {
         $courier = Courier::with('user')->findOrFail($id);
-
         $status = $request->input('status');
         $from = $request->input('from');
         $to = $request->input('to');
 
-        // ================= BASE QUERY =================
-        $baseQuery = $courier->shipments();
+        // ================= BASE QUERY (fresh every time) =================
+        $base = fn() => $courier->shipments()->newQuery()->where('courier_id', $courier->id);
 
         // ================= FILTERED SHIPMENTS =================
-        $query = $baseQuery->with('customer');
-
+        $query = $base()->with('customer');
         if ($status) {
             $query->where('status', $status);
         }
-
         if ($from && $to) {
-            $query->whereBetween('created_at', [$from, $to]);
+            $query->whereBetween('updated_at', [
+                Carbon::parse($from)->startOfDay(),
+                Carbon::parse($to)->endOfDay()
+            ]);
         }
-
         $shipments = $query->latest()->get();
 
         // ================= STATUS SUMMARY =================
         $allStatuses = ['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'];
-
         $statusSummary = [];
         foreach ($allStatuses as $st) {
-            $statusSummary[$st] = (clone $baseQuery)->where('status', $st)->count();
+            $statusSummary[$st] = $base()->where('status', $st)->count();
         }
 
-        // ================= DELIVERY QUERY =================
-        $deliveryQuery = (clone $baseQuery)
-        ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled']);
         // ================= TOTAL DELIVERED SHIPMENTS =================
-        $totalDeliveredShipments = (clone $baseQuery)
-        ->whereIn('status', ['delivered', 'partially_delivered'])
-        ->count();
-        // ================= TODAY EARNINGS =================
-        $todayEarnings = (clone $deliveryQuery)
-        ->whereDate('delivered_at', today())
-        ->count() * $courier->commission_rate;
+        $totalDeliveredShipments = $base()
+            ->whereIn('status', ['delivered', 'partially_delivered'])
+            ->count();
+
         // ================= TOTAL COMMISSION =================
-        $commission = (clone $baseQuery)
-        ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
-        ->count() * $courier->commission_rate;
+        $commission = $base()
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->count() * $courier->commission_rate;
+
+        // ================= TODAY EARNINGS =================
+        $todayEarnings = $base()
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->whereDate('updated_at', today())
+            ->count() * $courier->commission_rate;
 
         // ================= TOTAL COLLECTED AMOUNT =================
-        $totalDeliveredAmount = (clone $deliveryQuery)
+        $totalDeliveredAmount = $base()
+            ->whereIn('status', ['delivered', 'partially_delivered'])
             ->sum(DB::raw("
                 CASE
                     WHEN status = 'delivered' THEN price
@@ -79,30 +80,32 @@ class CourierAdminController extends Controller
         $todayAssignedShipmentIds = ShipmentStatusLog::query()
             ->where('status', 'assigned')
             ->whereDate('created_at', today())
-            ->whereHas('shipment', fn ($q) => $q->where('courier_id', $courier->id))
+            ->whereHas('shipment', fn($q) => $q->where('courier_id', $courier->id))
             ->pluck('shipment_id')
             ->unique();
 
-        $todayAssignedQuery = $courier->shipments()->whereIn('id', $todayAssignedShipmentIds);
+        $todayBase = fn() => $courier->shipments()->newQuery()
+            ->where('courier_id', $courier->id)
+            ->whereIn('id', $todayAssignedShipmentIds);
 
-        $todayAssignedTotalAmount = (clone $todayAssignedQuery)->sum('price');
+        $todayAssignedTotalAmount = $todayBase()->sum('price');
 
-        $todayAssignedCommission = (clone $todayAssignedQuery)
+        $todayAssignedCommission = $todayBase()
             ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
             ->count() * $courier->commission_rate;
 
-        $todayPartialShortfall = (clone $todayAssignedQuery)
+        $todayPartialShortfall = $todayBase()
             ->where('status', 'partially_delivered')
             ->sum(DB::raw('price - partial_price'));
 
-        $todayPartialDeliveredTotal = (clone $todayAssignedQuery)
+        $todayPartialDeliveredTotal = $todayBase()
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
-        $todayCancelledAmount = (clone $todayAssignedQuery)
+        $todayCancelledAmount = $todayBase()
             ->where('status', 'cancelled')
             ->sum('price');
-        
+
         $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
 
         return view('admin.couriers.view', compact(

@@ -67,10 +67,10 @@
                     {{-- Buttons --}}
                     <div class="col-12 col-md-1 d-flex gap-2">
                         <button type="submit" class="btn btn-dark btn-sm w-100">
-                            <i class="fas fa-search"></i>
+                            <i class="fas fa-search"></i> Search
                         </button>
                         <a href="{{ route('admin.payments.invoices') }}" class="btn btn-outline-secondary btn-sm w-100">
-                            <i class="fas fa-times"></i>
+                            <i class="fas fa-undo"></i> Clear
                         </a>
                     </div>
 
@@ -100,7 +100,7 @@
             <div class="card border-0 shadow-sm rounded-4 p-3 h-100 d-flex flex-row align-items-center gap-3">
                 <i class="fas fa-filter fs-4 text-primary"></i>
                 <div>
-                    <div class="text-muted small">Filtered Results</div>
+                    <div class="text-muted small">Searched Results</div>
                     <div class="fw-semibold text-dark">
                         {{ $totalInvoices }} invoice(s) —
                         <span class="text-success">৳{{ number_format($totalAmount, 2) }}</span> total

@@ -72,8 +72,28 @@
                             <h5 class="fw-bold text-success">{{ $summary['delivered'] ?? 0 }}</h5>
                         </div>
                         <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
+                            <div class="small text-muted">In Transit</div>
+                            <h5 class="fw-bold text-primary">{{ $summary['in_transit'] ?? 0 }}</h5>
+                        </div>
+                        <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
                             <div class="small text-muted">Partially Delivered</div>
-                            <h5 class="fw-bold text-warning">{{ $summary['partially_delivered'] ?? 0 }}</h5>
+                            <h5 class="fw-bold text-dark">{{ $summary['partially_delivered'] ?? 0 }}</h5>
+                        </div>
+                        <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
+                            <div class="small text-muted">Assigned</div>
+                            <h5 class="fw-bold text-info">{{ $summary['assigned'] ?? 0 }}</h5>
+                        </div>
+                        <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
+                            <div class="small text-muted">Picked</div>
+                            <h5 class="fw-bold text-primary">{{ $summary['picked'] ?? 0 }}</h5>
+                        </div>
+                        <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
+                            <div class="small text-muted">Hold</div>
+                            <h5 class="fw-bold text-secondary">{{ $summary['hold'] ?? 0 }}</h5>
+                        </div>
+                        <div class="col-6 col-md-3 border-end mb-2 mb-md-0">
+                            <div class="small text-muted">Pending</div>
+                            <h5 class="fw-bold text-warning">{{ $summary['pending'] ?? 0 }}</h5>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="small text-muted">Cancelled</div>

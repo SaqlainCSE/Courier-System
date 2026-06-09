@@ -109,7 +109,7 @@
                     <input type="date" name="to" class="form-control form-control-sm" value="{{ $to }}">
                 </div>
                 <div class="col-6 col-md-2 d-grid gap-2">
-                    <button type="submit" class="btn btn-dark btn-sm"><i class="fas fa-filter me-1"></i> Filter</button>
+                    <button type="submit" class="btn btn-dark btn-sm"><i class="fas fa-filter me-1"></i> Search</button>
                     <a href="{{ route('admin.couriers.view', $courier->id) }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-redo me-1"></i> Clear</a>
                 </div>
                 <div class="col-6 col-md-2 mt-2 mt-md-0">

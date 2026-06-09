@@ -62,11 +62,11 @@ class ShipmentAdminController extends Controller
         }
 
         if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
+            $query->whereDate('updated_at', '>=', $request->start_date);
         }
 
         if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
+            $query->whereDate('updated_at', '<=', $request->end_date);
         }
 
         // ================= DATA =================
