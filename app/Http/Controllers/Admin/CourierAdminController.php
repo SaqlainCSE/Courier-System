@@ -94,25 +94,21 @@ class CourierAdminController extends Controller
             ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
             ->count() * $courier->commission_rate;
 
-        $todayPartialShortfall = $todayBase()
-            ->where('status', 'partially_delivered')
-            ->sum(DB::raw('price - partial_price'));
-
         $todayPartialDeliveredTotal = $todayBase()
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
-        $todayCancelledAmount = $todayBase()
-            ->where('status', 'cancelled')
-            ->sum('price');
+        // Collected: delivered (full price) + partially_delivered (partial_price) only; cancelled excluded
+        $todayCollectedAmount = $todayBase()
+            ->sum(DB::raw("
+                CASE
+                    WHEN status = 'delivered' THEN price
+                    WHEN status = 'partially_delivered' THEN partial_price
+                    ELSE 0
+                END
+            "));
 
-        $todayDeliveredAmount = $todayBase()
-            ->where('status', 'delivered')
-            ->sum('price');
-
-        $todayCompletedAmount = $todayDeliveredAmount + $todayPartialDeliveredTotal + $todayCancelledAmount;
-
-        $todayNetAfterCommission = $todayCompletedAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
+        $todayNetAfterCommission = $todayCollectedAmount - $todayAssignedCommission;
 
         return view('admin.couriers.view', compact(
             'courier',
