@@ -197,9 +197,11 @@
     </div>
 
     {{-- Pagination --}}
-    <div class="mt-4 d-flex justify-content-center">
-        {{ $payments->withQueryString()->links() }}
-    </div>
+    @if($payments->hasPages())
+        <div class="mt-4 d-flex justify-content-center flex-wrap">
+            {{ $payments->withQueryString()->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
 
 </div>
 @endsection
