@@ -101,13 +101,11 @@ class CourierController extends Controller
             ->where('status', 'cancelled')
             ->sum('price');
 
-        $todayDeliveredAmount = $todayBase()
+            $todayDeliveredAmount = $todayBase()
             ->where('status', 'delivered')
             ->sum('price');
-
-        $todayCompletedAmount = $todayDeliveredAmount + $todayPartialDeliveredTotal + $todayCancelledAmount;
-
-        $todayNetAfterCommission = $todayCompletedAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
+        
+        $todayNetAfterCommission = ($todayDeliveredAmount + $todayPartialDeliveredTotal) - $todayCancelledAmount - $todayAssignedCommission;
 
         return view('courier.dashboard', compact(
             'assignments',

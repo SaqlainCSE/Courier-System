@@ -109,11 +109,9 @@ class CourierAdminController extends Controller
         $todayDeliveredAmount = $todayBase()
             ->where('status', 'delivered')
             ->sum('price');
-
-        $todayCompletedAmount = $todayDeliveredAmount + $todayPartialDeliveredTotal + $todayCancelledAmount;
-
-        $todayNetAfterCommission = $todayCompletedAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
-
+        
+        $todayNetAfterCommission = ($todayDeliveredAmount + $todayPartialDeliveredTotal) - $todayCancelledAmount - $todayAssignedCommission;
+        
         return view('admin.couriers.view', compact(
             'courier',
             'shipments',
