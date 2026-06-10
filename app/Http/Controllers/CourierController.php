@@ -75,31 +75,39 @@ class CourierController extends Controller
         $todayAssignedShipmentIds = ShipmentStatusLog::query()
             ->where('status', 'assigned')
             ->whereDate('created_at', today())
-            ->whereHas('shipment', fn ($q) => $q->where('courier_id', $courier->id))
+            ->whereHas('shipment', fn($q) => $q->where('courier_id', $courier->id))
             ->pluck('shipment_id')
             ->unique();
 
-        $todayAssignedQuery = $courier->shipments()->whereIn('id', $todayAssignedShipmentIds);
+        $todayBase = fn() => $courier->shipments()->newQuery()
+            ->where('courier_id', $courier->id)
+            ->whereIn('id', $todayAssignedShipmentIds);
 
-        $todayAssignedTotalAmount = (clone $todayAssignedQuery)->sum('price');
+        $todayAssignedTotalAmount = $todayBase()->sum('price');
 
-        $todayAssignedCommission = (clone $todayAssignedQuery)
+        $todayAssignedCommission = $todayBase()
             ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
             ->count() * $courier->commission_rate;
 
-        $todayPartialShortfall = (clone $todayAssignedQuery)
+        $todayPartialShortfall = $todayBase()
             ->where('status', 'partially_delivered')
             ->sum(DB::raw('price - partial_price'));
 
-        $todayPartialDeliveredTotal = (clone $todayAssignedQuery)
+        $todayPartialDeliveredTotal = $todayBase()
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
-            $todayCancelledAmount = (clone $todayAssignedQuery)
+        $todayCancelledAmount = $todayBase()
             ->where('status', 'cancelled')
             ->sum('price');
-        
-        $todayNetAfterCommission = $todayAssignedTotalAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
+
+        $todayDeliveredAmount = $todayBase()
+            ->where('status', 'delivered')
+            ->sum('price');
+
+        $todayCompletedAmount = $todayDeliveredAmount + $todayPartialDeliveredTotal + $todayCancelledAmount;
+
+        $todayNetAfterCommission = $todayCompletedAmount - $todayAssignedCommission - $todayPartialShortfall - $todayCancelledAmount;
 
         return view('courier.dashboard', compact(
             'assignments',
