@@ -182,18 +182,60 @@ class ShipmentAdminController extends Controller
         return back()->with('success', 'Shipment status updated successfully.');
     }
 
-    // Bulk Assign Page - Show today's pending shipments
-    public function bulkAssignPage()
+    // Bulk Assign Page - Show pending / hold shipments
+    public function bulkAssignPage(Request $request)
     {
-        $shipments = Shipment::where('status', 'pending')->orWhere('status', 'hold')
-            // ->whereDate('created_at', now()->toDateString())
+        $query = Shipment::where(function ($q) {
+                $q->where('status', 'pending')->orWhere('status', 'hold');
+            })
             ->with(['customer', 'courier.user'])
-            ->latest()
-            ->get();
+            ->latest();
 
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($sub) use ($search) {
+                $sub->where('tracking_number', 'like', "%{$search}%")
+                    ->orWhere('drop_phone', 'like', "%{$search}%");
+            });
+        }
+
+        $shipments = $query->get();
         $couriers = Courier::with('user')->where('status', 'available')->get();
 
         return view('admin.shipments.bulk-assign', compact('shipments', 'couriers'));
+    }
+
+    // AJAX search for bulk assign (tracking number or drop phone)
+    public function bulkAssignSearch(Request $request)
+    {
+        $request->validate(['q' => 'required|string|min:1']);
+
+        $search = $request->q;
+
+        $shipments = Shipment::where(function ($q) {
+                $q->where('status', 'pending')->orWhere('status', 'hold');
+            })
+            ->where(function ($sub) use ($search) {
+                $sub->where('tracking_number', 'like', "%{$search}%")
+                    ->orWhere('drop_phone', 'like', "%{$search}%");
+            })
+            ->with('customer')
+            ->latest()
+            ->limit(50)
+            ->get();
+
+        return response()->json($shipments->map(fn ($s) => [
+            'id' => $s->id,
+            'tracking_number' => $s->tracking_number,
+            'drop_name' => $s->drop_name,
+            'drop_phone' => $s->drop_phone,
+            'drop_address' => $s->drop_address,
+            'pickup_name' => $s->customer->business_name ?? 'N/A',
+            'pickup_address' => $s->pickup_address,
+            'price' => number_format($s->price, 2),
+            'created_at' => $s->created_at->format('d M Y H:i'),
+            'status' => $s->status,
+        ]));
     }
 
     // Handle Bulk Assignment
