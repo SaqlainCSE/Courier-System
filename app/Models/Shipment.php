@@ -26,6 +26,7 @@ class Shipment extends Model
         'drop_lng',
         'weight_kg',
         'price',
+        'partial_price',
         'cost_of_delivery_amount',
         'additional_charge',
         'balance_cost',

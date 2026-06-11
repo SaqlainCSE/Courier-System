@@ -35,7 +35,7 @@ class CourierAdminController extends Controller
             $query->where('status', $status);
         }
         if ($from && $to) {
-            $query->whereBetween('updated_at', [
+            $query->whereBetween('created_at', [
                 Carbon::parse($from)->startOfDay(),
                 Carbon::parse($to)->endOfDay()
             ]);
@@ -62,7 +62,7 @@ class CourierAdminController extends Controller
         // ================= TODAY EARNINGS =================
         $todayEarnings = $base()
             ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
-            ->whereDate('updated_at', today())
+            ->whereDate('delivered_at', today())
             ->count() * $courier->commission_rate;
 
         // ================= TOTAL COLLECTED AMOUNT =================
