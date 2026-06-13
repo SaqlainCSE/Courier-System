@@ -276,4 +276,10 @@ class ShipmentAdminController extends Controller
         return back()->with('success', count($shipmentIds) . ' shipment(s) assigned successfully to ' . $courier->user->name);
     }
 
+    public function delete(Shipment $shipment)
+    {
+        $shipment->delete();
+        return redirect()->back()->with('success', 'Shipment successfully deleted!');
+    }
+
 }

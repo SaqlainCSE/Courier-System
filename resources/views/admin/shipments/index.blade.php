@@ -201,6 +201,23 @@
                                 <td>৳ {{ number_format($s->partial_price,2) }}</td>
                                 <td>
                                     <a href="{{ route('admin.shipments.show', $s) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                    
+                                    <!-- Form (hidden) -->
+                                    <form id="delete-form-{{ $s->id }}" 
+                                        action="{{ route('admin.shipments.delete', $s) }}" 
+                                        method="POST" 
+                                        style="display:none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+
+                                    <!-- Button -->
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="confirmDelete({{ $s->id }})">
+                                        Delete
+                                    </button>
+                                    
                                 </td>
                             </tr>
                         @empty
@@ -310,5 +327,36 @@
         });
     });
 </script>
+
+<script>
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This shipment will be permanently deleted!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form-' + id).submit();
+        }
+    });
+}
+</script>
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        title: 'Deleted!',
+        text: "{{ session('success') }}",
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
+</script>
+@endif
 
 @endpush
