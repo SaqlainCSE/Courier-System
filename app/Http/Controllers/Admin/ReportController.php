@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -11,15 +12,13 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        // Default filters
-        $filter = $request->get('filter', 'total');
-        $status = $request->get('status', 'all');
-        $dateRange = $request->only(['start_date', 'end_date']);
+        $filter     = $request->get('filter', 'total');
+        $status     = $request->get('status', 'all');
+        $merchantId = $request->get('merchant_id', 'all');
+        $dateRange  = $request->only(['start_date', 'end_date']);
 
-        // 🔹 Build query
         $query = Shipment::query();
 
-        // Time filters
         switch ($filter) {
             case 'today':
                 $query->whereDate('created_at', now()->toDateString());
@@ -38,38 +37,41 @@ class ReportController extends Controller
                     $query->whereBetween('created_at', [$dateRange['start_date'], $dateRange['end_date']]);
                 }
                 break;
-            case 'total':
             default:
-                // no filter
                 break;
         }
 
-        // 🔹 Status filter
         if ($status !== 'all') {
             $query->where('status', $status);
         }
 
-        // Fetch results
+        if ($merchantId !== 'all') {
+            $query->where('user_id', $merchantId);
+        }
+
         $shipments = $query->latest()->get();
 
-        // 🔹 Summary data
         $summary = [
-            'total'      => Shipment::count(),
-            'today'      => Shipment::whereDate('created_at', now()->toDateString())->count(),
-            'this_week'  => Shipment::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'this_month' => Shipment::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
-            'this_year'  => Shipment::whereYear('created_at', now()->year)->count(),
-            'pending'    => Shipment::where('status', 'pending')->count(),
-            'assigned'   => Shipment::where('status', 'assigned')->count(),
-            'picked'     => Shipment::where('status', 'picked')->count(),
-            'in_transit' => Shipment::where('status', 'in_transit')->count(),
-            'delivered'  => Shipment::where('status', 'delivered')->count(),
+            'total'               => Shipment::count(),
+            'today'               => Shipment::whereDate('created_at', now()->toDateString())->count(),
+            'this_week'           => Shipment::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'this_month'          => Shipment::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count(),
+            'this_year'           => Shipment::whereYear('created_at', now()->year)->count(),
+            'pending'             => Shipment::where('status', 'pending')->count(),
+            'assigned'            => Shipment::where('status', 'assigned')->count(),
+            'picked'              => Shipment::where('status', 'picked')->count(),
+            'in_transit'          => Shipment::where('status', 'in_transit')->count(),
+            'delivered'           => Shipment::where('status', 'delivered')->count(),
             'partially_delivered' => Shipment::where('status', 'partially_delivered')->count(),
-            'hold'       => Shipment::where('status', 'hold')->count(),
-            'cancelled'  => Shipment::where('status', 'cancelled')->count(),
+            'hold'                => Shipment::where('status', 'hold')->count(),
+            'cancelled'           => Shipment::where('status', 'cancelled')->count(),
         ];
 
-        return view('admin.reports.index', compact('summary', 'shipments', 'filter', 'status', 'dateRange'));
+        $merchants = User::where('role', 'customer')->get();
+
+        return view('admin.reports.index', compact(
+            'summary', 'shipments', 'filter', 'status', 'dateRange', 'merchants', 'merchantId'
+        ));
     }
 
     public function export(Request $request)

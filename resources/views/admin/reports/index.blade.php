@@ -65,6 +65,18 @@
                     </select>
                 </div>
 
+                <div class="col-12 col-md-2">
+                    <label class="small fw-bold">Merchant</label>
+                    <select name="merchant_id" class="form-select form-select-sm">
+                        <option value="all" {{ ($merchantId ?? 'all') == 'all' ? 'selected' : '' }}>All Merchants</option>
+                        @foreach($merchants as $m)
+                            <option value="{{ $m->id }}" {{ ($merchantId ?? 'all') == $m->id ? 'selected' : '' }}>
+                                {{ $m->business_name ?? $m->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-end justify-content-center justify-content-md-end">
                     <button class="btn btn-sm btn-primary"><i class="fas fa-filter me-1"></i> Filter</button>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
