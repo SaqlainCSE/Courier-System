@@ -201,7 +201,9 @@
                                 <td>৳ {{ number_format($s->partial_price,2) }}</td>
                                 <td>
                                     <a href="{{ route('admin.shipments.show', $s) }}" class="btn btn-sm btn-outline-secondary">View</a>
-                                    
+                                    <a href="{{ route('admin.shipments.print', $s) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-print me-1"></i> Level
+                                    </a>
                                     <!-- Form (hidden) -->
                                     <form id="delete-form-{{ $s->id }}" 
                                         action="{{ route('admin.shipments.delete', $s) }}" 

@@ -282,4 +282,9 @@ class ShipmentAdminController extends Controller
         return redirect()->back()->with('success', 'Shipment successfully deleted!');
     }
 
+    public function printSingle(Shipment $shipment)
+    {
+        return view('admin.reports.print_single', compact('shipment'));
+    }
+
 }

@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function() {
 
         Route::get('/shipments', [ShipmentAdminController::class,'index'])->name('admin.shipments.index');
         Route::get('/shipments/{shipment}', [ShipmentAdminController::class,'show'])->name('admin.shipments.show');
+        Route::get('/admin/shipments/{shipment}/print', [ShipmentAdminController::class, 'printSingle'])->name('admin.shipments.print');
         Route::delete('/shipments/{shipment}', [ShipmentAdminController::class,'delete'])->name('admin.shipments.delete');
         Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class,'assignCourier'])->name('admin.shipments.assign');
         Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class,'updateStatus'])->name('admin.shipments.updateStatus');
