@@ -29,7 +29,7 @@
 
                                 $qrContent = json_encode($qrData, JSON_UNESCAPED_UNICODE);
                             @endphp
-                                {!! QrCode::size(50)->generate($qrContent) !!}
+                            {!! QrCode::size(50)->encoding('UTF-8')->generate($qrContent) !!}
                         </div>
                     </div>
 
