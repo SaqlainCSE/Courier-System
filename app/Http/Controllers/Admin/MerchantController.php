@@ -82,7 +82,7 @@ class MerchantController extends Controller
         $shipments = $merchant->shipments()->latest()->paginate(20);
 
         // ================= ENTRY BALANCE =================
-        $entryBalance = $merchant->shipments()->sum('price');
+        $entryBalance = $merchant->shipments()->sum('balance_cost');
 
         // ================= COD BALANCE =================
         $codBalance = $merchant->shipments()

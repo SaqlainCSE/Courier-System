@@ -209,7 +209,7 @@
         function calculateDeliveryFee(weight) {
             let fee = baseFee;
             if (weight > 1) {
-                let additionalKg = Math.ceil(weight - 1) * 10;
+                let additionalKg = Math.ceil(weight - 1) * 15;
                 fee += additionalKg;
             }
             return fee;

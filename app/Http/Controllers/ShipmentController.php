@@ -73,7 +73,7 @@ class ShipmentController extends Controller
             'partially_delivered'=> $summaryCounts['partially_delivered'] ?? 0,
         ];
 
-        $entryBalance = Shipment::where('user_id', $user->id)->sum('price');
+        $entryBalance = Shipment::where('user_id', $user->id)->sum('balance_cost');
 
         $codBalance = Shipment::where('user_id', $user->id)
             ->whereIn('status', $this->deliveredStatuses)
@@ -156,7 +156,7 @@ class ShipmentController extends Controller
             'price'                   => $request->price,
             'cost_of_delivery_amount' => $costs['costOfDelivery'],
             'additional_charge'       => $costs['additionalCharge'],
-            'balance_cost'            => $costs['balanceCost'], // ✅ Bug 2 Fix
+            'balance_cost'            => $costs['balanceCost'],
             'notes'                   => $request->notes,
         ]);
 
