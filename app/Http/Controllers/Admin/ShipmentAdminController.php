@@ -152,8 +152,7 @@ class ShipmentAdminController extends Controller
 
             $collectedAmount = $shipment->price;
 
-            // Merchant balance (never negative)
-            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+            // $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
 
         } elseif ($data['status'] === 'partially_delivered') {
 
@@ -161,11 +160,12 @@ class ShipmentAdminController extends Controller
 
             $collectedAmount = $shipment->partial_price;
 
-            $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
+            // $shipment->balance_cost = max($collectedAmount - $deliveryCharge, 0);
 
-        } else {
-            $shipment->balance_cost = 0;
         }
+        // else {
+        //     $shipment->balance_cost = 0;
+        // }
 
         // ================= SAVE =================
         $shipment->save();

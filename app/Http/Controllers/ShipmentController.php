@@ -73,11 +73,26 @@ class ShipmentController extends Controller
             'partially_delivered'=> $summaryCounts['partially_delivered'] ?? 0,
         ];
 
-        $entryBalance = Shipment::where('user_id', $user->id)->sum('balance_cost');
+        $entryBalance = Shipment::where('user_id', $user->id)
+                        ->whereDate('created_at', today())
+                        ->sum('balance_cost');
 
-        $codBalance = Shipment::where('user_id', $user->id)
-            ->whereIn('status', $this->deliveredStatuses)
+        // $codBalance = Shipment::where('user_id', $user->id)
+        //     ->whereIn('status', $this->deliveredStatuses)
+        //     ->sum('balance_cost');
+
+         // ✅ Bug Fix: delivered shipment gular balance_cost
+        $deliveredBalance = Shipment::where('user_id', $user->id)
+            ->where('status', 'delivered')
             ->sum('balance_cost');
+
+        // ✅ Bug Fix: partially_delivered shipment gular partial_price
+        $partiallyDeliveredBalance = Shipment::where('user_id', $user->id)
+            ->where('status', 'partially_delivered')
+            ->sum('partial_price');
+
+        // ✅ duitar sum mile codBalance hobe (delivered + partially_delivered)
+        $codBalance = $deliveredBalance + $partiallyDeliveredBalance;
 
         $paidAmount = Payment::whereHas('shipment', function ($q) use ($user) {
             $q->where('user_id', $user->id);

@@ -50,8 +50,13 @@ class PaymentController extends Controller
 
         $shipment = Shipment::findOrFail($request->shipment_id);
 
-        // ✅ max() দিয়ে negative balance prevent করা — cleaner
-        $shipment->balance_cost = max(0, $shipment->balance_cost - $request->amount);
+        // ✅ status onujayi shothik column update hobe
+        if ($shipment->status === 'partially_delivered') {
+            $shipment->partial_price = max(0, $shipment->partial_price - $request->amount);
+        } else {
+            $shipment->balance_cost = max(0, $shipment->balance_cost - $request->amount);
+        }
+
         $shipment->save();
 
         $payment = Payment::create([
@@ -65,10 +70,15 @@ class PaymentController extends Controller
             ]),
         ]);
 
+        // ✅ status onujayi shothik balance value response e pathano hobe
+        $remainingBalance = $shipment->status === 'partially_delivered'
+            ? $shipment->partial_price
+            : $shipment->balance_cost;
+
         return response()->json([
             'success'        => true,
             'message'        => 'Payment adjusted successfully.',
-            'balance_cost'   => $shipment->balance_cost,
+            'balance_cost'   => $remainingBalance,
             'invoice_number' => $payment->invoice_number,
             'invoice_url'    => route('admin.payments.invoice', $payment->id),
         ]);

@@ -82,12 +82,20 @@ class MerchantController extends Controller
         $shipments = $merchant->shipments()->latest()->paginate(20);
 
         // ================= ENTRY BALANCE =================
-        $entryBalance = $merchant->shipments()->sum('balance_cost');
+        $entryBalance = $merchant->shipments()
+                                ->whereDate('created_at', today())
+                                ->sum('balance_cost');
 
         // ================= COD BALANCE =================
-        $codBalance = $merchant->shipments()
-            ->whereIn('status', ['delivered', 'partially_delivered'])
+        $delivered = $merchant->shipments()
+            ->where('status', 'delivered')
             ->sum('balance_cost');
+
+        $partiallyDelivered = $merchant->shipments()
+            ->where('status', 'partially_delivered')
+            ->sum('partial_price');
+
+        $codBalance = $delivered + $partiallyDelivered;
 
         // ================= PAID AMOUNT =================
         $paidAmount = Payment::whereHas('shipment', function($q) use ($merchant) {

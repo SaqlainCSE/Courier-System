@@ -39,7 +39,6 @@
 <body>
 
 <div class="invoice-box">
-
     <!-- Header -->
     <div class="header">
         <div class="brand">
@@ -59,9 +58,9 @@
     <div class="info-grid">
         <div class="info-box">
             <h6>Merchant Info</h6>
-            <p>{{ $payment->shipment->customer->business_name ?? $payment->shipment->customer->name }}</p>
-            <p class="sub">{{ $payment->shipment->customer->phone }}</p>
-            <p class="sub">{{ $payment->shipment->customer->email }}</p>
+            <p>{{ $payment->shipment->user->business_name ?? $payment->shipment->user->name }}</p>
+            <p class="sub">{{ $payment->shipment->user->phone }}</p>
+            <p class="sub">{{ $payment->shipment->user->email }}</p>
         </div>
         <div class="info-box">
             <h6>Payment Info</h6>
@@ -69,6 +68,13 @@
             <p class="sub">Paid At: {{ $payment->created_at->format('d M Y, h:i A') }}</p>
         </div>
     </div>
+
+    @php
+        // ✅ status onujayi shothik COD amount ar remaining balance
+        $isPartial = $payment->shipment->status === 'partially_delivered';
+        $codAmount = $isPartial ? ($payment->shipment->partial_price ?? 0) : $payment->shipment->price;
+        $remainingBalance = $isPartial ? ($payment->shipment->partial_price ?? 0) : $payment->shipment->balance_cost;
+    @endphp
 
     <!-- Shipment Table -->
     <table>
@@ -83,21 +89,10 @@
         <tbody>
             <tr>
                 <td>{{ $payment->shipment->tracking_number }}</td>
-
-                @php
-                    if ($payment->shipment->status === 'partially_delivered') {
-                        $codAmount = $payment->shipment->partial_price ?? 0;
-                    } else {
-                        $codAmount = $payment->shipment->price;
-                    }
-                @endphp
-
                 <td>৳ {{ number_format($codAmount, 2) }}</td>
-
                 <td>
                     ৳ {{ number_format($payment->shipment->cost_of_delivery_amount ?? 0, 2) }}
                 </td>
-
                 <td>৳ {{ number_format($payment->amount, 2) }}</td>
             </tr>
         </tbody>
@@ -105,39 +100,26 @@
 
     <!-- Total Section -->
     <div class="total-section">
-        @php
-            if ($payment->shipment->status === 'partially_delivered') {
-                $codAmount = $payment->shipment->partial_price ?? 0;
-            } else {
-                $codAmount = $payment->shipment->price;
-            }
-        @endphp
-
         <div class="total-row">
             <span>COD Amount</span>
             <span>৳ {{ number_format($codAmount, 2) }}</span>
         </div>
-
         <div class="total-row">
             <span>Delivery Charge</span>
             <span>৳ {{ number_format($payment->shipment->cost_of_delivery_amount ?? 0, 2) }}</span>
         </div>
-
         <div class="total-row">
             <span>Paid Amount</span>
             <span>৳ {{ number_format($payment->amount, 2) }}</span>
         </div>
-
         <div class="total-row">
             <span>Remaining Balance</span>
-            <span>৳ {{ number_format($payment->shipment->balance_cost, 2) }}</span>
+            <span>৳ {{ number_format($remainingBalance, 2) }}</span>
         </div>
-
         <div class="total-row grand">
             <span>Total Paid</span>
             <span>৳ {{ number_format($payment->amount, 2) }}</span>
         </div>
-
     </div>
 
     <hr class="divider">
@@ -147,7 +129,6 @@
         <p>Thank you for using StepUpCourier!</p>
         <p>This is a system-generated invoice. No signature required.</p>
     </div>
-
 </div>
 
 <!-- Print Button -->

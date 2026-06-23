@@ -64,59 +64,62 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                @php
+                                    $shipments = $merchant->shipments
+                                        ->sortByDesc('created_at')
+                                        ->sortBy(function ($s) {
+                                            $bal = $s->status === 'partially_delivered' ? $s->partial_price : $s->balance_cost;
+                                            return $bal <= 0;
+                                        });
+                                @endphp
+
+                                @foreach($shipments as $shipment)
                                     @php
-                                        $shipments = $merchant->shipments
-                                            ->sortByDesc('created_at')
-                                            ->sortBy(fn($s) => $s->balance_cost <= 0);
+                                        // ✅ status onujayi shothik balance value
+                                        $displayBalance = $shipment->status === 'partially_delivered'
+                                            ? $shipment->partial_price
+                                            : $shipment->balance_cost;
                                     @endphp
 
-                                    @foreach($shipments as $shipment)
-                                        <tr id="shipment-{{ $shipment->id }}"
-                                            class="{{ $shipment->balance_cost > 0 ? 'table-warning' : '' }}">
-                                            <td class="ps-3">{{ $shipment->tracking_number }}</td>
-                                            <td class="text-center">
-                                                @php
-                                                    $statusColors = [
-                                                        'pending' => 'secondary',
-                                                        'assigned' => 'info',
-                                                        'picked' => 'primary',
-                                                        'in_transit' => 'warning',
-                                                        'delivered' => 'success',
-                                                        'partially_delivered' => 'dark',
-                                                        'cancelled' => 'danger',
-                                                        'hold' => 'secondary',
-                                                    ];
-                                                @endphp
+                                    <tr id="shipment-{{ $shipment->id }}"
+                                        class="{{ $displayBalance > 0 ? 'table-warning' : '' }}">
+                                        <td class="ps-3">{{ $shipment->tracking_number }}</td>
+                                        <td class="text-center">
+                                            @php
+                                                $statusColors = [
+                                                    'pending' => 'secondary',
+                                                    'assigned' => 'info',
+                                                    'picked' => 'primary',
+                                                    'in_transit' => 'warning',
+                                                    'delivered' => 'success',
+                                                    'partially_delivered' => 'dark',
+                                                    'cancelled' => 'danger',
+                                                    'hold' => 'secondary',
+                                                ];
+                                            @endphp
 
-                                                <span class="badge bg-{{ $statusColors[$shipment->status] ?? 'secondary' }} px-3 py-2 rounded-pill">
-                                                    {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
+                                            <span class="badge bg-{{ $statusColors[$shipment->status] ?? 'secondary' }} px-3 py-2 rounded-pill">
+                                                {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
+                                            </span>
+                                        </td>
+                                        <td class="balance text-center">{{ number_format($displayBalance, 2) }}</td>
+                                        <td class="text-center action-cell">
+                                            @if($displayBalance > 0)
+                                                <button
+                                                    class="btn btn-sm btn-outline-success pay-btn"
+                                                    data-id="{{ $shipment->id }}"
+                                                    data-balance="{{ $displayBalance }}"
+                                                    data-tracking="{{ $shipment->tracking_number }}">
+                                                    <i class="far fa-money-bill-alt me-1"></i> Pay
+                                                </button>
+                                            @else
+                                                <span class="badge bg-success rounded-pill px-3 py-2">
+                                                    <i class="fas fa-check-circle me-1"></i> Paid
                                                 </span>
-                                            </td>
-                                            <td class="balance text-center">{{ number_format($shipment->balance_cost, 2) }}</td>
-                                            <td class="text-center action-cell">
-                                                @if($shipment->balance_cost > 0)
-                                                    <button
-                                                        class="btn btn-sm btn-outline-success pay-btn"
-                                                        data-id="{{ $shipment->id }}"
-                                                        data-balance="{{ $shipment->balance_cost }}"
-                                                        data-tracking="{{ $shipment->tracking_number }}">
-                                                        <i class="far fa-money-bill-alt me-1"></i> Pay
-                                                    </button>
-                                                @else
-                                                    <span class="badge bg-success rounded-pill px-3 py-2">
-                                                        <i class="fas fa-check-circle me-1"></i> Paid
-                                                    </span>
-                                                    {{--  @if($shipment->payments->isNotEmpty())
-                                                        <a href="{{ route('admin.payments.invoice', $shipment->payments->last()->id) }}"
-                                                           target="_blank"
-                                                           class="btn btn-sm btn-outline-danger ms-1">
-                                                            <i class="fas fa-file-invoice me-1"></i> Invoice
-                                                        </a>
-                                                    @endif  --}}
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -150,9 +153,9 @@
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Enter Payment Amount (৳)</label>
-            <input type="number" name="amount" class="form-control border border-success"
-                   placeholder="Enter payment amount" step="0.01" required>
-          </div>
+            <input type="number" name="amount" class="form-control border border-success bg-light"
+                id="payment_amount" step="0.01" required readonly>
+        </div>
         </div>
 
         <div class="modal-footer bg-light rounded-bottom-4">
@@ -227,7 +230,10 @@ $(document).ready(function() {
         $('#shipment_id').val($(this).data('id'));
         $('#tracking_number').val($(this).data('tracking'));
         $('#current_balance').val($(this).data('balance'));
-        $('input[name="amount"]').val('');
+
+        // ✅ amount field-e current balance fixed value, readonly thakar karone edit kora jabe na
+        $('#payment_amount').val($(this).data('balance'));
+
         modal.show();
     });
 
@@ -244,7 +250,6 @@ $(document).ready(function() {
                 if (res.success) {
                     const row = $('#shipment-' + shipmentId);
 
-                    // Balance update
                     row.find('.balance').text(res.balance_cost.toFixed(2));
 
                     if (res.balance_cost <= 0) {
@@ -261,7 +266,6 @@ $(document).ready(function() {
 
                     modal.hide();
 
-                    // SweetAlert invoice popup
                     Swal.fire({
                         icon: 'success',
                         title: 'Payment Successful!',
