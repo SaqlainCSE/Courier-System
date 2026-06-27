@@ -155,6 +155,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="filterStatus">
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => '']) }}">All</a></li>
+                    <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'merchant_pay']) }}">Merchant Pay</a></li>
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'assigned']) }}">Assigned</a></li>
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'picked']) }}">Picked</a></li>
                     <li><a class="dropdown-item" href="{{ request()->fullUrlWithQuery(['status' => 'hold']) }}">Hold</a></li>
@@ -190,6 +191,7 @@
                         'picked'     => 'bg-primary',
                         'in_transit' => 'bg-warning text-dark',
                         'delivered'  => 'bg-success',
+                        'merchant_pay'  => 'bg-success',
                         'hold'       => 'bg-dark',
                         'partially_delivered' => 'bg-dark',
                         'cancelled'  => 'bg-danger',
@@ -201,6 +203,7 @@
                         'picked' => 55,
                         'in_transit' => 75,
                         'delivered' => 100,
+                        'merchant_pay' => 100,
                         'hold' => 80,
                         'partially_delivered' => 90,
                         'cancelled' => 0,
@@ -280,6 +283,7 @@
                                         @csrf
                                         <div class="col-7">
                                             <select name="status" class="form-select form-select-sm status-select" data-id="{{ $assignment->id }}" required>
+                                                <option value="merchant_pay" @selected($assignment->status=='merchant_pay')>Merchant Pay</option>
                                                 <option value="picked" @selected($assignment->status=='picked')>Picked</option>
                                                 <option value="delivered" @selected($assignment->status=='delivered')>Delivered</option>
                                                 <option value="hold" @selected($assignment->status=='hold')>Hold</option>
