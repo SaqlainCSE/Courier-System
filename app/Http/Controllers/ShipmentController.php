@@ -95,7 +95,7 @@ class ShipmentController extends Controller
 
         $merchantPayBalance = Shipment::where('user_id', $user->id)
             ->where('status', 'merchant_pay')
-            ->selectRaw('SUM(balance_cost - cost_of_delivery_amount) as total')
+            ->selectRaw('SUM(cost_of_delivery_amount) as total')
             ->value('total') ?? 0;
 
         $cancelled = Shipment::where('user_id', $user->id)
@@ -103,7 +103,7 @@ class ShipmentController extends Controller
             ->sum('cost_of_delivery_amount');
 
         // ✅ duitar sum mile codBalance hobe (delivered + partially_delivered)
-        $codBalance = $deliveredBalance + $partiallyDeliveredBalance + $merchantPayBalance - $cancelled;
+        $codBalance = $deliveredBalance + $partiallyDeliveredBalance - $merchantPayBalance - $cancelled;
 
         $paidAmount = Payment::whereHas('shipment', function ($q) use ($user) {
             $q->where('user_id', $user->id);

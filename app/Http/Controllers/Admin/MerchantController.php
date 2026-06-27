@@ -98,14 +98,13 @@ class MerchantController extends Controller
 
         $merchantPay = $merchant->shipments()
             ->where('status', 'merchant_pay')
-            ->selectRaw('SUM(balance_cost - cost_of_delivery_amount) as total')
-            ->value('total') ?? 0;
+            ->sum('cost_of_delivery_amount');
 
         $cancelled = $merchant->shipments()
             ->where('status', 'cancelled')
             ->sum('cost_of_delivery_amount');
 
-        $codBalance = $delivered + $partiallyDelivered + $merchantPay - $cancelled;
+        $codBalance = $delivered + $partiallyDelivered - $merchantPay - $cancelled;
 
         // ================= PAID AMOUNT =================
         $paidAmount = Payment::whereHas('shipment', function($q) use ($merchant) {
