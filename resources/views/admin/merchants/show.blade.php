@@ -124,6 +124,13 @@
                                 <h6 class="fw-bold text-success">৳{{ number_format($summary['paid_amount'] ?? 0, 2) }}</h6>
                             </div>
                         </div>
+                        <div class="col-6 col-md-3">
+                            <div class="card border-0 shadow-sm text-center p-2">
+                                <i class="fas fa-ban fa-lg text-danger mb-1"></i>
+                                <div class="small text-muted">Cancelled Amount</div>
+                                <h6 class="fw-bold text-danger">৳{{ number_format($summary['cancelled_amount'] ?? 0, 2) }}</h6>
+                            </div>
+                        </div>
                         {{--  <div class="col-6 col-md-3">
                             <div class="card border-0 shadow-sm text-center p-2">
                                 <i class="fas fa-balance-scale fa-lg text-danger mb-1"></i>

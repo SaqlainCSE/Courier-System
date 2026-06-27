@@ -76,6 +76,16 @@
             </div>
         </div>
 
+        <!-- Cancelled Amount -->
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">
+                <i class="fas fa-ban fa-2x text-danger mb-2"></i>
+           
+                <h6 class="fw-bold text-muted">Cancelled Amount</h6>
+                <h4 class="fw-bold text-danger">৳ {{ number_format($cancelledAmount, 2) }}</h4>
+            </div>
+        </div>
+
         <!-- Remaining Balance -->
         {{--  <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 h-100 text-center p-3 hover-card">

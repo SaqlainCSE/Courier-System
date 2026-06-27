@@ -108,6 +108,8 @@ class MerchantController extends Controller
         ->where('status', 'paid')
         ->sum('amount');
 
+        $cancelledAmount = $cancelled;
+
         // ================= FINAL DUE =================
         $newCOD = $codBalance - $paidAmount;
 
@@ -128,6 +130,7 @@ class MerchantController extends Controller
             'cod_balance' => $codBalance,
             'paid_amount' => $paidAmount,
             'new_cod' => $newCOD,
+            'cancelled_amount' => $cancelledAmount,
         ];
 
         return view('admin.merchants.show', compact(

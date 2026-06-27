@@ -104,6 +104,10 @@ class ShipmentController extends Controller
         ->where('status', 'paid')
         ->sum('amount');
 
+        $cancelledAmount = Shipment::where('user_id', $user->id)
+        ->where('status', 'cancelled')
+        ->sum('cost_of_delivery_amount');
+
         // ✅ Bug 7 Fix: negative হলে 0 দেখাবে
         $newCOD = max(0, $codBalance - $paidAmount);
 
@@ -117,7 +121,7 @@ class ShipmentController extends Controller
 
         return view('shipments.dashboard', compact(
             'shipments', 'summary', 'entryBalance',
-            'codBalance', 'paidAmount', 'newCOD', 'monthlyCosts'
+            'codBalance', 'paidAmount', 'newCOD', 'monthlyCosts', 'cancelledAmount'
         ))->with('filters', $request->only(['q', 'status', 'start_date', 'end_date']));
     }
 
