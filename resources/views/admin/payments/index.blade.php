@@ -68,7 +68,9 @@
                                     $shipments = $merchant->shipments
                                         ->sortByDesc('created_at')
                                         ->sortBy(function ($s) {
-                                            $bal = $s->status === 'partially_delivered' ? $s->partial_price : $s->balance_cost;
+                                            $bal = $s->status === 'partially_delivered'
+                                                ? ($s->partial_price - $s->cost_of_delivery_amount)
+                                                : $s->balance_cost;
                                             return $bal <= 0;
                                         });
                                 @endphp
@@ -77,7 +79,7 @@
                                     @php
                                         // ✅ status onujayi shothik balance value
                                         $displayBalance = $shipment->status === 'partially_delivered'
-                                            ? $shipment->partial_price
+                                            ? ($shipment->partial_price - $shipment->cost_of_delivery_amount)
                                             : $shipment->balance_cost;
                                     @endphp
 

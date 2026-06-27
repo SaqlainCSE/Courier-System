@@ -89,7 +89,8 @@ class ShipmentController extends Controller
         // ✅ Bug Fix: partially_delivered shipment gular partial_price
         $partiallyDeliveredBalance = Shipment::where('user_id', $user->id)
             ->where('status', 'partially_delivered')
-            ->sum('partial_price');
+            ->selectRaw('SUM(partial_price - cost_of_delivery_amount) as total')
+            ->value('total') ?? 0;
 
         $cancelled = Shipment::where('user_id', $user->id)
             ->where('status', 'cancelled')

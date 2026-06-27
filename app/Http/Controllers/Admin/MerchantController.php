@@ -93,7 +93,8 @@ class MerchantController extends Controller
 
         $partiallyDelivered = $merchant->shipments()
             ->where('status', 'partially_delivered')
-            ->sum('partial_price');
+            ->selectRaw('SUM(partial_price - cost_of_delivery_amount) as total')
+            ->value('total') ?? 0;
 
         $cancelled = $merchant->shipments()
             ->where('status', 'cancelled')
