@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class SoftwareManagementController extends Controller
 {
-    const EARNING_STATUSES = ['delivered', 'cancelled', 'partially_delivered'];
+    const EARNING_STATUSES = ['merchant_pay','delivered', 'cancelled', 'partially_delivered'];
 
     public function index()
     {
@@ -61,19 +61,24 @@ class SoftwareManagementController extends Controller
             ];
         }
 
-        $delivered = $data['delivered'] ?? ['count' => 0, 'earning' => 0];
-        $cancelled = $data['cancelled'] ?? ['count' => 0, 'earning' => 0];
-        $partial   = $data['partially_delivered'] ?? ['count' => 0, 'earning' => 0];
+        $delivered    = $data['delivered'] ?? ['count' => 0, 'earning' => 0];
+        $cancelled    = $data['cancelled'] ?? ['count' => 0, 'earning' => 0];
+        $partial      = $data['partially_delivered'] ?? ['count' => 0, 'earning' => 0];
+        $merchant_pay = $data['merchant_pay'] ?? ['count' => 0, 'earning' => 0];
 
         return [
-            'delivered'           => $delivered['count'],
-            'cancelled'           => $cancelled['count'],
-            'partially_delivered' => $partial['count'],
-            'delivered_earning'   => $delivered['earning'],
-            'cancelled_earning'   => $cancelled['earning'],
-            'partial_earning'     => $partial['earning'],
-            'total_count'         => $delivered['count'] + $cancelled['count'] + $partial['count'],
-            'total_earning'       => $delivered['earning'] + $cancelled['earning'] + $partial['earning'],
+            'delivered'            => $delivered['count'],
+            'cancelled'            => $cancelled['count'],
+            'partially_delivered'  => $partial['count'],
+            'merchant_pay'         => $merchant_pay['count'],
+
+            'delivered_earning'    => $delivered['earning'],
+            'cancelled_earning'    => $cancelled['earning'],
+            'partial_earning'      => $partial['earning'],
+            'merchant_pay_earning' => $merchant_pay['earning'],
+
+            'total_count'   => $delivered['count'] + $cancelled['count'] + $partial['count'] + $merchant_pay['count'],
+            'total_earning' => $delivered['earning'] + $cancelled['earning'] + $partial['earning'] + $merchant_pay['earning'],
         ];
     }
 }

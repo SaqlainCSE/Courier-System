@@ -156,6 +156,7 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select form-select-sm">
                         <option value="">All Status</option>
+                        <option value="merchant_pay" @selected(($filters['merchant_pay'] ?? '')=='merchant_pay')>Merchant Pay</option>
                         <option value="pending" @selected(($filters['status'] ?? '')=='pending')>Pending</option>
                         <option value="assigned" @selected(($filters['status'] ?? '')=='assigned')>Assigned</option>
                         <option value="picked" @selected(($filters['status'] ?? '')=='picked')>Picked</option>
@@ -227,6 +228,7 @@
                                         'picked' => 'primary',
                                         'in_transit' => 'primary',
                                         'delivered' => 'success',
+                                        'merchant_pay' => 'success',
                                         'cancelled' => 'danger',
                                         'hold' => 'secondary',
                                         'partially_delivered' => 'dark'

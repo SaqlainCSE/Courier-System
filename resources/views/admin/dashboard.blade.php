@@ -98,6 +98,7 @@
                                                 'in_transit' => 'primary',
                                                 'hold' => 'secondary',
                                                 'delivered' => 'success',
+                                                'merchant_pay' => 'success',
                                                 'partially_delivered' => 'dark',
                                                 'cancelled' => 'danger',
                                             ];

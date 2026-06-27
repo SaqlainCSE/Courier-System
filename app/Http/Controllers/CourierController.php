@@ -20,6 +20,28 @@ class CourierController extends Controller
     {
         $courier = Auth::user()->courierProfile;
 
+        if (!$courier) {
+
+            $assignments = Shipment::whereRaw('1 = 0')
+                ->paginate(20);
+        
+            return view('courier.dashboard', [
+                'assignments' => $assignments,
+                'todayEarnings' => 0,
+                'lastMonthEarnings' => 0,
+                'newAssignments' => 0,
+                'deliveredAssignments' => 0,
+                'partiallyDeliveredAssignments' => 0,
+                'inTransitAssignments' => 0,
+                'holdAssignments' => 0,
+                'cancelledAssignments' => 0,
+                'todayAssignedTotalAmount' => 0,
+                'todayAssignedCommission' => 0,
+                'todayPartialDeliveredTotal' => 0,
+                'todayNetAfterCommission' => 0,
+            ]);
+        }
+
         // Assignments list with filter
         $assignments = $courier->assignedShipments()
                                         ->with(['customer']) // eager load user (customer)
@@ -129,7 +151,7 @@ class CourierController extends Controller
 
         // ================= VALIDATION =================
         $data = $request->validate([
-            'status' => 'required|in:picked,hold,delivered,partially_delivered,cancelled',
+            'status' => 'required|in:merchant_pay,picked,hold,delivered,partially_delivered,cancelled',
             'note' => 'nullable|string',
             'partial_price' => 'nullable|numeric|min:0'
         ]);

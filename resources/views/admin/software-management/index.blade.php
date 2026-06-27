@@ -25,7 +25,8 @@
                                 {{ number_format($earnings['lifetime']['total_count']) }} total deliveries &nbsp;·&nbsp;
                                 Delivered: {{ number_format($earnings['lifetime']['delivered']) }} &nbsp;·&nbsp;
                                 Cancelled: {{ number_format($earnings['lifetime']['cancelled']) }} &nbsp;·&nbsp;
-                                Partial: {{ number_format($earnings['lifetime']['partially_delivered']) }}
+                                Partial: {{ number_format($earnings['lifetime']['partially_delivered']) }} &nbsp;·&nbsp;
+                                Merchant Pay: {{ number_format($earnings['lifetime']['merchant_pay_earning']) }}
                             </div>
                         </div>
                     </div>
@@ -130,6 +131,7 @@
                             $dPct  = round($earnings[$key]['delivered']           / $total * 100);
                             $cPct  = round($earnings[$key]['cancelled']           / $total * 100);
                             $pPct  = round($earnings[$key]['partially_delivered'] / $total * 100);
+                            $mPct  = round($earnings[$key]['merchant_pay']        / $total * 100);
                         @endphp
 
                         {{-- Delivered --}}
@@ -191,6 +193,26 @@
                                 <div class="text-end" style="font-size: 11px; color: #6c757d;">{{ $pPct }}%</div>
                             </div>
                         </div>
+
+                        {{-- Merchant Pay Delivered --}}
+                        <div class="col-12 col-sm-6 col-md-4">
+                            <div class="card p-3 shadow-sm border-0 h-100">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-success me-2">Merchant Pay</span>
+                                    <span class="small text-muted">Merchant Pay delivered</span>
+                                </div>
+                                <div class="h5 fw-bold text-dark mb-0">
+                                    {{ number_format($earnings[$key]['merchant_pay']) }}
+                                </div>
+                                <div class="small text-muted mt-1">
+                                    Earnings: <strong class="text-dark">৳ {{ number_format($earnings[$key]['merchant_pay_earning'], 2) }}</strong>
+                                </div>
+                                <div class="progress mt-2" style="height: 5px;">
+                                    <div class="progress-bar bg-dark" style="width: {{ $mPct }}%"></div>
+                                </div>
+                                <div class="text-end" style="font-size: 11px; color: #6c757d;">{{ $mPct }}%</div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Summary Table --}}
@@ -226,6 +248,12 @@
                                             <td><span class="badge bg-dark">Partially Delivered</span></td>
                                             <td class="text-center small">{{ number_format($earnings[$key]['partially_delivered']) }}</td>
                                             <td class="text-center small">৳ {{ $earnings[$key]['partially_delivered'] > 0 ? number_format($earnings[$key]['partial_earning'] / $earnings[$key]['partially_delivered'], 2) : '5.00' }}</td>
+                                            <td class="text-center small fw-bold">৳ {{ number_format($earnings[$key]['partial_earning'], 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="badge bg-success">Merchant Pay Delivered</span></td>
+                                            <td class="text-center small">{{ number_format($earnings[$key]['merchant_pay']) }}</td>
+                                            <td class="text-center small">৳ {{ $earnings[$key]['merchant_pay_earning'] > 0 ? number_format($earnings[$key]['partial_earning'] / $earnings[$key]['partially_delivered'], 2) : '5.00' }}</td>
                                             <td class="text-center small fw-bold">৳ {{ number_format($earnings[$key]['partial_earning'], 2) }}</td>
                                         </tr>
                                         <tr class="table-success">

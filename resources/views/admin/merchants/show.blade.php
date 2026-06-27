@@ -164,6 +164,7 @@
                                                 'picked' => '#0d6efd',
                                                 'in_transit' => '#0d6efd',
                                                 'delivered' => '#198754',
+                                                'merchant_pay' => '#198754',
                                                 'cancelled' => '#dc3545',
                                                 'hold' => '#6c757d',
                                                 'partially_delivered' => '#343a40',

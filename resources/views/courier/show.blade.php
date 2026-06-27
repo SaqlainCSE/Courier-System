@@ -37,6 +37,7 @@
                                     'picked' => 'bg-primary',
                                     'hold' => 'bg-secondary',
                                     'delivered' => 'bg-success',
+                                    'merchant_pay' => 'bg-success',
                                     'partially_delivered' => 'bg-dark',
                                     'cancelled' => 'bg-danger',
                                     'in_transit' => 'bg-warning text-dark',
@@ -180,6 +181,7 @@
                                     <select name="status"
                                         class="form-select form-select-sm status-select"
                                         data-id="{{ $shipment->id }}">
+                                        <option value="merchant_pay" @selected($shipment->status=='merchant_pay')>Merchant Pay</option>
                                         <option value="picked" @selected($shipment->status=='picked')>Picked</option>
                                         <option value="hold" @selected($shipment->status=='hold')>Hold</option>
                                         <option value="delivered" @selected($shipment->status=='delivered')>Delivered</option>

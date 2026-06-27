@@ -20,6 +20,7 @@
                 'picked' => ['color' => 'primary', 'icon' => 'box-open', 'label' => 'Picked'],
                 'in_transit' => ['color' => 'primary', 'icon' => 'truck-moving', 'label' => 'In Transit'],
                 'delivered' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Delivered'],
+                'merchant_pay' => ['color' => 'success', 'icon' => 'check-circle', 'label' => 'Merchant Pay'],
                 'hold' => ['color' => 'secondary', 'icon' => 'pause-circle', 'label' => 'On Hold'],
                 'partially_delivered' => ['color' => 'dark', 'icon' => 'clipboard-check', 'label' => 'Partially Delivered'],
                 'cancelled' => ['color' => 'danger', 'icon' => 'times-circle', 'label' => 'Cancelled'],
@@ -84,6 +85,7 @@
                         <option value="">All Status</option>
 
                         @foreach([
+                            'merchant_pay',
                             'pending',
                             'assigned',
                             'picked',
@@ -179,6 +181,7 @@
                                             'picked' => 'primary',
                                             'in_transit' => 'primary',
                                             'delivered' => 'success',
+                                            'merchant_pay' => 'success',
                                             'hold' => 'secondary',
                                             'partially_delivered' => 'dark',
                                             'cancelled' => 'danger'

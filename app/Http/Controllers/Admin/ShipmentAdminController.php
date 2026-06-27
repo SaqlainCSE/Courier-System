@@ -82,6 +82,7 @@ class ShipmentAdminController extends Controller
             'picked' => (clone $summaryQuery)->where('status', 'picked')->count(),
             'in_transit' => (clone $summaryQuery)->where('status', 'in_transit')->count(),
             'delivered' => (clone $summaryQuery)->where('status', 'delivered')->count(),
+            'merchant_pay' => (clone $summaryQuery)->where('status', 'merchant_pay')->count(),
             'hold' => (clone $summaryQuery)->where('status', 'hold')->count(),
             'partially_delivered' => (clone $summaryQuery)->where('status', 'partially_delivered')->count(),
             'cancelled' => (clone $summaryQuery)->where('status', 'cancelled')->count(),
@@ -131,7 +132,7 @@ class ShipmentAdminController extends Controller
     {
         // ================= VALIDATION =================
         $data = $request->validate([
-            'status' => 'required|in:pending,assigned,picked,in_transit,hold,delivered,partially_delivered,cancelled',
+            'status' => 'required|in:merchant_pay,pending,assigned,picked,in_transit,hold,delivered,partially_delivered,cancelled',
             'note' => 'nullable|string',
             'partial_price' => 'nullable|numeric|min:0|max:' . $shipment->price
         ]);

@@ -49,6 +49,7 @@
                             'picked' => 'primary',
                             'in_transit' => 'primary',
                             'delivered' => 'success',
+                            'merchant_pay' => 'success',
                             'cancelled' => 'danger',
                             'hold' => 'secondary',
                             'partially_delivered' => 'dark'
@@ -65,62 +66,68 @@
 
             <!-- Shipment Progress Tracker -->
             @php
-            // Base statuses
-            $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered','partially_delivered'];
+                // Base statuses
+                $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','merchant_pay'];
 
-            // Filter statuses for the tracker
-            if ($shipment->status === 'cancelled') {
-                $statuses = ['cancelled'];
-            } elseif ($shipment->status === 'hold') {
-                // If shipment is currently on hold, show all up to hold
-                $statuses = ['pending','assigned','picked','in_transit','hold'];
-            } elseif ($shipment->status === 'delivered') {
-                // If delivered, skip hold
-                $statuses = ['pending','assigned','picked','in_transit','delivered'];
-            }elseif ($shipment->status === 'partially_delivered') {
-                // If partially delivered, skip hold, show all up to partially delivered
-                $statuses = ['pending','assigned','picked','in_transit','partially_delivered'];
-            }else {
-                // For other statuses, show everything except cancelled
-                $statuses = array_filter($allStatuses, fn($s) => $s !== 'cancelled');
-            }
+                // Filter statuses for the tracker
+                if ($shipment->status === 'cancelled') {
+                    $statuses = ['cancelled'];
+                } elseif ($shipment->status === 'hold') {
+                    // If shipment is currently on hold, show all up to hold
+                    $statuses = ['pending','assigned','picked','in_transit','hold'];
+                } elseif ($shipment->status === 'delivered') {
+                    // If delivered, skip hold
+                    $statuses = ['pending','assigned','picked','in_transit','delivered'];
+                } elseif ($shipment->status === 'merchant_pay') {
+                    // If merchant pay, skip hold, show all up to merchant pay
+                    $statuses = ['pending','assigned','picked','in_transit','merchant_pay'];
+                } elseif ($shipment->status === 'partially_delivered') {
+                    // If partially delivered, skip hold, show all up to partially delivered
+                    $statuses = ['pending','assigned','picked','in_transit','partially_delivered'];
+                } else {
+                    // For other statuses, show everything except cancelled
+                    $statuses = array_filter($allStatuses, fn($s) => $s !== 'cancelled' && $s !== 'merchant_pay');
+                }
 
-            $statusLabels = [
-                'pending'     => 'Pending',
-                'assigned'    => 'Assigned',
-                'picked'      => 'Picked Up',
-                'in_transit'  => 'On The Way',
-                'delivered'   => 'Delivered',
-                'cancelled'   => 'Cancelled',
-                'hold'        => 'On Hold',
-                'partially_delivered' => 'Partially Delivered'
-            ];
+                $statusLabels = [
+                    'pending'     => 'Pending',
+                    'assigned'    => 'Assigned',
+                    'picked'      => 'Picked Up',
+                    'in_transit'  => 'On The Way',
+                    'delivered'   => 'Delivered',
+                    'cancelled'   => 'Cancelled',
+                    'hold'        => 'On Hold',
+                    'partially_delivered' => 'Partially Delivered',
+                    'merchant_pay' => 'Merchant Pay'
+                ];
 
-            $icons = [
-                'pending'     => 'fa-hourglass-start',
-                'assigned'    => 'fa-user-check',
-                'picked'      => 'fa-box',
-                'in_transit'  => 'fa-truck-moving',
-                'delivered'   => 'fa-flag-checkered',
-                'cancelled'   => 'fa-times-circle',
-                'hold'        => 'fa-pause-circle',
-                'partially_delivered' => 'fa-clipboard-check'
-            ];
+                $icons = [
+                    'pending'     => 'fa-hourglass-start',
+                    'assigned'    => 'fa-user-check',
+                    'picked'      => 'fa-box',
+                    'in_transit'  => 'fa-truck-moving',
+                    'delivered'   => 'fa-flag-checkered',
+                    'cancelled'   => 'fa-times-circle',
+                    'hold'        => 'fa-pause-circle',
+                    'partially_delivered' => 'fa-clipboard-check',
+                    'merchant_pay' => 'fa-flag-checkered'
+                ];
 
-            $colors = [
-                'pending'     => '#ffc107',
-                'assigned'    => '#0dcaf0',
-                'picked'      => '#0d6efd',
-                'in_transit'  => '#6f42c1',
-                'delivered'   => '#198754',
-                'cancelled'   => '#dc3545',
-                'hold'        => '#6c757d',
-                'partially_delivered' => '#343a40'
-            ];
+                $colors = [
+                    'pending'     => '#ffc107',
+                    'assigned'    => '#0dcaf0',
+                    'picked'      => '#0d6efd',
+                    'in_transit'  => '#6f42c1',
+                    'delivered'   => '#198754',
+                    'cancelled'   => '#dc3545',
+                    'hold'        => '#6c757d',
+                    'partially_delivered' => '#343a40',
+                    'merchant_pay' => '#198754'
+                ];
 
-            $currentIndex = array_search($shipment->status, $statuses);
-            if ($currentIndex === false) $currentIndex = 0;
-        @endphp
+                $currentIndex = array_search($shipment->status, $statuses);
+                if ($currentIndex === false) $currentIndex = 0;
+            @endphp
 
             <div class="progress-tracker">
                 <div class="progress-bar"></div>

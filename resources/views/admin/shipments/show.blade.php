@@ -169,7 +169,8 @@
                         $statusColors = [
                             'pending'=>'warning','assigned'=>'info','picked'=>'primary',
                             'in_transit'=>'primary','delivered'=>'success','cancelled'=>'danger',
-                            'hold'=>'secondary','partially_delivered'=>'dark'
+                            'hold'=>'secondary','partially_delivered'=>'dark',
+                            'merchant_pay'=>'success'
                         ];
                     @endphp
                     <span class="badge bg-{{ $statusColors[$shipment->status] }}">
@@ -181,19 +182,20 @@
             </div>
 
             @php
-                $allStatuses = ['pending','assigned','picked','in_transit','hold','delivered','partially_delivered'];
+                $allStatuses = ['merchant_pay','pending','assigned','picked','in_transit','hold','delivered','partially_delivered'];
                 if ($shipment->status==='cancelled') $statuses=['cancelled'];
                 elseif ($shipment->status==='hold') $statuses=['pending','assigned','picked','in_transit','hold'];
                 elseif ($shipment->status==='delivered') $statuses=['pending','assigned','picked','in_transit','delivered'];
+                elseif ($shipment->status==='merchant_pay') $statuses=['pending','assigned','picked','in_transit','merchant_pay'];
                 elseif ($shipment->status==='partially_delivered') $statuses=['pending','assigned','picked','in_transit','partially_delivered'];
                 else $statuses=array_filter($allStatuses, fn($s)=>$s!=='cancelled');
 
-                $statusLabels=['pending'=>'Pending','assigned'=>'Assigned','picked'=>'Picked Up','in_transit'=>'On The Way',
-                               'delivered'=>'Delivered','cancelled'=>'Cancelled','hold'=>'On Hold','partially_delivered'=>'Partially Delivered'];
-                $icons=['pending'=>'fa-hourglass-start','assigned'=>'fa-user-check','picked'=>'fa-box',
+                $statusLabels=['merchant_pay'=>'Merchant Pay','pending'=>'Pending','assigned'=>'Assigned','picked'=>'Picked Up','in_transit'=>'On The Way',
+                            'delivered'=>'Delivered','cancelled'=>'Cancelled','hold'=>'On Hold','partially_delivered'=>'Partially Delivered'];
+                $icons=['merchant_pay'=>'fa-flag-checkered','pending'=>'fa-hourglass-start','assigned'=>'fa-user-check','picked'=>'fa-box',
                         'in_transit'=>'fa-truck-moving','delivered'=>'fa-flag-checkered','cancelled'=>'fa-times-circle',
                         'hold'=>'fa-pause-circle','partially_delivered'=>'fa-clipboard-check'];
-                $colors=['pending'=>'#ffc107','assigned'=>'#0dcaf0','picked'=>'#0d6efd','in_transit'=>'#6f42c1',
+                $colors=['merchant_pay'=>'#198754','pending'=>'#ffc107','assigned'=>'#0dcaf0','picked'=>'#0d6efd','in_transit'=>'#6f42c1',
                         'delivered'=>'#198754','cancelled'=>'#dc3545','hold'=>'#6c757d','partially_delivered'=>'#343a40'];
                 $currentIndex=array_search($shipment->status,$statuses);
                 if($currentIndex===false) $currentIndex=0;
@@ -281,7 +283,7 @@
                 <div class="col-12 col-md-4">
                     <select name="status" id="statusSelect" class="form-select">
                         <option value="">-- Change Status --</option>
-                        @foreach(['pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $status)
+                        @foreach(['merchant_pay','pending','assigned','picked','in_transit','hold','delivered','partially_delivered','cancelled'] as $status)
                             <option value="{{ $status }}" {{ $shipment->status === $status ? 'selected' : '' }}>
                                 {{ ucfirst(str_replace('_',' ', $status)) }}
                             </option>

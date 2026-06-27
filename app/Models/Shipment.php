@@ -60,12 +60,13 @@ class Shipment extends Model
     {
         static::updating(function ($shipment) {
             $rates = [
+                'merchant_pay' => 5,
                 'delivered' => 5,
                 'cancelled' => 5,
                 'partially_delivered' => 5,
             ];
 
-            if (in_array($shipment->status, ['delivered', 'partially_delivered', 'cancelled'])) {
+            if (in_array($shipment->status, ['merchant_pay','delivered', 'partially_delivered', 'cancelled'])) {
 
                 $shipment->earning = $rates[$shipment->status] ?? 0;
 
@@ -78,7 +79,7 @@ class Shipment extends Model
 
     public function getIsPaidAttribute(): bool
     {
-        return in_array($this->status, ['delivered', 'partially_delivered'])
+        return in_array($this->status, ['merchant_pay','delivered', 'partially_delivered'])
             && $this->balance_cost <= 0;
     }
 
