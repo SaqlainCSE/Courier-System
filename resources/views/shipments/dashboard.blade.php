@@ -87,7 +87,7 @@
     </div>
 
     <!-- Monthly Wise Cost -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <!-- <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-header bg-gradient text-dark fw-bold rounded-top-4">
             <i class="fas fa-calendar-alt me-2"></i> Monthly Balance Breakdown
         </div>
@@ -115,7 +115,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- All Shipments -->
     <div class="card border-0 shadow-sm rounded-4">
