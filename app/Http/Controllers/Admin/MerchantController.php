@@ -95,7 +95,11 @@ class MerchantController extends Controller
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
-        $codBalance = $delivered + $partiallyDelivered;
+        $cancelled = $merchant->shipments()
+            ->where('status', 'cancelled')
+            ->sum('cost_of_delivery_amount');
+
+        $codBalance = $delivered + $partiallyDelivered - $cancelled;
 
         // ================= PAID AMOUNT =================
         $paidAmount = Payment::whereHas('shipment', function($q) use ($merchant) {

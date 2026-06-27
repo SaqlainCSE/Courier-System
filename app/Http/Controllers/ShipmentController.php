@@ -91,8 +91,12 @@ class ShipmentController extends Controller
             ->where('status', 'partially_delivered')
             ->sum('partial_price');
 
+        $cancelled = Shipment::where('user_id', $user->id)
+            ->where('status', 'cancelled')
+            ->sum('cost_of_delivery_amount');
+
         // ✅ duitar sum mile codBalance hobe (delivered + partially_delivered)
-        $codBalance = $deliveredBalance + $partiallyDeliveredBalance;
+        $codBalance = $deliveredBalance + $partiallyDeliveredBalance - $cancelled;
 
         $paidAmount = Payment::whereHas('shipment', function ($q) use ($user) {
             $q->where('user_id', $user->id);
