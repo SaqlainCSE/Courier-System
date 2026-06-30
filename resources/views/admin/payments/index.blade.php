@@ -60,7 +60,7 @@
                                         <th class="text-start ps-3">Tracking</th>
                                         <th class="text-center">Status</th>
                                         <th>Balance (৳)</th>
-                                        <th>Action</th>
+                                        <!-- <th>Action</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -84,7 +84,9 @@
                                             if ($shipment->status === 'partially_delivered') {
                                                 $displayBalance = $shipment->partial_price - $shipment->cost_of_delivery_amount;
                                             } elseif ($shipment->status === 'merchant_pay') {
-                                                $displayBalance = $shipment->balance_cost - $shipment->cost_of_delivery_amount;
+                                                $displayBalance = (- $shipment->cost_of_delivery_amount);
+                                            } elseif ($shipment->status === 'cancelled') {
+                                                $displayBalance = (- $shipment->cost_of_delivery_amount);
                                             } else {
                                                 $displayBalance = $shipment->balance_cost;
                                             }
@@ -112,7 +114,7 @@
                                                 </span>
                                             </td>
                                             <td class="balance text-center">{{ number_format($displayBalance, 2) }}</td>
-                                            <td class="text-center action-cell">
+                                            <!-- <td class="text-center action-cell">
                                                 @if($shipment->status === 'merchant_pay')
                                                     <span class="badge bg-success rounded-pill px-3 py-2">
                                                         <i class="fas fa-check-circle me-1"></i> Paid
@@ -134,7 +136,7 @@
                                                         <i class="fas fa-check-circle me-1"></i> Paid
                                                     </span>
                                                 @endif
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     @endforeach
                                 </tbody>
