@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class PaymentController extends Controller
 {
     // Reusable delivered status array
-    private array $deliveredStatuses = ['delivered', 'partially_delivered'];
+    private array $deliveredStatuses = ['delivered', 'partially_delivered','cancelled','merchant_pay'];
 
     public function index(Request $request)
     {

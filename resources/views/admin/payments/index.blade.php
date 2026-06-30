@@ -81,7 +81,6 @@
 
                                     @foreach($shipments as $shipment)
                                         @php
-                                            // ✅ status onujayi shothik balance value
                                             if ($shipment->status === 'partially_delivered') {
                                                 $displayBalance = $shipment->partial_price - $shipment->cost_of_delivery_amount;
                                             } elseif ($shipment->status === 'merchant_pay') {
@@ -117,6 +116,10 @@
                                                 @if($shipment->status === 'merchant_pay')
                                                     <span class="badge bg-success rounded-pill px-3 py-2">
                                                         <i class="fas fa-check-circle me-1"></i> Paid
+                                                    </span>
+                                                @elseif($shipment->status === 'cancelled')
+                                                    <span class="badge bg-danger rounded-pill px-3 py-2">
+                                                        <i class="fas fa-check-circle me-1"></i> Cancelled
                                                     </span>
                                                 @elseif($displayBalance > 0)
                                                     <button
