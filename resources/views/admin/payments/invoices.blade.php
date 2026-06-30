@@ -137,35 +137,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($payments as $i => $payment)
+                    @forelse($payments as $i => $invoice)
                         <tr>
                             <td class="ps-3 text-muted small">{{ $payments->firstItem() + $i }}</td>
                             <td>
                                 <span class="text-dark fw-semibold">
-                                    {{ $payment->invoice_number }}
+                                    {{ $invoice['invoice_number'] }}
                                 </span>
+                                @if($invoice['type'] === 'bulk')
+                                    <span class="badge bg-primary-subtle text-primary ms-1">Bulk</span>
+                                @endif
                             </td>
                             <td>
-                                <div class="fw-semibold">{{ $payment->shipment->user->business_name ?? '—' }}</div>
-                                <div class="text-muted small">{{ $payment->shipment->user->phone ?? '' }}</div>
+                                <div class="fw-semibold">{{ $invoice['merchant']->business_name ?? '—' }}</div>
+                                <div class="text-muted small">{{ $invoice['merchant']->phone ?? '' }}</div>
                             </td>
                             <td class="text-center">
-                                <span class="text-dark fw-semibold">{{ $payment->shipment->tracking_number ?? '—' }}</span>
+                                <span class="text-dark fw-semibold">{{ $invoice['tracking'] }}</span>
                             </td>
                             <td class="text-center fw-bold text-success">
-                                ৳{{ number_format($payment->amount, 2) }}
+                                ৳{{ number_format($invoice['amount'], 2) }}
                             </td>
-                            {{--  <td class="text-center">
-                                <span class="badge bg-info-subtle text-info rounded-pill px-2 py-1 text-capitalize">
-                                    {{ $payment->method }}
-                                </span>
-                            </td>  --}}
                             <td class="text-center text-muted small">
-                                {{ $payment->created_at->format('d M Y') }}<br>
-                                <span class="text-muted">{{ $payment->created_at->format('h:i A') }}</span>
+                                {{ $invoice['created_at']->format('d M Y') }}<br>
+                                <span class="text-muted">{{ $invoice['created_at']->format('h:i A') }}</span>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('admin.payments.invoice', $payment->id) }}"
+                                <a href="{{ $invoice['url'] }}"
                                    target="_blank"
                                    class="btn btn-sm btn-outline-danger">
                                     <i class="fas fa-file-invoice me-1"></i> Invoice
@@ -184,11 +182,11 @@
                 @if($payments->isNotEmpty())
                 <tfoot class="table-light">
                     <tr>
-                        <td colspan="4" class="text-end fw-bold ps-3 text-dark">Total:</td>
+                        <td colspan="4" class="text-end fw-bold ps-3 text-dark">Total (this page):</td>
                         <td class="text-center fw-bold text-success">
-                            ৳{{ number_format($payments->sum('amount'), 2) }}
+                            ৳{{ number_format(collect($payments->items())->sum('amount'), 2) }}
                         </td>
-                        <td colspan="3"></td>
+                        <td colspan="2"></td>
                     </tr>
                 </tfoot>
                 @endif

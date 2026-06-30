@@ -105,7 +105,9 @@ Route::middleware('auth')->group(function() {
         // Payments
         Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
         Route::post('/payments/adjust', [PaymentController::class, 'adjustPayment'])->name('admin.payments.adjust');
+        Route::post('/payments/bulk-adjust', [PaymentController::class, 'bulkAdjustPayment'])->name('admin.payments.bulk-adjust');
         Route::get('/payments/invoices', [PaymentController::class, 'invoices'])->name('admin.payments.invoices');
+        Route::get('/payments/invoice-group/{paymentInvoice}', [PaymentController::class, 'bulkInvoice'])->name('admin.payments.bulk-invoice');
         Route::get('/payments/{payment}/invoice', [PaymentController::class, 'invoice'])->name('admin.payments.invoice');
     });
 });
