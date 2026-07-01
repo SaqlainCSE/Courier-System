@@ -14,10 +14,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\SoftwareManagementController;
 
 Route::get('/', function () {
-    if(\Illuminate\Support\Facades\Auth::check()){
+    if (\Illuminate\Support\Facades\Auth::check()) {
         $role = \Illuminate\Support\Facades\Auth::user()->role;
-        if($role === 'admin') return redirect()->route('admin.dashboard');
-        if($role === 'courier') return redirect()->route('courier.dashboard');
+        if ($role === 'admin') return redirect()->route('admin.dashboard');
+        if ($role === 'courier') return redirect()->route('courier.dashboard');
         return redirect()->route('shipments.dashboard');
     }
     return view('welcome');
@@ -34,55 +34,58 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/track', function(){ return view('tracking.form'); })->name('tracking.form');
-Route::post('/track', [TrackingController::class,'search'])->name('tracking.search');
-Route::get('/track/{tracking}', [TrackingController::class,'show'])->name('tracking.show');
+Route::get('/track', function () {
+    return view('tracking.form');
+})->name('tracking.form');
+Route::post('/track', [TrackingController::class, 'search'])->name('tracking.search');
+Route::get('/track/{tracking}', [TrackingController::class, 'show'])->name('tracking.show');
 
 Route::get('/get-dropoff-details', [ShipmentController::class, 'getDropoffDetails']);
 Route::get('/shipments/{shipment}/print', [ShipmentController::class, 'print'])->name('shipments.print');
 Route::get('/shipments/print/all', [ShipmentController::class, 'printAll'])->name('shipments.print.all');
 
-Route::middleware('auth')->group(function() {
+Route::middleware('auth')->group(function () {
 
     // customer shipments
-    Route::prefix('customer')->middleware('role:customer')->group(function() {
-        Route::get('/shipments/dashboard', [ShipmentController::class,'dashboard'])->name('shipments.dashboard');
-        Route::get('/shipments/create', [ShipmentController::class,'create'])->name('shipments.create');
-        Route::post('/shipments', [ShipmentController::class,'store'])->name('shipments.store');
-        Route::get('/shipments/{shipment}', [ShipmentController::class,'show'])->name('shipments.show');
-        Route::post('/shipments/{shipment}/cancel', [ShipmentController::class,'cancel'])->name('shipments.cancel');
+    Route::prefix('customer')->middleware('role:customer')->group(function () {
+        Route::get('/shipments/dashboard', [ShipmentController::class, 'dashboard'])->name('shipments.dashboard');
+        Route::get('/shipments/create', [ShipmentController::class, 'create'])->name('shipments.create');
+        Route::post('/shipments', [ShipmentController::class, 'store'])->name('shipments.store');
+        Route::get('/shipments/{shipment}', [ShipmentController::class, 'show'])->name('shipments.show');
+        Route::post('/shipments/{shipment}/cancel', [ShipmentController::class, 'cancel'])->name('shipments.cancel');
         Route::get('/shipments/{shipment}/edit', [ShipmentController::class, 'edit'])->name('shipments.edit');
         Route::put('/shipments/{shipment}', [ShipmentController::class, 'update'])->name('shipments.update');
 
         Route::get('shipments/export/excel', [ShipmentController::class, 'exportExcel'])->name('shipments.export.excel');
         Route::get('shipments/export/pdf', [ShipmentController::class, 'exportPdf'])->name('shipments.export.pdf');
         Route::get('/payments/invoices', [ShipmentController::class, 'invoices'])->name('shipments.invoices');
+        Route::get('/payments/invoice-group/{paymentInvoice}', [ShipmentController::class, 'bulkInvoice'])->name('shipments.bulk-invoice');
         Route::get('/payments/{payment}/invoice', [ShipmentController::class, 'invoice'])->name('shipments.invoice');
     });
 
     // courier
-    Route::prefix('courier')->middleware('role:courier')->group(function(){
-        Route::get('/dashboard', [CourierController::class,'dashboard'])->name('courier.dashboard');
-        Route::post('/shipments/{shipment}/status', [CourierController::class,'updateStatus'])->name('courier.shipments.updateStatus');
-        Route::post('/location', [CourierController::class,'updateLocation'])->name('courier.location.update');
-        Route::get('/shipments/history', [CourierController::class,'history'])->name('courier.shipments.history');
-        Route::get('/shipments/{shipment}', [CourierController::class,'show'])->name('courier.shipments.show');
+    Route::prefix('courier')->middleware('role:courier')->group(function () {
+        Route::get('/dashboard', [CourierController::class, 'dashboard'])->name('courier.dashboard');
+        Route::post('/shipments/{shipment}/status', [CourierController::class, 'updateStatus'])->name('courier.shipments.updateStatus');
+        Route::post('/location', [CourierController::class, 'updateLocation'])->name('courier.location.update');
+        Route::get('/shipments/history', [CourierController::class, 'history'])->name('courier.shipments.history');
+        Route::get('/shipments/{shipment}', [CourierController::class, 'show'])->name('courier.shipments.show');
     });
 
     // admin
-    Route::prefix('admin')->middleware('role:admin')->group(function(){
+    Route::prefix('admin')->middleware('role:admin')->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-        Route::get('/shipments', [ShipmentAdminController::class,'index'])->name('admin.shipments.index');
-        Route::get('/shipments/{shipment}', [ShipmentAdminController::class,'show'])->name('admin.shipments.show');
+        Route::get('/shipments', [ShipmentAdminController::class, 'index'])->name('admin.shipments.index');
+        Route::get('/shipments/{shipment}', [ShipmentAdminController::class, 'show'])->name('admin.shipments.show');
         Route::get('/admin/shipments/{shipment}/print', [ShipmentAdminController::class, 'printSingle'])->name('admin.shipments.print');
-        Route::delete('/shipments/{shipment}', [ShipmentAdminController::class,'delete'])->name('admin.shipments.delete');
-        Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class,'assignCourier'])->name('admin.shipments.assign');
-        Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class,'updateStatus'])->name('admin.shipments.updateStatus');
-        Route::get('/shipments/bulk/assign', [ShipmentAdminController::class,'bulkAssignPage'])->name('admin.shipments.bulk.assign');
-        Route::get('/shipments/bulk/search', [ShipmentAdminController::class,'bulkAssignSearch'])->name('admin.shipments.bulk.search');
-        Route::post('/shipments/bulk/store', [ShipmentAdminController::class,'bulkAssign'])->name('admin.shipments.bulk.store');
+        Route::delete('/shipments/{shipment}', [ShipmentAdminController::class, 'delete'])->name('admin.shipments.delete');
+        Route::post('/shipments/{shipment}/assign', [ShipmentAdminController::class, 'assignCourier'])->name('admin.shipments.assign');
+        Route::post('/shipments/{shipment}/status', [ShipmentAdminController::class, 'updateStatus'])->name('admin.shipments.updateStatus');
+        Route::get('/shipments/bulk/assign', [ShipmentAdminController::class, 'bulkAssignPage'])->name('admin.shipments.bulk.assign');
+        Route::get('/shipments/bulk/search', [ShipmentAdminController::class, 'bulkAssignSearch'])->name('admin.shipments.bulk.search');
+        Route::post('/shipments/bulk/store', [ShipmentAdminController::class, 'bulkAssign'])->name('admin.shipments.bulk.store');
 
         // Merchants (management)
         Route::resource('merchants', MerchantController::class, ['as' => 'admin']);
@@ -112,4 +115,4 @@ Route::middleware('auth')->group(function() {
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

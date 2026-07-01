@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Shipment;
 use App\Models\ShipmentStatusLog;
 use App\Models\Payment;
+use App\Models\PaymentInvoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -71,18 +72,18 @@ class ShipmentController extends Controller
             'merchant_pay'          => $summaryCounts['merchant_pay'] ?? 0,
             'hold'               => $summaryCounts['hold'] ?? 0,
             'cancelled'          => $summaryCounts['cancelled'] ?? 0,
-            'partially_delivered'=> $summaryCounts['partially_delivered'] ?? 0,
+            'partially_delivered' => $summaryCounts['partially_delivered'] ?? 0,
         ];
 
         $entryBalance = Shipment::where('user_id', $user->id)
-                        ->whereDate('created_at', today())
-                        ->sum('balance_cost');
+            ->whereDate('created_at', today())
+            ->sum('balance_cost');
 
         // $codBalance = Shipment::where('user_id', $user->id)
         //     ->whereIn('status', $this->deliveredStatuses)
         //     ->sum('balance_cost');
 
-         // ✅ Bug Fix: delivered shipment gular balance_cost
+        // ✅ Bug Fix: delivered shipment gular balance_cost
         $deliveredBalance = Shipment::where('user_id', $user->id)
             ->where('status', 'delivered')
             ->sum('balance_cost');
@@ -108,12 +109,12 @@ class ShipmentController extends Controller
         $paidAmount = Payment::whereHas('shipment', function ($q) use ($user) {
             $q->where('user_id', $user->id);
         })
-        ->where('status', 'paid')
-        ->sum('amount');
+            ->where('status', 'paid')
+            ->sum('amount');
 
         $cancelledAmount = Shipment::where('user_id', $user->id)
-        ->where('status', 'cancelled')
-        ->sum('cost_of_delivery_amount');
+            ->where('status', 'cancelled')
+            ->sum('cost_of_delivery_amount');
 
         // ✅ Bug 7 Fix: negative হলে 0 দেখাবে
         $newCOD = max(0, $codBalance - $paidAmount);
@@ -127,8 +128,14 @@ class ShipmentController extends Controller
             ->get();
 
         return view('shipments.dashboard', compact(
-            'shipments', 'summary', 'entryBalance',
-            'codBalance', 'paidAmount', 'newCOD', 'monthlyCosts', 'cancelledAmount'
+            'shipments',
+            'summary',
+            'entryBalance',
+            'codBalance',
+            'paidAmount',
+            'newCOD',
+            'monthlyCosts',
+            'cancelledAmount'
         ))->with('filters', $request->only(['q', 'status', 'start_date', 'end_date']));
     }
 
@@ -372,43 +379,100 @@ class ShipmentController extends Controller
 
     public function invoice(Payment $payment)
     {
-        // ✅ Bug 4 Fix: customer → user
         $payment->load('shipment.user');
-        return view('shipments.invoices', compact('payment'));
+
+        return view('shipments.invoice', compact('payment'));
+    }
+
+    public function bulkInvoice(PaymentInvoice $paymentInvoice)
+    {
+        $paymentInvoice->load(['user', 'payments.shipment']);
+
+        return view('shipments.bulk-invoice', compact('paymentInvoice'));
     }
 
     public function invoices(Request $request)
     {
         $user = Auth::user();
 
-        $query = Payment::with(['shipment'])
+        $paymentQuery = Payment::with(['shipment.user'])
             ->whereHas('shipment', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })
+            ->whereNull('payment_invoice_id')
+            ->orderByDesc('created_at');
+
+        $invoiceQuery = PaymentInvoice::with(['user', 'payments.shipment'])
+            ->where('user_id', $user->id)
             ->orderByDesc('created_at');
 
         if ($dateFrom = $request->input('date_from')) {
-            $query->whereDate('created_at', '>=', $dateFrom);
+            $paymentQuery->whereDate('created_at', '>=', $dateFrom);
+            $invoiceQuery->whereDate('created_at', '>=', $dateFrom);
         }
         if ($dateTo = $request->input('date_to')) {
-            $query->whereDate('created_at', '<=', $dateTo);
+            $paymentQuery->whereDate('created_at', '<=', $dateTo);
+            $invoiceQuery->whereDate('created_at', '<=', $dateTo);
         }
 
         if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
+            $paymentQuery->where(function ($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
                     ->orWhereHas('shipment', function ($q2) use ($search) {
                         $q2->where('tracking_number', 'like', "%{$search}%");
                     });
             });
+
+            $invoiceQuery->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhereHas('payments.shipment', function ($q2) use ($search) {
+                        $q2->where('tracking_number', 'like', "%{$search}%");
+                    });
+            });
         }
 
-        $totalAmount   = (clone $query)->sum('amount');
-        $totalInvoices = (clone $query)->count();
-        $payments      = $query->paginate(20);
+        $singlePayments = $paymentQuery->get();
+        $bulkInvoices   = $invoiceQuery->get();
+
+        $allInvoices = collect()
+            ->merge($singlePayments->map(fn($payment) => [
+                'type'           => 'single',
+                'invoice_number' => $payment->invoice_number,
+                'tracking'       => $payment->shipment->tracking_number ?? '—',
+                'amount'         => $payment->amount,
+                'created_at'     => $payment->created_at,
+                'url'            => route('shipments.invoice', $payment->id),
+            ]))
+            ->merge($bulkInvoices->map(fn($invoice) => [
+                'type'           => 'bulk',
+                'invoice_number' => $invoice->invoice_number,
+                'tracking'       => $invoice->payments->count() . ' shipment(s)',
+                'amount'         => $invoice->total_amount,
+                'created_at'     => $invoice->created_at,
+                'url'            => route('shipments.bulk-invoice', $invoice->id),
+            ]))
+            ->sortByDesc('created_at')
+            ->values();
+
+        $totalAmount   = $allInvoices->sum('amount');
+        $totalInvoices = $allInvoices->count();
+
+        $page    = max(1, (int) $request->input('page', 1));
+        $perPage = 20;
+        $items   = $allInvoices->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $payments = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $allInvoices->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('shipments.invoices', compact(
-            'payments', 'totalAmount', 'totalInvoices'
+            'payments',
+            'totalAmount',
+            'totalInvoices'
         ));
     }
 }
