@@ -143,14 +143,14 @@
     </table>
 
     <div class="total-section">
-        <div class="total-row">
+        <!-- <div class="total-row">
             <span>Total COD Amount</span>
             <span>৳ {{ number_format($totalCod, 2) }}</span>
         </div>
         <div class="total-row">
             <span>Total Delivery Charge (Cancelled / Merchant Pay)</span>
             <span class="text-danger">-৳ {{ number_format($totalDeliveryDeduction, 2) }}</span>
-        </div>
+        </div> -->
         <div class="total-row">
             <span>Net Payable ({{ $paymentInvoice->payments->count() }} shipments)</span>
             <span>৳ {{ number_format($totalNet, 2) }}</span>

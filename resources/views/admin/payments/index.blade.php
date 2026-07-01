@@ -122,10 +122,19 @@
                                                         'hold' => 'secondary',
                                                         'merchant_pay' => 'success',
                                                     ];
+                                                        $paidEligibleStatuses = ['delivered', 'partially_delivered', 'merchant_pay'];
+                                                        $isPaid = in_array($shipment->status, $paidEligibleStatuses) && $displayBalance <= 0;
                                                 @endphp
-                                                <span class="badge bg-{{ $statusColors[$shipment->status] ?? 'secondary' }} px-3 py-2 rounded-pill">
-                                                    {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
-                                                </span>
+
+                                                    @if($isPaid)
+                                                        <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                            Paid
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-{{ $statusColors[$shipment->status] ?? 'secondary' }} px-3 py-2 rounded-pill">
+                                                            {{ ucfirst(str_replace('_', ' ', $shipment->status)) }}
+                                                        </span>
+                                                    @endif
                                             </td>
                                             <td class="balance text-center {{ $displayBalance < 0 ? 'text-danger fw-semibold' : '' }}">
                                                 {{ number_format($displayBalance, 2) }}
