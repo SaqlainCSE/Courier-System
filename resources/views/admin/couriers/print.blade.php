@@ -4,14 +4,20 @@
     <meta charset="UTF-8">
     <title>Delivery Man Report</title>
     <style>
-        body { font-family: sans-serif; font-size: 12px; }
-        h2, h3 { margin: 0; padding: 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #000; padding: 5px; text-align: left; }
-        th { background: #eee; }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .header div { line-height: 1.2; }
-    </style>
+    @font-face {
+        font-family: 'notosansbengali';
+        src: url('{{ public_path('fonts/NotoSansBengali-Regular.ttf') }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    body { font-family: 'notosansbengali', sans-serif; font-size: 12px; }
+    h2, h3 { margin: 0; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #000; padding: 5px; text-align: left; }
+    th { background: #eee; }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .header div { line-height: 1.2; }
+</style>
 </head>
 <body>
     <div class="header">

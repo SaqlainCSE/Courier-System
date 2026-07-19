@@ -126,6 +126,8 @@
                 "Banani",
                 "Bangla Bazar",
                 "Banglamotor",
+                "Baridhara-DOHS",
+                "Bashundhara R/A",
                 "Begum Bazar",
                 "Bijoynagar",
                 "Dhanmondi",

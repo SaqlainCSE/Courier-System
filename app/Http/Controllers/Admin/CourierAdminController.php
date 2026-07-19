@@ -234,6 +234,51 @@ class CourierAdminController extends Controller
         return redirect()->route('admin.couriers.index')->with('success', 'Courier deleted successfully.');
     }
 
+    // public function print(Request $request, $id)
+    // {
+    //     $courier = Courier::with('user')->findOrFail($id);
+
+    //     $status = $request->input('status');
+    //     $from = $request->input('from');
+    //     $to = $request->input('to');
+
+    //     $fromDate = $from ? \Carbon\Carbon::parse($from)->startOfDay() : null;
+    //     $toDate = $to ? \Carbon\Carbon::parse($to)->endOfDay() : null;
+
+    //     $query = $courier->shipments();
+
+    //     if ($status) {
+    //         $query->where('status', $status);
+    //     }
+
+    //     if ($fromDate && $toDate) {
+    //         $query->whereBetween('created_at', [$fromDate, $toDate]);
+    //     }
+
+    //     $shipments = $query->latest()->get();
+
+    //     $totalParcel = $shipments->count();
+
+    //     $totalDeliveredAmount = $shipments
+    //         ->whereIn('status', ['delivered', 'partially_delivered'])
+    //         ->sum('price');
+
+    //     $statusSummary = $shipments->countBy('status')->toArray();
+
+    //     $pdf = Pdf::loadView('admin.couriers.print', compact(
+    //         'courier',
+    //         'shipments',
+    //         'statusSummary',
+    //         'totalParcel',
+    //         'totalDeliveredAmount',
+    //         'status',
+    //         'from',
+    //         'to'
+    //     ))->setPaper('a4', 'portrait');
+
+    //     return $pdf->stream('delivery-man-'.$courier->user->name.'-report.pdf');
+    // }
+
     public function print(Request $request, $id)
     {
         $courier = Courier::with('user')->findOrFail($id);
@@ -242,47 +287,54 @@ class CourierAdminController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
 
+        $fromDate = $from ? \Carbon\Carbon::parse($from)->startOfDay() : null;
+        $toDate = $to ? \Carbon\Carbon::parse($to)->endOfDay() : null;
+
         $query = $courier->shipments();
 
         if ($status) {
             $query->where('status', $status);
         }
 
-        if ($from && $to) {
-            $query->whereBetween('created_at', [$from, $to]);
+        if ($fromDate && $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate]);
         }
 
-        // Get shipments after filters
         $shipments = $query->latest()->get();
-
-        // Total parcels based on filters
         $totalParcel = $shipments->count();
+        $totalDeliveredAmount = $shipments->whereIn('status', ['delivered', 'partially_delivered'])->sum('price');
+        $statusSummary = $shipments->countBy('status')->toArray();
 
-        // Total delivered/partially delivered amount based on filters
-        $totalDeliveredAmount = $query->whereIn('status', ['delivered', 'partially_delivered'])->sum('price');
+        $html = view('admin.couriers.print', compact(
+            'courier', 'shipments', 'statusSummary',
+            'totalParcel', 'totalDeliveredAmount',
+            'status', 'from', 'to'
+        ))->render();
 
-        // Status summary for cards in PDF
-        $statusSummary = $courier->shipments()
-            ->when($status, fn($q) => $q->where('status', $status))
-            ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'fontDir' => array_merge(
+                (new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'],
+                [public_path('fonts')]
+            ),
+            'fontdata' => array_merge(
+                (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'],
+                [
+                    'notosansbengali' => [
+                        'R' => 'NotoSansBengali-Regular.ttf',
+                    ]
+                ]
+            ),
+            'default_font' => 'notosansbengali',
+            'useOTL' => 0xFF,
+            'useKashida' => 75,
+        ]);
 
-        // Generate PDF
-        $pdf = Pdf::loadView('admin.couriers.print', compact(
-            'courier',
-            'shipments',
-            'statusSummary',
-            'totalParcel',
-            'totalDeliveredAmount',
-            'status',
-            'from',
-            'to'
-        ))->setPaper('a4', 'portrait');
+        $mpdf->WriteHTML($html);
 
-        return $pdf->stream('delivery-man-'.$courier->user->name.'-report.pdf');
+        return response($mpdf->Output('delivery-man-'.$courier->user->name.'-report.pdf', 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
     }
 
 }
