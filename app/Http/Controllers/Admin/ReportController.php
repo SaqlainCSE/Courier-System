@@ -121,7 +121,6 @@ class ReportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        // same logic as index to get shipments
         $filter = $request->input('filter', 'total');
         $status = $request->input('status', 'pending');
         $start_date = $request->input('start_date');
@@ -134,15 +133,40 @@ class ReportController extends Controller
         }
 
         if ($filter === 'custom' && $start_date && $end_date) {
-            $query->whereBetween('created_at', [$start_date, $end_date]);
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($start_date)->startOfDay(),
+                \Carbon\Carbon::parse($end_date)->endOfDay(),
+            ]);
         }
 
         $shipments = $query->latest()->get();
 
-        // Generate PDF
-        $pdf = Pdf::loadView('admin.reports.pdf', compact('shipments', 'filter', 'status'))
-            ->setPaper('a4', 'potrait');
+        $html = view('admin.reports.pdf', compact('shipments', 'filter', 'status'))->render();
 
-        return $pdf->stream('shipment-report-' . now()->format('Ymd-His') . '.pdf');
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'fontDir' => array_merge(
+                (new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'],
+                [public_path('fonts')]
+            ),
+            'fontdata' => array_merge(
+                (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'],
+                [
+                    'notosansbengali' => [
+                        'R' => 'NotoSansBengali-Regular.ttf',
+                    ]
+                ]
+            ),
+            'default_font' => 'notosansbengali',
+            'useOTL' => 0xFF,
+            'useKashida' => 75,
+        ]);
+
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('shipment-report-' . now()->format('Ymd-His') . '.pdf', 'I'), 200)
+            ->header('Content-Type', 'application/pdf');
     }
 }
