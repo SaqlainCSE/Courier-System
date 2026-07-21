@@ -80,7 +80,9 @@
                 <div class="col-12 col-md-6 d-flex flex-wrap gap-2 align-items-end justify-content-center justify-content-md-end">
                     <button class="btn btn-sm btn-primary"><i class="fas fa-filter me-1"></i> Filter</button>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
-                    <a href="{{ route('admin.reports.exportPdf', request()->query()) }}" class="btn btn-sm btn-outline-danger">Download PDF</a>
+                    <a href="{{ route('admin.reports.exportPdf', request()->query()) }}" target="_blank" class="btn btn-sm btn-danger">
+                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                    </a>
                 </div>
             </form>
         </div>

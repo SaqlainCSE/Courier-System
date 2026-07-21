@@ -77,7 +77,7 @@
 
         <div class="card-body collapse show" id="filterCollapse">
             <form method="GET" class="row g-2 align-items-center">
-                <div class="col-12 col-sm-6 col-md-3">
+                <div class="col-12 col-sm-6 col-md-2">
                     <input type="text" name="q" class="form-control form-control-sm" placeholder="Search tracking, address, name..." value="{{ request('q') }}">
                 </div>
                 <div class="col-6 col-md-2">
@@ -105,12 +105,22 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-2">
                     <select name="courier_id" class="form-select form-select-sm">
                         <option value="">All Couriers</option>
                         @foreach($couriers as $c)
                             <option value="{{ $c->id }}" @selected(request('courier_id')==$c->id)>
                                 {{ $c->user->name ?? '—' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select name="user_id" class="form-select form-select-sm">
+                        <option value="">All Merchants</option>
+                        @foreach($merchants as $m)
+                            <option value="{{ $m->id }}" @selected(request('user_id')==$m->id)>
+                                {{ $m->business_name ?? $m->name ?? '—' }}
                             </option>
                         @endforeach
                     </select>
@@ -126,7 +136,7 @@
                     <a href="{{ route('admin.shipments.index') }}" class="btn btn-sm btn-outline-dark">Clear</a>
                     <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-secondary">Reports</a>
                     <a href="{{ route('admin.reports.export', request()->all()) }}" class="btn btn-sm btn-primary">Export CSV</a>
-                    <a href="{{ route('admin.shipments.print.all') }}" target="_blank" class="btn btn-sm btn-success">Print</a>
+                    <a href="{{ route('admin.shipments.print.all', request()->query()) }}" target="_blank" class="btn btn-sm btn-success">Print</a>
                     <a href="{{ route('admin.shipments.bulk.assign') }}" class="btn btn-sm btn-warning"><i class="fas fa-user-tie me-1"></i> Today Assign</a>
                 </div>
             </form>

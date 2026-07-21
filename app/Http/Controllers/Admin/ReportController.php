@@ -111,62 +111,143 @@ class ReportController extends Controller
 
     public function printAll(Request $request)
     {
-        $shipments = Shipment::with(['courier', 'customer', 'statusLogs'])
-                                    ->whereIn('status', ['assigned', 'pending','hold'])
-                                    ->latest()
-                                    ->get();
+        $query = Shipment::query()->with(['courier.user', 'customer', 'statusLogs']);
+
+        // Period filter
+        if ($request->filled('period')) {
+            switch ($request->period) {
+                case 'today':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'this_week':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'this_month':
+                    $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+                    break;
+                case 'this_year':
+                    $query->whereYear('created_at', now()->year);
+                    break;
+            }
+        }
+
+        // Search
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('tracking_number', 'like', "%{$q}%")
+                    ->orWhere('pickup_name', 'like', "%{$q}%")
+                    ->orWhere('drop_name', 'like', "%{$q}%")
+                    ->orWhere('pickup_address', 'like', "%{$q}%")
+                    ->orWhere('drop_address', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            if ($request->status === 'paid') {
+                $query->whereIn('status', ['delivered', 'partially_delivered'])
+                    ->where('balance_cost', '<=', 0);
+            } else {
+                $query->where('status', $request->status);
+            }
+        } else {
+            $query->whereIn('status', ['assigned', 'pending', 'hold']);
+        }
+
+        if ($request->filled('courier_id')) {
+            $query->where('courier_id', $request->courier_id);
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $shipments = $query->latest()->get();
 
         return view('admin.reports.print-multi', compact('shipments'));
     }
 
     public function exportPdf(Request $request)
-    {
-        $filter = $request->input('filter', 'total');
-        $status = $request->input('status', 'pending');
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
+{
+    $filter = $request->input('filter', 'total');
+    $status = $request->input('status', 'all');
+    $merchantId = $request->input('merchant_id', 'all');
+    $start_date = $request->input('start_date');
+    $end_date = $request->input('end_date');
 
-        $query = \App\Models\Shipment::query();
+    $query = \App\Models\Shipment::query()->with(['courier.user', 'customer']);
 
-        if ($status != 'all') {
-            $query->where('status', $status);
-        }
-
-        if ($filter === 'custom' && $start_date && $end_date) {
-            $query->whereBetween('created_at', [
-                \Carbon\Carbon::parse($start_date)->startOfDay(),
-                \Carbon\Carbon::parse($end_date)->endOfDay(),
-            ]);
-        }
-
-        $shipments = $query->latest()->get();
-
-        $html = view('admin.reports.pdf', compact('shipments', 'filter', 'status'))->render();
-
-        $mpdf = new \Mpdf\Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'orientation' => 'P',
-            'fontDir' => array_merge(
-                (new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'],
-                [public_path('fonts')]
-            ),
-            'fontdata' => array_merge(
-                (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'],
-                [
-                    'notosansbengali' => [
-                        'R' => 'NotoSansBengali-Regular.ttf',
-                    ]
-                ]
-            ),
-            'default_font' => 'notosansbengali',
-            'useOTL' => 0xFF,
-            'useKashida' => 75,
-        ]);
-
-        $mpdf->WriteHTML($html);
-
-        return response($mpdf->Output('shipment-report-' . now()->format('Ymd-His') . '.pdf', 'I'), 200)
-            ->header('Content-Type', 'application/pdf');
+    // Status filter
+    if ($status !== 'all') {
+        $query->where('status', $status);
     }
+
+    // Period filter
+    switch ($filter) {
+        case 'today':
+            $query->whereDate('created_at', today());
+            break;
+        case 'this_week':
+            $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            break;
+        case 'this_month':
+            $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+            break;
+        case 'this_year':
+            $query->whereYear('created_at', now()->year);
+            break;
+        case 'custom':
+            if ($start_date && $end_date) {
+                $query->whereBetween('created_at', [
+                    \Carbon\Carbon::parse($start_date)->startOfDay(),
+                    \Carbon\Carbon::parse($end_date)->endOfDay(),
+                ]);
+            }
+            break;
+        // 'total' হলে কোনো period restriction লাগবে না
+    }
+
+    // Merchant filter
+    if ($merchantId !== 'all') {
+        $query->where('user_id', $merchantId);
+    }
+
+    $shipments = $query->latest()->get();
+
+    $html = view('admin.reports.pdf', compact('shipments', 'filter', 'status'))->render();
+
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'orientation' => 'P',
+        'fontDir' => array_merge(
+            (new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'],
+            [public_path('fonts')]
+        ),
+        'fontdata' => array_merge(
+            (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'],
+            [
+                'notosansbengali' => [
+                    'R' => 'NotoSansBengali-Regular.ttf',
+                ]
+            ]
+        ),
+        'default_font' => 'notosansbengali',
+        'useOTL' => 0xFF,
+        'useKashida' => 75,
+    ]);
+
+    $mpdf->WriteHTML($html);
+
+    return response($mpdf->Output('shipment-report-' . now()->format('Ymd-His') . '.pdf', 'I'), 200)
+        ->header('Content-Type', 'application/pdf');
+}
 }

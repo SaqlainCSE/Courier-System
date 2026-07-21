@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Shipment;
 use App\Models\Courier;
+use App\Models\User;
 use App\Models\ShipmentStatusLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -61,17 +62,22 @@ class ShipmentAdminController extends Controller
             $query->where('courier_id', $request->courier_id);
         }
 
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
         if ($request->filled('start_date')) {
-            $query->whereDate('updated_at', '>=', $request->start_date);
+            $query->whereDate('created_at', '>=', $request->start_date);
         }
 
         if ($request->filled('end_date')) {
-            $query->whereDate('updated_at', '<=', $request->end_date);
+            $query->whereDate('created_at', '<=', $request->end_date);
         }
 
         // ================= DATA =================
         $shipments = $query->latest()->paginate(20)->withQueryString();
         $couriers = Courier::with('user')->get();
+        $merchants = User::where('role', 'customer')->orderBy('business_name')->get();
 
         // ================= SUMMARY (OPTIMIZED) =================
         $summaryQuery = (clone $baseQuery);
@@ -94,7 +100,7 @@ class ShipmentAdminController extends Controller
             'this_year' => (clone $summaryQuery)->whereYear('created_at', now()->year)->count(),
         ];
 
-        return view('admin.shipments.index', compact('shipments', 'couriers', 'summary'));
+        return view('admin.shipments.index', compact('shipments', 'couriers', 'merchants', 'summary'));
     }
 
     public function show(Shipment $shipment)
