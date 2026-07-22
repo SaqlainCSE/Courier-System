@@ -95,7 +95,7 @@
 </section>
 
 <!-- Testimonials -->
-<section class="py-5 bg-light">
+<!-- <section class="py-5 bg-light">
     <div class="container">
         <h2 class="fw-bold text-center mb-5">❤️ What Customers Say</h2>
         <div class="row g-4">
@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 <!-- CTA Section -->
 <section class="py-5 text-white text-center"

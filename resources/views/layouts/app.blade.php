@@ -127,7 +127,7 @@
 @yield('content')
 
 <!-- Footer -->
-<footer class="text-white pt-5 pb-3 mt-5"
+<footer class="text-white pb-3"
         style="background: linear-gradient(135deg, #111 0%, #222 100%); width:100%;">
   <div class="container">
     <div class="row g-4">
