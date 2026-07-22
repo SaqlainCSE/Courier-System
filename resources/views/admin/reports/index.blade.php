@@ -8,7 +8,7 @@
     <div class="row g-2 g-md-3 mb-4">
         @foreach(['total'=>'Total','today'=>'Today','this_week'=>'This Week','this_month'=>'This Month','this_year'=>'This Year'] as $key => $label)
         <div class="col-6 col-md-3">
-            <a href="{{ route('admin.reports.index', ['filter'=>$key, 'status'=>$status]) }}" class="text-decoration-none">
+        <a href="{{ route('admin.reports.index', array_merge(request()->query(), ['filter'=>$key])) }}" class="text-decoration-none">
                 <div class="card text-center {{ $filter === $key ? 'border-primary shadow-sm' : '' }}">
                     <div class="card-body py-3">
                         <h6 class="text-muted small">{{ $label }}</h6>
@@ -25,7 +25,7 @@
     <div class="row g-2 g-md-3 mb-4">
         @foreach(['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'] as $st)
         <div class="col-6 col-md-3">
-            <a href="{{ route('admin.reports.index', ['filter'=>$filter, 'status'=>$st]) }}" class="text-decoration-none">
+        <a href="{{ route('admin.reports.index', array_merge(request()->query(), ['status'=>$st])) }}" class="text-decoration-none">
                 <div class="card text-center {{ $status === $st ? 'border-success shadow-sm' : '' }}">
                     <div class="card-body py-3">
                         <h6 class="text-capitalize small">{{ str_replace('_',' ', $st) }}</h6>
