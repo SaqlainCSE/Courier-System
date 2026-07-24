@@ -41,7 +41,7 @@
                         <input type="text"
                                id="shipmentSearch"
                                class="form-control"
-                               placeholder="e.g. TRK-12345 or 01712345678"
+                               placeholder="e.g. TRK12345678 or 01712345678"
                                value="{{ request('q') }}"
                                autocomplete="off">
                         <button type="button" class="btn btn-primary" id="searchBtn">

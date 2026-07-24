@@ -45,6 +45,21 @@
       .hero { background: url('https://source.unsplash.com/1600x600/?delivery,logistics') center/cover no-repeat; height: 70vh; color: #fff; display: flex; align-items: center; }
       .hero h1 { font-size: 3rem; font-weight: 700; }
       .hero p { font-size: 1.2rem; }
+
+      html, body {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    main.page-content {
+        flex: 1 0 auto;
+    }
+    footer {
+        flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -110,6 +125,7 @@
   </div>
 </nav>
 
+<main class="page-content">
 
                 @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
@@ -125,9 +141,10 @@
 
 
 @yield('content')
+</main>
 
 <!-- Footer -->
-<footer class="text-white pb-3"
+<footer class="text-white pt-5 pb-3"
         style="background: linear-gradient(135deg, #111 0%, #222 100%); width:100%;">
   <div class="container">
     <div class="row g-4">
