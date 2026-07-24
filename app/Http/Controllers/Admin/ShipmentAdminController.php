@@ -220,7 +220,7 @@ class ShipmentAdminController extends Controller
         $search = $request->q;
 
         $shipments = Shipment::where(function ($q) {
-                $q->where('status', 'pending')->orWhere('status', 'hold');
+                $q->where('status', 'pending')->orWhere('status', 'hold')->orWhere('status', 'picked');
             })
             ->where(function ($sub) use ($search) {
                 $sub->where('tracking_number', 'like', "%{$search}%")
