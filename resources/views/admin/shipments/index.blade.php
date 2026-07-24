@@ -227,11 +227,11 @@
                                     </form>
 
                                     <!-- Button -->
-                                    <button type="button" 
+                                    <!-- <button type="button" 
                                             class="btn btn-sm btn-outline-danger"
                                             onclick="confirmDelete({{ $s->id }})">
                                         Delete
-                                    </button>
+                                    </button> -->
                                     
                                 </td>
                             </tr>

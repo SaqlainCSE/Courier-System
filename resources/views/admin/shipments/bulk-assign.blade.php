@@ -129,9 +129,9 @@
                                     </td>
                                     <td><strong>৳ {{ number_format($shipment->price, 2) }}</strong></td>
                                     <td>
-                                        <span class="badge bg-{{ $shipment->status === 'hold' ? 'warning text-dark' : 'secondary' }}">
-                                            {{ ucfirst($shipment->status) }}
-                                        </span>
+                                    <span class="badge bg-{{ $shipment->status === 'hold' ? 'secondary' : ($shipment->status === 'picked' ? 'primary' : 'warning') }}">
+                                        {{ ucfirst($shipment->status === 'hold' ? 'hold' : ($shipment->status === 'picked' ? 'picked' : $shipment->status)) }}
+                                    </span>
                                     </td>
                                     <td class="text-nowrap small text-muted">
                                         {{ $shipment->created_at->format('d M Y H:i') }}

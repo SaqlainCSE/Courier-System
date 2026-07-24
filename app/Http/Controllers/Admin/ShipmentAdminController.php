@@ -193,7 +193,7 @@ class ShipmentAdminController extends Controller
     public function bulkAssignPage(Request $request)
     {
         $query = Shipment::where(function ($q) {
-                $q->where('status', 'pending')->orWhere('status', 'hold');
+                $q->where('status', 'pending')->orWhere('status', 'hold')->orWhere('status', 'picked');
             })
             ->with(['customer', 'courier.user'])
             ->latest();
