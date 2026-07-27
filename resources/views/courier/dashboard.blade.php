@@ -315,8 +315,8 @@
         </div><!-- row -->
 
         <!-- Pagination -->
-        <div class="mt-4 d-flex justify-content-center">
-            {{ $assignments->links() }}
+        <div class="mt-3 d-flex justify-content-center flex-wrap">
+                {{ $assignments->links('pagination::bootstrap-5') }}
         </div>
     @endif
 </div>
