@@ -60,7 +60,7 @@
     <!-- Status Summary Cards -->
     <div class="row g-3 mb-4">
         @php
-            $allStatuses = ['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'];
+            $allStatuses = ['merchant_pay','pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'];
             $statusColors = [
                 'pending' => 'warning',
                 'assigned' => 'info',
@@ -70,6 +70,7 @@
                 'partially_delivered' => 'dark',
                 'hold' => 'secondary',
                 'cancelled' => 'danger',
+                'merchant_pay' => 'success',
             ];
         @endphp
 
