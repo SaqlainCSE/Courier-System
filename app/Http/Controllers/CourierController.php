@@ -67,12 +67,12 @@ class CourierController extends Controller
 
         // === Dashboard Stats ===
         $todayEarnings = $courier->assignedShipments()
-                                            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+                                            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled','merchant_pay'])
                                             ->whereDate('delivered_at', today())
                                             ->count() * $courier->commission_rate;
 
         $lastMonthEarnings = $courier->assignedShipments()
-                                                    ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+                                                    ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled','merchant_pay'])
                                                     ->whereBetween('delivered_at', [now()->subMonth()->startOfDay(), now()])
                                                     ->count() * $courier->commission_rate;
 
@@ -108,7 +108,7 @@ class CourierController extends Controller
         $todayAssignedTotalAmount = $todayBase()->sum('price');
 
         $todayAssignedCommission = $todayBase()
-            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled','merchant_pay'])
             ->count() * $courier->commission_rate;
 
         $todayPartialDeliveredTotal = $todayBase()
@@ -121,6 +121,7 @@ class CourierController extends Controller
                 CASE
                     WHEN status = 'delivered' THEN price
                     WHEN status = 'partially_delivered' THEN partial_price
+                    WHEN status = 'merchant_pay' THEN price
                     ELSE 0
                 END
             "));

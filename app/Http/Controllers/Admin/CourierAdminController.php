@@ -43,7 +43,7 @@ class CourierAdminController extends Controller
         $shipments = $query->latest()->get();
 
         // ================= STATUS SUMMARY =================
-        $allStatuses = ['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled'];
+        $allStatuses = ['pending','assigned','picked','in_transit','delivered','partially_delivered','hold','cancelled','merchant_pay'];
         $statusSummary = [];
         foreach ($allStatuses as $st) {
             $statusSummary[$st] = $base()->where('status', $st)->count();
@@ -51,27 +51,28 @@ class CourierAdminController extends Controller
 
         // ================= TOTAL DELIVERED SHIPMENTS =================
         $totalDeliveredShipments = $base()
-            ->whereIn('status', ['delivered', 'partially_delivered'])
+            ->whereIn('status', ['delivered', 'partially_delivered','merchant_pay'])
             ->count();
 
         // ================= TOTAL COMMISSION =================
         $commission = $base()
-            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled','merchant_pay'])
             ->count() * $courier->commission_rate;
 
         // ================= TODAY EARNINGS =================
         $todayEarnings = $base()
-            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled','merchant_pay'])
             ->whereDate('delivered_at', today())
             ->count() * $courier->commission_rate;
 
         // ================= TOTAL COLLECTED AMOUNT =================
         $totalDeliveredAmount = $base()
-            ->whereIn('status', ['delivered', 'partially_delivered'])
+            ->whereIn('status', ['delivered', 'partially_delivered','merchant_pay'])
             ->sum(DB::raw("
                 CASE
                     WHEN status = 'delivered' THEN price
                     WHEN status = 'partially_delivered' THEN partial_price
+                    WHEN status = 'merchant_pay' THEN price
                     ELSE 0
                 END
             "));
@@ -91,7 +92,7 @@ class CourierAdminController extends Controller
         $todayAssignedTotalAmount = $todayBase()->sum('price');
 
         $todayAssignedCommission = $todayBase()
-            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled'])
+            ->whereIn('status', ['delivered', 'partially_delivered', 'cancelled', 'merchant_pay'])
             ->count() * $courier->commission_rate;
 
         $todayPartialDeliveredTotal = $todayBase()
@@ -104,6 +105,7 @@ class CourierAdminController extends Controller
                 CASE
                     WHEN status = 'delivered' THEN price
                     WHEN status = 'partially_delivered' THEN partial_price
+                    WHEN status = 'merchant_pay' THEN price
                     ELSE 0
                 END
             "));
