@@ -57,7 +57,14 @@
                 <td>{{ $shipment->customer->business_name ?? '—' }} <br> {{ $shipment->customer->phone ?? '' }}</td>
                 <td>{{ $shipment->drop_name ?? '—' }} <br> {{ $shipment->drop_phone ?? '' }}</td>
                 <td>{{ $shipment->user->business_address }}</td>
-                <td>{{ $shipment->drop_address }}</td>
+                <td>
+                    {{ 
+                        collect(explode('>', $shipment->drop_address))
+                            ->skip(2)
+                            ->map(fn($part) => trim($part))
+                            ->implode(', ')
+                    }}
+                </td>
                 <td>{{ $shipment->notes ?? '-' }}</td>
                 <td>{{ $shipment->created_at->format('d M, Y') }}</td>
             </tr>
