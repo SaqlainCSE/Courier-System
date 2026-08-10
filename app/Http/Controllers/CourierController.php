@@ -44,26 +44,27 @@ class CourierController extends Controller
 
         // Assignments list with filter
         $assignments = $courier->assignedShipments()
-                                        ->with(['customer']) // eager load user (customer)
-                                        ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
-                                        ->when($request->filled('q'), function($q) use ($request) {
-                                            $q->where(function($sub) use ($request) {
-                                                $sub->where('tracking_number', 'like', '%'.$request->q.'%')
-                                                    ->orWhere('pickup_address', 'like', '%'.$request->q.'%')
-                                                    ->orWhere('drop_address', 'like', '%'.$request->q.'%')
-                                                    ->orWhere('pickup_name', 'like', '%'.$request->q.'%')
-                                                    ->orWhere('drop_name', 'like', '%'.$request->q.'%');
-                                            });
-                                        })
-                                        ->orderByRaw("CASE
-                                            WHEN status IN ('assigned', 'in_transit','hold') THEN 1
-                                            WHEN status IN ('picked','partially_delivered') THEN 2
-                                            WHEN status = 'delivered' THEN 3
-                                            ELSE 4
-                                        END")
-                                        ->orderBy('created_at', 'desc')
-                                        ->paginate(20)
-                                        ->withQueryString();
+                                ->with(['customer'])
+                                ->whereDate('updated_at', today())
+                                ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+                                ->when($request->filled('q'), function($q) use ($request) {
+                                    $q->where(function($sub) use ($request) {
+                                        $sub->where('tracking_number', 'like', '%'.$request->q.'%')
+                                            ->orWhere('pickup_address', 'like', '%'.$request->q.'%')
+                                            ->orWhere('drop_address', 'like', '%'.$request->q.'%')
+                                            ->orWhere('pickup_name', 'like', '%'.$request->q.'%')
+                                            ->orWhere('drop_name', 'like', '%'.$request->q.'%');
+                                    });
+                                })
+                                ->orderByRaw("CASE
+                                    WHEN status IN ('assigned', 'in_transit','hold') THEN 1
+                                    WHEN status IN ('picked','partially_delivered') THEN 2
+                                    WHEN status = 'delivered' THEN 3
+                                    ELSE 4
+                                END")
+                                ->orderBy('created_at', 'desc')
+                                ->paginate(20)
+                                ->withQueryString();
 
         // === Dashboard Stats ===
         $todayEarnings = $courier->assignedShipments()
@@ -82,16 +83,29 @@ class CourierController extends Controller
                                                     ->count();
 
         $deliveredAssignments = $courier->assignedShipments()
-                                                            ->where('status','delivered')
-                                                            ->count();
-
+                                        ->where('status','delivered')
+                                        ->whereDate('updated_at', today())
+                                        ->count();
+                    
         $partiallyDeliveredAssignments = $courier->assignedShipments()
-                                                                                ->where('status','partially_delivered')
-                                                                                ->count();
-
-        $inTransitAssignments = $courier->assignedShipments()->where('status','in_transit')->count();
-        $holdAssignments = $courier->assignedShipments()->where('status','hold')->count();
-        $cancelledAssignments = $courier->assignedShipments()->where('status','cancelled')->count();
+                                        ->where('status','partially_delivered')
+                                        ->whereDate('updated_at', today())
+                                        ->count();
+                    
+        $inTransitAssignments = $courier->assignedShipments()
+                                        ->where('status','in_transit')
+                                        ->whereDate('updated_at', today())
+                                        ->count();
+                    
+        $holdAssignments = $courier->assignedShipments()
+                                        ->where('status','hold')
+                                        ->whereDate('updated_at', today())
+                                        ->count();
+                    
+        $cancelledAssignments = $courier->assignedShipments()
+                                        ->where('status','cancelled')
+                                        ->whereDate('updated_at', today())
+                                        ->count();
 
         // ================= TODAY'S ASSIGNED SHIPMENTS =================
         $todayAssignedShipmentIds = ShipmentStatusLog::query()
