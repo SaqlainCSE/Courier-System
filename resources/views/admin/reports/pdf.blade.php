@@ -47,7 +47,15 @@
         <td>{{ ucfirst(str_replace('_',' ',$shipment->status)) }}</td>
         <td>{{ number_format($shipment->price, 2) }}</td>
         <td>{{ $shipment->customer->business_name ?? '—' }} - {{ $shipment->customer->phone ?? '' }} <br> {{ $shipment->customer->business_address ?? '' }}</td>
-        <td>{{ $shipment->drop_name ?? '—' }} - {{ $shipment->drop_phone ?? '' }} <br> {{ $shipment->drop_address ?? '' }}</td>
+        <td>{{ $shipment->drop_name ?? '—' }} - {{ $shipment->drop_phone ?? '' }} -
+        <br> 
+                    {{ 
+                        collect(explode('>', $shipment->drop_address))
+                            ->skip(2)
+                            ->map(fn($part) => trim($part))
+                            ->implode(', ')
+                    }}
+        </td>
         <td>{{ $shipment->notes ?? '-' }}</td>
     </tr>
     @endforeach
