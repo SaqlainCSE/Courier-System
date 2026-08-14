@@ -68,30 +68,36 @@
 <style>
     @media print {
         @page {
-            size: A4 portrait; /* Portrait mode */
-            margin: 8mm;       /* Small margins */
+            size: A4 portrait;
+            margin: 8mm;
         }
 
         body {
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
             margin: 0;
             font-size: 11px;
         }
 
         .row.g-3 {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 6px !important;
+            width: 100% !important;
         }
 
         .print-invoice {
-            page-break-inside: avoid;
-            width: 50%;     /* 2 columns */
+            width: 100% !important;
+            max-width: 100% !important;
+            flex: none !important;
             padding: 6px;
             box-sizing: border-box;
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
 
         .invoice-card {
-            height: 90mm;   /* ✅ 3 rows = 3 × 90mm ≈ 270mm inside A4 */
+            height: 90mm;
             overflow: hidden;
             border: 1px solid #ccc;
             padding: 6px;
@@ -101,10 +107,9 @@
         }
     }
 
-    /* Responsive for screen (not print) */
     @media (max-width: 768px) {
         .print-invoice {
-            width: 100% !important; /* full width on mobile */
+            width: 100% !important;
         }
     }
 </style>
